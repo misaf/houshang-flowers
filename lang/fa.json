@@ -1,0 +1,18 @@
+{
+    "The :attribute must contain at least one letter.": "The :attribute must contain at least one letter.",
+    "The :attribute must contain at least one number.": "The :attribute must contain at least one number.",
+    "The :attribute must contain at least one symbol.": "The :attribute must contain at least one symbol.",
+    "The :attribute must contain at least one uppercase and one lowercase letter.": "The :attribute must contain at least one uppercase and one lowercase letter.",
+    "The given :attribute has appeared in a data leak. Please choose a different :attribute.": "The given :attribute has appeared in a data leak. Please choose a different :attribute.",
+    "best_selling_products": "پرفروش ترین محصولات",
+    "blog_posts": "اطلاعات گل و گیاه",
+    "cheapest_products": "ارزانترین محصولات",
+    "daily_products": "محصولات روزانه",
+    "expensivest_products": "گرانترین محصولات",
+    "form.search": "جستجو",
+    "product_category": "دسته بندی محصولات",
+    "products": "محصولات",
+    "read_more_blog_posts": "سایر مطالب",
+    "Related Products": "محصولات مرتبط",
+    "Share on Social Networks": "اشتراک گذاری در شبکه های اجتماعی"
+}
