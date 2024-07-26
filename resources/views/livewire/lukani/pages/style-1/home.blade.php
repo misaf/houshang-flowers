@@ -3,14 +3,14 @@
     @include('lukani.partials.banner')
 
     <!-- Product Category -->
-    <livewire:lukani.product.widgets.style1.product :lazy="false" />
+    <livewire:lukani.product.widgets.style-1.product :lazy="false" />
 
     <!-- Intro -->
-    <x-lukani.home.widgets.intro.style1.intro />
+    <x-lukani.home.widgets.intro.style-1.intro />
 
     <!-- BlogPosts -->
-    <livewire:lukani.blog.blogPost.widgets.style1.latest-blog-posts :lazy="false" />
+    <livewire:lukani.blog.blogPost.widgets.style-1.latest-blog-posts :lazy="false" />
 
     <!-- Newsletter -->
-    <livewire:lukani.newsletter.widgets.style1.newsletter :lazy="false" />
+    <livewire:lukani.newsletter.widgets.style-1.newsletter :lazy="false" />
 </div>
