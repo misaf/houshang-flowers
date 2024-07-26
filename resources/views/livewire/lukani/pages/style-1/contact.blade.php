@@ -26,7 +26,7 @@
                     <x-bi-telegram class="w-8 h-8 fill-current" />
                 </a>
 
-                <a class="mx-1.5 dark:hover:text-green-400 text-white transition-colors duration-300 transform hover:text-green-500" href="#">
+                <a class="mx-1.5 dark:hover:text-green-400 text-white transition-colors duration-300 transform hover:text-green-500" href="{{ url('https://www.instagram.com/houshangflower') }}">
                     <x-bi-instagram class="w-8 h-8 fill-current" />
                 </a>
 

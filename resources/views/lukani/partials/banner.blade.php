@@ -24,7 +24,7 @@
                             <x-bi-telegram class="w-4 h-4" />
                             <span class="sr-only">{{ __('Telegram') }}</span>
                         </a>
-                        <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('Instagram') }}">
+                        <a href="{{ url('https://www.instagram.com/houshangflower') }}" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('Instagram') }}">
                             <x-bi-instagram class="w-4 h-4" />
                             <span class="sr-only">{{ __('Instagram') }}</span>
                         </a>
