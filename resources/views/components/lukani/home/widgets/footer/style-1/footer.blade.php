@@ -14,10 +14,10 @@
                             <a wire:navigate.hover href="{{ route('products.index') }}" class="hover:underline">{{ __('محصولات') }}</a>
                         </li>
                         <li class="mb-4">
-                            <a href="https://flowbite.com/" class="hover:underline">{{ __('گیاهان لوکس') }}</a>
+                            <a href="#" class="hover:underline">{{ __('گیاهان لوکس') }}</a>
                         </li>
                         <li>
-                            <a href="https://discord.gg/4eeurUVvTy" class="hover:underline">{{ __('پرسش و پاسخ') }}</a>
+                            <a href="#" class="hover:underline">{{ __('پرسش و پاسخ') }}</a>
                         </li>
                     </ul>
                 </div>
@@ -28,10 +28,10 @@
                             <a wire:navigate.hover href="{{ route('contacts.index') }}" class="hover:underline ">{{ __('درباره ما') }}</a>
                         </li>
                         <li class="mb-4">
-                            <a href="https://github.com/themesberg/flowbite" class="hover:underline ">{{ __('نحوه پرداخت') }}</a>
+                            <a href="#" class="hover:underline ">{{ __('نحوه پرداخت') }}</a>
                         </li>
                         <li>
-                            <a href="https://flowbite.com/" class="hover:underline">{{ __('ثبت شکایات') }}</a>
+                            <a href="#" class="hover:underline">{{ __('ثبت شکایات') }}</a>
                         </li>
                     </ul>
                 </div>
