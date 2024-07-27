@@ -130,6 +130,6 @@ final class ListProduct extends Component
 
     private function mergeProducts(array $existingProducts, array $newProducts): array
     {
-        return array_merge($existingProducts, $newProducts);
+        return array_merge_recursive($existingProducts, $newProducts);
     }
 }
