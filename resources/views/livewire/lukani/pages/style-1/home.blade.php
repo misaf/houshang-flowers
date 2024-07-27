@@ -1,4 +1,6 @@
 <div>
+    @section('pageTitle', __('خرید'))
+
     <!-- Banner -->
     @include('lukani.partials.banner')
 
