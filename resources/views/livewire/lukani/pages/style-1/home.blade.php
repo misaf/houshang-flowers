@@ -1,6 +1,6 @@
-<div>
-    @section('pageTitle', __('خرید'))
+@section('pageTitle', __('خرید'))
 
+<div>
     <!-- Banner -->
     @include('lukani.partials.banner')
 
