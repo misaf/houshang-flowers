@@ -18,7 +18,7 @@ final class ShowProduct extends Component
 
     public function render()
     {
-        $product = Cache::remember('show-product-' . $this->token, 30, function () {
+        $product = Cache::remember('show-product-' . $this->token, 180, function () {
             return (new ProductService())->viewProduct(
                 token: $this->token,
                 queryParams: [
