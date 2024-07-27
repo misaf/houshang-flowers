@@ -8,7 +8,7 @@
     <meta name="description" content="{{ config('settings.CMS_DESCRIPTION') }}" />
     <meta name="keywords" content="{{ config('settings.CMS_KEYWORDS') }}" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <title>{{ __('مجتمع گل و گیاه هوشنگ') }} - {{ $pageTitle ?? '' }}</title>
+    <title>{{ __('مجتمع گل و گیاه هوشنگ') }} - @yield('pageTitle')</title>
 
     @livewireStyles
     @vite(['resources/css/app.css'])

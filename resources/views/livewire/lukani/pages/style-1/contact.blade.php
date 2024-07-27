@@ -1,3 +1,5 @@
+@section('pageTitle', __('تماس با ما'))
+
 <div class="relative flex">
     <!-- Right div -->
     <div class="hidden lg:flex lg:flex-col fixed inset-y-0 right-0 w-1/3 bg-green-900 items-center justify-center z-10 space-y-8">

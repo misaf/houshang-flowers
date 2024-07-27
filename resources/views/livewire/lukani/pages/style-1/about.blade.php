@@ -1,3 +1,5 @@
+@section('pageTitle', __('درباره ما'))
+
 <section class="bg-white dark:bg-gray-900">
     <div class="mx-auto px-4 mt-8">
         <div class="flex flex-col md:flex-row">

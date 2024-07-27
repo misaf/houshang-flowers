@@ -1,3 +1,5 @@
+@section('pageTitle', $product['attributes']['name'])
+
 <section class="bg-white dark:bg-gray-900">
     <div class="mx-auto px-4 mt-8">
         <div class="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
