@@ -78,7 +78,10 @@
         </div>
 
         <div>
-            <iframe class="mx-auto w-full lg:max-w-xl h-64 rounded-lg sm:h-96 shadow-xl" src="{{ asset('assets/houshang-flowers-intro.webm') }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <video class="mx-auto w-full lg:max-w-xl h-64 rounded-lg sm:h-96 shadow-xl" controls>
+                <source src="{{ asset('assets/houshang-flowers-intro.webm') }}" type="video/webm">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
 </section>

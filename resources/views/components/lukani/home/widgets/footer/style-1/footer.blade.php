@@ -55,7 +55,7 @@
                     <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">{{ __('تمامی حقوقی این سایت محفوظ و منوط به مجتمع گل و گیاه هوشنگ می باشد.') }}</span>
                 </div>
                 <div>
-                    <a href="tel:+989125649438" class="text-sm text-gray-500 sm:text-center dark:text-gray-400">{{ __('طراحی و توسطعه توسط ترمه سافت') }}</a>
+                    <a href="tel:+989125649438" class="text-sm text-gray-500 sm:text-center dark:text-gray-400">{{ __('طراحی و توسعه توسط ترمه سافت') }}</a>
                 </div>
             </div>
             <div class="flex mt-4 sm:justify-center sm:mt-0 gap-x-5">
