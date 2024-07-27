@@ -20,10 +20,8 @@ final class ProductCategoryService extends ApiService
 
     public function listProductCategories(?array $queryParams = []): ?array
     {
-        $customQueryParams = array_merge(['page[size]' => 12], $queryParams);
-
         return $this->fetchProductCategories(new ProductCategoryDto(
-            queryParams: $customQueryParams,
+            $queryParams,
         ));
     }
 

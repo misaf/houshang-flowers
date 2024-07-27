@@ -54,7 +54,7 @@ final class Product extends Component
         return [
             'sort'       => 'random-position',
             'include'    => 'multimedia,latestProductPrice',
-            'page[size]' => 12,
+            'page[size]' => 4,
         ];
     }
 }

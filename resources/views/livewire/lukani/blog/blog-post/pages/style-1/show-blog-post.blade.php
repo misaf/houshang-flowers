@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <!-- Left div -->
+    <!-- Left div with two columns -->
     <div class="w-full lg:w-2/3 bg-white p-4 overflow-y-auto lg:ms-auto lg:relative lg:z-0">
         <div class="grid grid-cols-1 gap-4">
             @if (!empty($blogPost['data'][0]) && !empty($blogPost['included']))

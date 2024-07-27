@@ -18,7 +18,8 @@ final class Product extends Component
                 'fields[product-categories]' => 'name',
                 'filter[status]'             => true,
                 'sort'                       => '-position',
-                'page[size]'                 => 1,
+                'page[size]'                 => 4,
+                'page[number]'               => 1,
             ],
         );
 

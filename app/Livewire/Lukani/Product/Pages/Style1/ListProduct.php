@@ -21,9 +21,8 @@ final class ListProduct extends Component
 
     public array $products = [];
 
-    public $selectedProductCategories = [];
+    public array $selectedProductCategories = [];
 
-    // expensivest | cheapest
     public string $sortOrder = '-position';
 
     protected $listeners = ['sortUpdated', 'productCategoriesUpdated'];
@@ -31,31 +30,14 @@ final class ListProduct extends Component
     public function loadMore(): void
     {
         $this->incrementPageNumber();
-
         $this->products = $this->mergeProducts($this->products, $this->fetchProducts());
     }
 
     public function mount(): void
     {
-        $this->productParams = [
-            'fields[products]'           => 'name,description,slug,token,in_stock,productCategory,latestProductPrice,multimedia',
-            'fields[product-categories]' => 'name',
-            'fields[product-prices]'     => 'price',
-            'fields[multimedia]'         => 'uuid,name,file_name',
-            'sort'                       => '-position',
-            'page[size]'                 => 12,
-            'page[number]'               => 1,
-            'include'                    => 'productCategory,multimedia,latestProductPrice',
-        ];
-
-        $this->productCategoryParams = [
-            'fields[products]' => 'name,slug',
-            'sort'             => '-position',
-            'page[size]'       => 12,
-        ];
-
-        $this->products = $this->fetchProducts();
-        $this->productCategories = $this->fetchProductCategories();
+        $this->initializeProductParams();
+        $this->initializeProductCategoryParams();
+        $this->loadInitialData();
     }
 
     #[On('product-categories-updated')]
@@ -78,21 +60,15 @@ final class ListProduct extends Component
         $this->products = $this->fetchProducts();
     }
 
-    public function UpdatedSelectedProductCategories(): void
+    public function updatedSelectedProductCategories(): void
     {
         $this->productParams['filter[with-productCategory][slug]'] = implode(',', $this->selectedProductCategories);
-
         $this->dispatch('product-categories-updated');
     }
 
     public function updatedSortOrder(): void
     {
-        if ('expensivest' === $this->sortOrder) {
-            $this->productParams['sort'] = 'position';
-        } else {
-            $this->productParams['sort'] = '-position';
-        }
-
+        $this->productParams['sort'] = 'expensivest' === $this->sortOrder ? 'position' : '-position';
         $this->dispatch('sort-updated');
     }
 
@@ -123,8 +99,37 @@ final class ListProduct extends Component
         $this->productParams['page[number]']++;
     }
 
+    private function initializeProductCategoryParams(): void
+    {
+        $this->productCategoryParams = [
+            'fields[products]' => 'name,slug',
+            'sort'             => '-position',
+            'page[size]'       => 12,
+        ];
+    }
+
+    private function initializeProductParams(): void
+    {
+        $this->productParams = [
+            'fields[products]'           => 'name,description,slug,token,in_stock,productCategory,latestProductPrice,multimedia',
+            'fields[product-categories]' => 'name',
+            'fields[product-prices]'     => 'price',
+            'fields[multimedia]'         => 'uuid,name,file_name',
+            'sort'                       => '-position',
+            'page[size]'                 => 12,
+            'page[number]'               => 1,
+            'include'                    => 'productCategory,multimedia,latestProductPrice',
+        ];
+    }
+
+    private function loadInitialData(): void
+    {
+        $this->products = $this->fetchProducts();
+        $this->productCategories = $this->fetchProductCategories();
+    }
+
     private function mergeProducts(array $existingProducts, array $newProducts): array
     {
-        return array_merge_recursive($existingProducts, $newProducts);
+        return array_merge($existingProducts, $newProducts);
     }
 }
