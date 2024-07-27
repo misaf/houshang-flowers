@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('layouts.lukani.app')]
+#[Layout('layouts.lukani.app-contact')]
 final class ShowProduct extends Component
 {
     public string $slug;
@@ -22,12 +22,14 @@ final class ShowProduct extends Component
             return (new ProductService())->viewProduct(
                 token: $this->token,
                 queryParams: [
-                    'fields[products]'           => 'name,description,slug,productCategory,multimedia',
-                    'fields[product-categories]' => 'name,slug',
+                    'fields[products]'           => 'name,description,slug,token,in_stock,productCategory,latestProductPrice,multimedia',
+                    'fields[product-categories]' => 'name',
+                    'fields[product-prices]'     => 'price',
                     'fields[multimedia]'         => 'uuid,name,file_name',
                     'sort'                       => '-position',
-                    'page[size]'                 => 1,
-                    'include'                    => 'productCategory,multimedia',
+                    'page[size]'                 => 12,
+                    'page[number]'               => 1,
+                    'include'                    => 'productCategory,multimedia,latestProductPrice',
                 ],
             );
         });
