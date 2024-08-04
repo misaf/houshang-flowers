@@ -39,7 +39,7 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array $selected): void
     {
-        $this->productParams['filter[with-productCategory][slug]'] = implode(',', $selected);
+        $this->productParams['filter[with-productCategory][slug][]'] = implode(',', $selected);
 
         $this->products = $this->fetchProducts();
     }
