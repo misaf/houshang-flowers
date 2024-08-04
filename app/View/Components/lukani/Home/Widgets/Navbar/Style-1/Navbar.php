@@ -31,7 +31,7 @@ final class Navbar extends Component
                 'page[size]'                => 12,
             ],
         );
-
+        
         return view('components.lukani.home.widgets.navbar.style-1.navbar', compact('productCategories'));
     }
 }
