@@ -78,10 +78,10 @@
         </div>
 
         <div>
-            <video class="mx-auto w-full lg:max-w-xl h-64 rounded-lg sm:h-96 shadow-xl" controls>
+            {{-- <video class="mx-auto w-full lg:max-w-xl h-64 rounded-lg sm:h-96 shadow-xl" controls>
                 <source src="{{ asset('assets/houshang-flowers-intro.webm') }}" type="video/webm">
                 Your browser does not support the video tag.
-            </video>
+            </video> --}}
         </div>
     </div>
 </section>
