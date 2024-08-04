@@ -23,16 +23,14 @@ final class Navbar extends Component
      */
     public function render(): View
     {
-        $productCategories = Cache::rememberForever('navbar', function () {
-            return (new ProductCategoryService())->listProductCategories(
-                queryParams: [
-                    'fields[product-categories' => 'name,description',
-                    'filter[status]'            => true,
-                    'sort'                      => '-position',
-                    'page[size]'                => 12,
-                ],
-            );
-        });
+        $productCategories = (new ProductCategoryService())->listProductCategories(
+            queryParams: [
+                'fields[product-categories' => 'name,description',
+                'filter[status]'            => true,
+                'sort'                      => '-position',
+                'page[size]'                => 12,
+            ],
+        );
 
         return view('components.lukani.home.widgets.navbar.style-1.navbar', compact('productCategories'));
     }
