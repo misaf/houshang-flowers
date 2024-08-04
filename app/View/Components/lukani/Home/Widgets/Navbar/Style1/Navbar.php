@@ -32,6 +32,8 @@ final class Navbar extends Component
             ],
         );
 
+        dd($productCategories);
+
         return view('components.lukani.home.widgets.navbar.style-1.navbar', compact('productCategories'));
     }
 }
