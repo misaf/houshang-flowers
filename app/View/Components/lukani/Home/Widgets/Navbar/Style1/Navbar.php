@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\View\Components\lukani\Home\Widgets\Navbar\Style1;
 
 use App\Services\Api\Product\ProductCategoryService;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
@@ -12,16 +13,9 @@ use Illuminate\View\Component;
 final class Navbar extends Component
 {
     /**
-     * Create a new component instance.
-     */
-    public function __construct() {}
-
-    /**
      * Get the view / contents that represent the component.
-     *
-     * @return View
      */
-    public function render(): View
+    public function render(): View|Closure|string
     {
         dd(1);
         $productCategories = (new ProductCategoryService())->listProductCategories(

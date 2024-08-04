@@ -19,8 +19,6 @@
 </head>
 
 <body>
-    {{-- <x-abbas.form.input /> --}}
-
     <!-- Navbar -->
     <x-lukani.home.widgets.navbar.style1.navbar />
 
