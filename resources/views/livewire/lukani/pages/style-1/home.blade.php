@@ -8,7 +8,7 @@
     <livewire:lukani.product.widgets.style-1.product :lazy="false" />
 
     <!-- Intro -->
-    <x-lukani.home.widgets.intro.style-1.intro />
+    <x-lukani.home.widgets.intro.style1.intro />
 
     <!-- BlogPosts -->
     <livewire:lukani.blog.blogPost.widgets.style-1.latest-blog-posts :lazy="false" />
