@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Lukani\Product;
 
 use App\Livewire\Lukani\Product\Pages\Style1\ListProduct;

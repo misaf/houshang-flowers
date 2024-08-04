@@ -22,7 +22,7 @@ final class ListProduct extends Component
         $this->products = $this->mergeProducts($this->products, $this->fetchProducts());
     }
 
-    public function mount(string $slug = null): void
+    public function mount(?string $slug = null): void
     {
         $this->initializeProductParams($slug);
         $this->loadInitialData();
@@ -36,19 +36,19 @@ final class ListProduct extends Component
         $this->products = $this->fetchProducts();
     }
 
+    public function render()
+    {
+        return view('livewire.lukani.product.pages.style-1.list-product', [
+            'products' => $this->products,
+        ]);
+    }
+
     #[On('sort-updated')]
     public function sortUpdated(string $sort): void
     {
         $this->productParams['sort'] = 'expensivest' === $sort ? 'position' : '-position';
 
         $this->products = $this->fetchProducts();
-    }
-
-    public function render()
-    {
-        return view('livewire.lukani.product.pages.style-1.list-product', [
-            'products' => $this->products,
-        ]);
     }
 
     private function fetchProducts(): array
@@ -80,8 +80,7 @@ final class ListProduct extends Component
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
 
-        if ($slug)
-        {
+        if ($slug) {
             $this->productParams['filter']['with-productCategory']['slug'] = $slug;
         }
     }

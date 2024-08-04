@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components\Abbas\Form\Style1;
 
 use Closure;
@@ -11,10 +13,7 @@ class Input extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct() {}
 
     /**
      * Get the view / contents that represent the component.

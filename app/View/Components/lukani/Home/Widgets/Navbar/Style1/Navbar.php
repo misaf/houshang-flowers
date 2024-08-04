@@ -7,7 +7,6 @@ namespace App\View\Components\Lukani\Home\Widgets\Navbar\Style1;
 use App\Services\Api\Product\ProductCategoryService;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\Component;
 
 final class Navbar extends Component
@@ -21,9 +20,9 @@ final class Navbar extends Component
         $productCategories = (new ProductCategoryService())->listProductCategories(
             queryParams: [
                 'fields[product-categories]' => 'name,description',
-                'filter[status]'            => true,
-                'sort'                      => '-position',
-                'page[size]'                => 12,
+                'filter[status]'             => true,
+                'sort'                       => '-position',
+                'page[size]'                 => 12,
             ],
         );
 

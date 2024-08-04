@@ -3,9 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductRequest;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
