@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\View\Components\lukani\Home\Widgets\Navbar\Style1;
+namespace App\View\Components\Lukani\Home\Widgets\Navbar\Style1;
 
 use App\Services\Api\Product\ProductCategoryService;
 use Closure;

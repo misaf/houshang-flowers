@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\View\Components\lukani\Home\Widgets\Footer\Style1;
+namespace App\View\Components\Lukani\Home\Widgets\Footer\Style1;
 
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;

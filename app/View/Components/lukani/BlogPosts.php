@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\View\Components\lukani;
+namespace App\View\Components\Lukani;
 
 use App\Services\Api\Blog\BlogPostService;
 use Illuminate\Contracts\View\View;
