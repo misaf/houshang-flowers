@@ -26,10 +26,7 @@ Route::prefix('products')->name('products.')->group(function (): void {
 Route::get('products', App\Livewire\Lukani\Product\Pages\Style1\ListProduct::class)->name('products.index');
 Route::get('products/{token}/{slug}', App\Livewire\Lukani\Product\Pages\Style1\ShowProduct::class)->name('products.show');
 
-// Route::resource('product-categories', ProductCategoryController::class)->only('index', 'show')->parameter('product-category', 'product-category:slug');
-// Route::match(['get', 'post'], 'products', [ProductController::class, 'index'])->name('products.index');
-// Route::get('products/{token}/{product:slug}', [ProductController::class, 'show'])->name('products.show');
-// Route::get('products/{token}/{product:slug}/request', ProductRequest::class)->name('products.request');
+// Route::resource('product-categories/{slug}', ProductCategoryController::class)->only('index', 'show')->parameter('product-category', 'product-category:slug');
 
 Route::get('search', [SearchController::class, 'index'])->name('search.index');
 Route::get('pages/{page:slug}', [PageController::class, 'show'])->name('pages.show');
