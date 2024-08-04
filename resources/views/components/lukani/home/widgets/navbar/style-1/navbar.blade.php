@@ -184,7 +184,7 @@
                                                             <hr class="border-t border-gray-200">
                                                             <div class="flex flex-col">
                                                                 <ul role="list" aria-labelledby="Clothing-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
-
+                                                                    {{ dd($productCategories) }}
                                                                 </ul>
                                                             </div>
                                                         </div>
