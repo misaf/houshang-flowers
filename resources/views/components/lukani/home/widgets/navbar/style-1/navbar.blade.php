@@ -184,11 +184,6 @@
                                                             <hr class="border-t border-gray-200">
                                                             <div class="flex flex-col">
                                                                 <ul role="list" aria-labelledby="Clothing-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
-                                                                    @foreach ($productCategories['data'] as $productCategory)
-                                                                        <li class="flex">
-                                                                            <a href="{{ route('product-categories.show', $productCategory['attributes']['slug']) }}" class="hover:text-gray-800">{{ $productCategory['attributes']['name'] }}</a>
-                                                                        </li>
-                                                                    @endforeach
                                                                 </ul>
                                                             </div>
                                                         </div>
