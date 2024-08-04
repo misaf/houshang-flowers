@@ -16,7 +16,6 @@ final class Navbar extends Component
      */
     public function render(): View|Closure|string
     {
-        dd(1);
         $productCategories = (new ProductCategoryService())->listProductCategories(
             queryParams: [
                 'fields[product-categories]' => 'name,description',
