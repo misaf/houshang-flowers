@@ -6,7 +6,6 @@ namespace App\Livewire\Lukani\Product;
 
 use App\Livewire\Lukani\Product\Pages\Style1\ListProduct;
 use App\Services\Api\Product\ProductCategoryService;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class ProductCategoryFilter extends Component
@@ -15,10 +14,14 @@ final class ProductCategoryFilter extends Component
 
     public array $productCategoryParams = [];
 
+    public string|null $querySelectedProductCategory = null;
+
     public array $selectedProductCategories = [];
 
     public function mount(): void
     {
+        $this->selectedProductCategories[] = $this->querySelectedProductCategory;
+
         $this->initializeProductCategoryParams();
         $this->loadInitialData();
     }

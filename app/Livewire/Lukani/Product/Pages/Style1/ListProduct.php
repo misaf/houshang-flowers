@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Livewire\Lukani\Product\Pages\Style1;
 
-use App\Livewire\Lukani\Product\ProductCategoryFilter;
 use App\Services\Api\Product\ProductService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
@@ -19,7 +18,7 @@ final class ListProduct extends Component
 
     public array $products = [];
 
-    public array $selectedProductCategories = [];
+    public string|null $querySelectedProductCategory = null;
 
     public function loadMore(): void
     {
@@ -97,7 +96,7 @@ final class ListProduct extends Component
         if ($this->productCategory) {
             $this->productParams['filter[with-productCategory][slug]'] = $this->productCategory;
 
-            $this->selectedProductCategories[] = $this->productCategory;
+            $this->querySelectedProductCategory = $this->productCategory;
         }
     }
 
