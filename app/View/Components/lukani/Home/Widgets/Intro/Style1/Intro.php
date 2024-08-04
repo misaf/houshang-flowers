@@ -21,6 +21,7 @@ final class Intro extends Component
      */
     public function render(): View
     {
+        dd(1);
         return view('components.lukani.home.widgets.intro.style1.intro');
     }
 }
