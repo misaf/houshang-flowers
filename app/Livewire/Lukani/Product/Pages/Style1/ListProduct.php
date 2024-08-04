@@ -12,6 +12,8 @@ use Livewire\Component;
 #[Layout('layouts.lukani.app-contact')]
 final class ListProduct extends Component
 {
+    public string|null $productCategory = null;
+
     public array $productParams = [];
 
     public array $products = [];
@@ -26,9 +28,9 @@ final class ListProduct extends Component
         $this->products = $this->mergeProducts($this->products, $this->fetchProducts());
     }
 
-    public function mount(?string $slug = null): void
+    public function mount(): void
     {
-        $this->initializeProductParams($slug);
+        $this->initializeProductParams();
         $this->loadInitialData();
     }
 
@@ -76,7 +78,7 @@ final class ListProduct extends Component
         $this->productParams['page[number]']++;
     }
 
-    private function initializeProductParams(string|null $slug): void
+    private function initializeProductParams(): void
     {
         $this->productParams = [
             'fields[products]'           => 'name,description,slug,token,in_stock,productCategory,latestProductPrice,multimedia',
@@ -89,8 +91,8 @@ final class ListProduct extends Component
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
 
-        if ($slug) {
-            $this->productParams['filter']['with-productCategory']['slug'] = $slug;
+        if ($this->productCategory) {
+            $this->productParams['filter[with-productCategory][slug]'] = $this->productCategory;
         }
     }
 
