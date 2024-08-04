@@ -31,6 +31,6 @@ final class ShowBlogPost extends Component
             );
         });
 
-        return view('livewire.lukani.blog.blog-post.pages.style-1.show-blog-post', compact('blogPost'));
+        return view('livewire.lukani.blog.blog-post.pages.style1.show-blog-post', compact('blogPost'));
     }
 }

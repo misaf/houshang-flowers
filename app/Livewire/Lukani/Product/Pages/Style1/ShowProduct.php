@@ -34,6 +34,6 @@ final class ShowProduct extends Component
             );
         });
 
-        return view('livewire.lukani.product.pages.style-1.show-product', compact('product'));
+        return view('livewire.lukani.product.pages.style1.show-product', compact('product'));
     }
 }

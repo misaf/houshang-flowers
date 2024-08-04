@@ -12,6 +12,6 @@ final class Newsletter extends Component
 {
     public function render()
     {
-        return view('livewire.lukani.newsletter.widgets.style-1.newsletter');
+        return view('livewire.lukani.newsletter.widgets.style1.newsletter');
     }
 }

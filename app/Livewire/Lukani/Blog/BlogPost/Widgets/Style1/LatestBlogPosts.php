@@ -13,7 +13,7 @@ final class LatestBlogPosts extends Component
 {
     public function placeholder(array $params = [])
     {
-        return view('livewire.lukani.blog.blog-post.widgets.style-1.placeholders.latest-blog-posts', $params);
+        return view('livewire.lukani.blog.blog-post.widgets.style1.placeholders.latest-blog-posts', $params);
     }
 
     public function render()
@@ -28,6 +28,6 @@ final class LatestBlogPosts extends Component
             ],
         );
 
-        return view('livewire.lukani.blog.blog-post.widgets.style-1.latest-blog-posts', compact('blogPosts'));
+        return view('livewire.lukani.blog.blog-post.widgets.style1.latest-blog-posts', compact('blogPosts'));
     }
 }
