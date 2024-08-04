@@ -14,6 +14,6 @@ final class Contact extends Component
     {
         // Notification::send(User::isAdmin()->first(), new ContactNotification($request->only('email', 'phone', 'subject', 'description')));
 
-        return view('livewire.lukani.pages.style1.contact');
+        return view('livewire.lukani.pages.style-1.contact');
     }
 }

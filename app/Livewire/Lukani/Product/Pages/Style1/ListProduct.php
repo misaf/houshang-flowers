@@ -42,7 +42,7 @@ final class ListProduct extends Component
 
     public function render()
     {
-        return view('livewire.lukani.product.pages.style1.list-product', [
+        return view('livewire.lukani.product.pages.style-1.list-product', [
             'products' => $this->products,
         ]);
     }

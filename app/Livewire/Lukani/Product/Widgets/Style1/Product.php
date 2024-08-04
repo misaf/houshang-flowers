@@ -23,6 +23,6 @@ final class Product extends Component
             ],
         );
 
-        return view('livewire.lukani.product.widgets.style1.product', compact('productCategories'));
+        return view('livewire.lukani.product.widgets.style-1.product', compact('productCategories'));
     }
 }

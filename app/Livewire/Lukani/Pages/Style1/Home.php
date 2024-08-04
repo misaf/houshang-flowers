@@ -12,6 +12,6 @@ final class Home extends Component
 {
     public function render()
     {
-        return view('livewire.lukani.pages.style1.home');
+        return view('livewire.lukani.pages.style-1.home');
     }
 }

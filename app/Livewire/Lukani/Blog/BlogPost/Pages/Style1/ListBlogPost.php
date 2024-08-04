@@ -23,6 +23,6 @@ final class ListBlogPost extends Component
             ],
         );
 
-        return view('livewire.lukani.blog.blog-post.pages.style1.list-blog-post', compact('blogPosts'));
+        return view('livewire.lukani.blog.blog-post.pages.style-1.list-blog-post', compact('blogPosts'));
     }
 }

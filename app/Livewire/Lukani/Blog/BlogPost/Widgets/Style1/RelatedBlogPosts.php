@@ -26,6 +26,6 @@ final class RelatedBlogPosts extends Component
             ],
         );
 
-        return view('livewire.lukani.blog.blog-post.widgets.style1.related-blog-posts', compact('similarBlogPosts'));
+        return view('livewire.lukani.blog.blog-post.widgets.style-1.related-blog-posts', compact('similarBlogPosts'));
     }
 }
