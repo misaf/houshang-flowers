@@ -6,6 +6,7 @@ namespace App\Livewire\Lukani\Product;
 
 use App\Livewire\Lukani\Product\Pages\Style1\ListProduct;
 use App\Services\Api\Product\ProductCategoryService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 final class ProductCategoryFilter extends Component
