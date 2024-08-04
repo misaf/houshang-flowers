@@ -25,7 +25,7 @@ final class Navbar extends Component
     {
         $productCategories = (new ProductCategoryService())->listProductCategories(
             queryParams: [
-                'fields[product-categories' => 'name,description',
+                'fields[product-categories]' => 'name,description',
                 'filter[status]'            => true,
                 'sort'                      => '-position',
                 'page[size]'                => 12,
