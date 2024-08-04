@@ -23,6 +23,7 @@ final class Navbar extends Component
      */
     public function render(): View
     {
+        dd(1);
         $productCategories = (new ProductCategoryService())->listProductCategories(
             queryParams: [
                 'fields[product-categories]' => 'name,description',
@@ -31,7 +32,7 @@ final class Navbar extends Component
                 'page[size]'                => 12,
             ],
         );
-        
+
         return view('components.lukani.home.widgets.navbar.style-1.navbar', compact('productCategories'));
     }
 }
