@@ -21,7 +21,6 @@ final class Footer extends Component
      */
     public function render(): View
     {
-        dd(1);
-        return view('components.lukani.home.widgets.footer.style-1.footer');
+        return view('components.lukani.home.widgets.footer.style1.footer');
     }
 }

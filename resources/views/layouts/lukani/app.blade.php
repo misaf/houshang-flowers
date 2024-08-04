@@ -20,7 +20,7 @@
 
 <body>
     <!-- Navbar -->
-    <x-lukani.home.widgets.navbar.style-1.navbar />
+    <x-lukani.home.widgets.navbar.style1.navbar />
 
     <div class="container mx-auto">
         {{ $slot }}
@@ -29,7 +29,7 @@
     <hr class="my-6 h-px border-none bg-gray-200 dark:bg-gray-700" />
 
     <!-- Footer -->
-    <x-lukani.home.widgets.footer.style-1.footer />
+    <x-lukani.home.widgets.footer.style1.footer />
 
     @livewireScriptConfig
     @vite(['resources/js/app.js'])
