@@ -18,6 +18,10 @@ final class ListProduct extends Component
 
     public function loadMore(): void
     {
+        if ( ! $this->hasMorePages()) {
+            return;
+        }
+
         $this->incrementPageNumber();
         $this->products = $this->mergeProducts($this->products, $this->fetchProducts());
     }
@@ -60,6 +64,11 @@ final class ListProduct extends Component
     private function getProductParams(): array
     {
         return $this->productParams;
+    }
+
+    private function hasMorePages(): bool
+    {
+        return $this->productParams['page[number]'] < $this->products['meta']['page']['lastPage'];
     }
 
     private function incrementPageNumber(): void
