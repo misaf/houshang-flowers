@@ -22,9 +22,9 @@ final class ListProduct extends Component
         $this->products = $this->mergeProducts($this->products, $this->fetchProducts());
     }
 
-    public function mount(): void
+    public function mount(string $slug = null): void
     {
-        $this->initializeProductParams();
+        $this->initializeProductParams($slug);
         $this->loadInitialData();
     }
 
@@ -67,7 +67,7 @@ final class ListProduct extends Component
         $this->productParams['page[number]']++;
     }
 
-    private function initializeProductParams(): void
+    private function initializeProductParams(string|null $slug): void
     {
         $this->productParams = [
             'fields[products]'           => 'name,description,slug,token,in_stock,productCategory,latestProductPrice,multimedia',
@@ -79,6 +79,11 @@ final class ListProduct extends Component
             'page[number]'               => 1,
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
+
+        if ($slug)
+        {
+            $this->productParams['filter']['with-productCategory']['slug'] = $slug;
+        }
     }
 
     private function loadInitialData(): void
