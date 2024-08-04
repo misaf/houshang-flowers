@@ -7,7 +7,7 @@ namespace App\View\Components\lukani\Home\Widgets\Intro\Style1;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Intro extends Component
+final class Intro extends Component
 {
     /**
      * Create a new component instance.
@@ -21,7 +21,6 @@ class Intro extends Component
      */
     public function render(): View
     {
-        dd(1);
         return view('components.lukani.home.widgets.intro.style1.intro');
     }
 }

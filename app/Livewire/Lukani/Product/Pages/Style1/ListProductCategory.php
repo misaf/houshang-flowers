@@ -10,7 +10,7 @@ use Livewire\Attributes\On;
 use Livewire\Component;
 
 #[Layout('layouts.lukani.app-contact')]
-final class ListProduct extends Component
+final class ListProductCategory extends Component
 {
     public array $productParams = [];
 
