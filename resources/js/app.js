@@ -1,6 +1,11 @@
 import "./bootstrap";
 import "flowbite";
 // import Hls from "hls.js";
+import { initFlowbite } from "flowbite";
+
+document.addEventListener("livewire:navigated", () => {
+    initFlowbite();
+});
 
 import {
     Livewire,

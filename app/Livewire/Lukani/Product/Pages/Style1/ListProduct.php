@@ -39,14 +39,8 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array|string $selected): void
     {
-        $this->querySelectedCategory = collect($selected)->first();
-
-        if (count($selected) > 1) {
-            $this->querySelectedCategory = $selected;
-        }
-
-        $this->productParams['filter[with-in-product-category][slug]'] = is_array($selected) ? implode(',', $selected) : $selected;
-
+        $this->querySelectedCategory = is_array($selected) ? $selected : [$selected];
+        $this->updateCategoryFilter($this->querySelectedCategory);
         $this->products = $this->fetchProducts();
     }
 
@@ -61,24 +55,18 @@ final class ListProduct extends Component
     public function sortUpdated(string $sort): void
     {
         $this->productParams['sort'] = 'expensivest' === $sort ? 'position' : '-position';
-
         $this->products = $this->fetchProducts();
     }
 
     private function fetchProducts(): array
     {
         $productService = new ProductService();
-        return $productService->listProducts($this->getProductParams());
-    }
-
-    private function getProductParams(): array
-    {
-        return $this->productParams;
+        return $productService->listProducts($this->productParams);
     }
 
     private function hasMorePages(): bool
     {
-        return $this->productParams['page[number]'] < $this->products['meta']['page']['lastPage'];
+        return ($this->productParams['page[number]'] ?? 1) < ($this->products['meta']['page']['lastPage'] ?? 1);
     }
 
     private function incrementPageNumber(): void
@@ -100,7 +88,7 @@ final class ListProduct extends Component
         ];
 
         if ($this->querySelectedCategory) {
-            $this->productParams['filter[with-in-product-category][slug]'] = is_array($this->querySelectedCategory) ? implode(',', $this->querySelectedCategory) : $this->querySelectedCategory;
+            $this->productParams['filter[with-in-product-category][slug]'] = implode(',', (array) $this->querySelectedCategory);
         }
     }
 
@@ -112,5 +100,14 @@ final class ListProduct extends Component
     private function mergeProducts(array $existingProducts, array $newProducts): array
     {
         return array_merge_recursive($existingProducts, $newProducts);
+    }
+
+    private function updateCategoryFilter(): void
+    {
+        if ( ! empty($this->querySelectedCategory)) {
+            $this->productParams['filter[with-in-product-category][slug]'] = implode(',', $this->querySelectedCategory);
+        } else {
+            unset($this->productParams['filter[with-in-product-category][slug]']);
+        }
     }
 }

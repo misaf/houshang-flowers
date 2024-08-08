@@ -6,32 +6,19 @@ namespace App\Livewire\Lukani\Product;
 
 use App\Livewire\Lukani\Product\Pages\Style1\ListProduct;
 use App\Services\Api\Product\ProductCategoryService;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class ProductCategoryFilter extends Component
 {
     public array $productCategories = [];
 
-    public array $productCategoryParams = [];
-
     public array|string|null $selected;
 
-    // #[Url(as: 'category', history: true)]
-    // public array|string|null $querySelectedCategory = '';
+    private array $productCategoryParams = [];
 
     public function mount(array|string $querySelectedCategory): void
     {
-        $this->selected = $querySelectedCategory;
-
-        if ( ! is_array($querySelectedCategory)) {
-            $this->selected = [$querySelectedCategory];
-        }
-
-        $this->dispatch('product-categories-updated', implode(',', $this->querySelectedCategory))->to(ListProduct::class);
-
-        $this->querySelectedCategory = explode(',', $this->querySelectedCategory);
-
+        $this->selected = is_array($querySelectedCategory) ? $querySelectedCategory : [$querySelectedCategory];
         $this->initializeParams();
         $this->loadInitialData();
     }
@@ -50,13 +37,8 @@ final class ProductCategoryFilter extends Component
 
     private function fetch(): array
     {
-        $productCategoryService = new ProductCategoryService();
-        return $productCategoryService->listProductCategories($this->getParams());
-    }
-
-    private function getParams(): array
-    {
-        return $this->productCategoryParams;
+        $productCategoryService = new ProductCategoryService(); // Direct instantiation
+        return $productCategoryService->listProductCategories($this->productCategoryParams);
     }
 
     private function initializeParams(): void
