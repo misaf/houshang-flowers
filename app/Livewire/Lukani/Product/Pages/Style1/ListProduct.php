@@ -18,7 +18,7 @@ final class ListProduct extends Component
     public array $products = [];
 
     #[Url(as: 'category', history: true)]
-    public array|string|null $querySelectedCategory = '';
+    public array|string|null $querySelectedCategory = [];
 
     public function loadMore(): void
     {
@@ -39,8 +39,6 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array|string $selected): void
     {
-        $this->querySelectedCategory = '';
-        
         if (isset($selected)) {
             $this->querySelectedCategory = collect($selected)->first();
 
