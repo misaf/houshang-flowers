@@ -1,6 +1,6 @@
 import "./bootstrap";
 import "flowbite";
-import Hls from "hls.js";
+// import Hls from "hls.js";
 
 import {
     Livewire,
