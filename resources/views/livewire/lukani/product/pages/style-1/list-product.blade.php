@@ -20,7 +20,7 @@
         </div>
 
         <div class="absolute bottom-0 left-0 z-50 w-full h-16 bg-green-900">
-            {{-- <x-lukani.sub-menu /> --}}
+            <x-lukani.sub-menu />
         </div>
     </div>
 
