@@ -31,9 +31,9 @@
                 <!-- Heading & Filters -->
                 <div class="mb-4 items-end justify-end space-y-4 sm:flex sm:space-y-0 md:mb-8">
                     <div class="flex items-center gap-x-4">
-                        <livewire:lukani.product.product-category-filter :lazy="true" :$querySelectedCategory />
+                        <livewire:lukani.product.product-category-filter :lazy="false" :$querySelectedCategory />
 
-                        <livewire:lukani.product.product-category-sort :lazy="true" />
+                        <livewire:lukani.product.product-category-sort :lazy="false" />
                     </div>
                 </div>
                 <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-3">
