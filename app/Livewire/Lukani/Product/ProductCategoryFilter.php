@@ -28,9 +28,9 @@ final class ProductCategoryFilter extends Component
             $this->selected = [$querySelectedCategory];
         }
 
-        // $this->dispatch('product-categories-updated', implode(',', $this->querySelectedCategory))->to(ListProduct::class);
+        $this->dispatch('product-categories-updated', implode(',', $this->querySelectedCategory))->to(ListProduct::class);
 
-        // $this->querySelectedCategory = explode(',', $this->querySelectedCategory);
+        $this->querySelectedCategory = explode(',', $this->querySelectedCategory);
 
         $this->initializeParams();
         $this->loadInitialData();
