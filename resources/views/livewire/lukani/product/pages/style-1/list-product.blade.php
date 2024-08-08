@@ -20,7 +20,7 @@
         </div>
 
         <div class="absolute bottom-0 left-0 z-50 w-full h-16 bg-green-900">
-            <x-lukani.sub-menu />
+            {{-- <x-lukani.sub-menu /> --}}
         </div>
     </div>
 
@@ -31,22 +31,25 @@
                 <!-- Heading & Filters -->
                 <div class="mb-4 items-end justify-end space-y-4 sm:flex sm:space-y-0 md:mb-8">
                     <div class="flex items-center gap-x-4">
-                        <livewire:lukani.product.product-category-filter :lazy="false" :$querySelectedCategory />
+                        <livewire:lukani.product.product-category-filter :lazy="true" :$querySelectedCategory />
 
-                        <livewire:lukani.product.product-category-sort :lazy="false" />
+                        <livewire:lukani.product.product-category-sort :lazy="true" />
                     </div>
                 </div>
                 <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-3">
-                    @forelse($products['data'] as $product)
-                        <x-lukani.product.product :$products :$product />
-                    @empty
-                    @endforelse
+                    @if (isset($products['data']) && count($products['data']) > 0)
+                        @forelse($products['data'] as $product)
+                            <x-lukani.product.product :$products :$product />
+                        @empty
+                        @endforelse
+                    @endif
                 </div>
                 <div class="w-full text-center">
-                    <x-lukani.product.load-more-button />
+                    @if (isset($products['data']) && count($products['data']) > 0)
+                        <x-lukani.product.load-more-button />
+                    @endif
                 </div>
             </div>
         </section>
-
     </div>
 </div>

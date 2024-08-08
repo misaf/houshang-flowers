@@ -18,7 +18,7 @@ final class ListProduct extends Component
     public array $products = [];
 
     #[Url(as: 'category', history: true)]
-    public array|string|null $querySelectedCategory = [];
+    public array|string|null $querySelectedCategory;
 
     public function loadMore(): void
     {
@@ -39,13 +39,13 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array|string $selected): void
     {
-        $this->querySelectedCategory = [];
+        $this->querySelectedCategory = collect($selected)->first();
 
-        if (count($selected)) {
-            $this->querySelectedCategory = collect($selected)->first();
-
-            $this->productParams['filter[with-in-product-category][slug]'] = is_array($selected) ? implode(',', $selected) : $selected;
+        if (count($selected) > 1) {
+            $this->querySelectedCategory = $selected;
         }
+
+        $this->productParams['filter[with-in-product-category][slug]'] = is_array($selected) ? implode(',', $selected) : $selected;
 
         $this->products = $this->fetchProducts();
     }
@@ -99,7 +99,7 @@ final class ListProduct extends Component
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
 
-        if (count($this->querySelectedCategory)) {
+        if ($this->querySelectedCategory) {
             $this->productParams['filter[with-in-product-category][slug]'] = is_array($this->querySelectedCategory) ? implode(',', $this->querySelectedCategory) : $this->querySelectedCategory;
         }
     }

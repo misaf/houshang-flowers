@@ -19,20 +19,22 @@
             </div>
         </div>
         <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownSearchButton">
-            @forelse($productCategories['data'] as $productCategory)
-                {{-- @php
+            @if (isset($productCategories['data']) && count($productCategories['data']) > 0)
+                @forelse($productCategories['data'] as $productCategory)
+                    {{-- @php
                     $disabled = in_array($productCategory['attributes']['slug'], $querySelectedCategory);
                 @endphp --}}
-                <li>
-                    <div class="flex items-center ps-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <input class='w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500' id="{{ $productCategory['attributes']['slug'] }}" type="checkbox" value="{{ $productCategory['attributes']['slug'] }}" wire:model.change="selected">
-                        <label for="{{ $productCategory['attributes']['slug'] }}" class="w-full py-2 ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
-                            {{ $productCategory['attributes']['name'] }}
-                        </label>
-                    </div>
-                </li>
-            @empty
-            @endforelse
+                    <li>
+                        <div class="flex items-center ps-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                            <input class='w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500' id="{{ $productCategory['attributes']['slug'] }}" type="checkbox" value="{{ $productCategory['attributes']['slug'] }}" wire:model.change="selected">
+                            <label for="{{ $productCategory['attributes']['slug'] }}" class="w-full py-2 ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                                {{ $productCategory['attributes']['name'] }}
+                            </label>
+                        </div>
+                    </li>
+                @empty
+                @endforelse
+            @endif
         </ul>
     </div>
 </div>
