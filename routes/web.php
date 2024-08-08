@@ -20,7 +20,6 @@ Route::prefix('blogs')->name('blogs.')->group(function (): void {
 Route::prefix('products')->name('products.')->group(function (): void {
     Route::get('posts/{slug}/show', App\Livewire\Lukani\Blog\BlogPost\Pages\Style1\ShowBlogPost::class)->name('posts.show');
 });
-Route::get('products/categories/{productCategory}', App\Livewire\Lukani\Product\Pages\Style1\ListProduct::class)->name('product-categories.show');
 Route::get('products', App\Livewire\Lukani\Product\Pages\Style1\ListProduct::class)->name('products.index');
 Route::get('products/{token}/{slug}', App\Livewire\Lukani\Product\Pages\Style1\ShowProduct::class)->name('products.show');
 Route::get('search', [SearchController::class, 'index'])->name('search.index');

@@ -78,6 +78,7 @@
         </div>
 
         <div>
+            {{-- <video id="video" controls data-src="{{ asset('assets/output.m3u8') }}"></video> --}}
             {{-- <video class="mx-auto w-full lg:max-w-xl h-64 rounded-lg sm:h-96 shadow-xl" controls>
                 <source src="{{ asset('assets/houshang-flowers-intro.webm') }}" type="video/webm">
                 Your browser does not support the video tag.

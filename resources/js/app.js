@@ -1,5 +1,6 @@
 import "./bootstrap";
 import "flowbite";
+import Hls from "hls.js";
 
 import {
     Livewire,
@@ -19,3 +20,22 @@ import.meta.glob([
     "../templates/**/assets/images/**",
     //'../templates/**/assets/js/**',
 ]);
+
+document.addEventListener("DOMContentLoaded", function () {
+    const video = document.getElementById("video");
+    const videoSrc = video.getAttribute("data-src");
+
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            video.play();
+        });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = videoSrc;
+        video.addEventListener("canplay", function () {
+            video.play();
+        });
+    }
+});

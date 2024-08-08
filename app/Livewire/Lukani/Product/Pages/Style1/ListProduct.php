@@ -7,18 +7,18 @@ namespace App\Livewire\Lukani\Product\Pages\Style1;
 use App\Services\Api\Product\ProductService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 #[Layout('layouts.lukani.app-contact')]
 final class ListProduct extends Component
 {
-    public string|null $productCategory = null;
-
     public array $productParams = [];
 
     public array $products = [];
 
-    public string|null $querySelectedProductCategory = null;
+    #[Url(as: 'category', history: true)]
+    public array|string|null $querySelectedCategory;
 
     public function loadMore(): void
     {
@@ -37,9 +37,15 @@ final class ListProduct extends Component
     }
 
     #[On('product-categories-updated')]
-    public function productCategoriesUpdated(array $selected): void
+    public function productCategoriesUpdated(array|string $selected): void
     {
-        $this->productParams['filter[with-productCategory][slug][]'] = implode(',', $selected);
+        $this->querySelectedCategory = collect($selected)->first();
+
+        if (count($selected) > 1) {
+            $this->querySelectedCategory = $selected;
+        }
+
+        $this->productParams['filter[with-in-product-category][slug]'] = is_array($selected) ? implode(',', $selected) : $selected;
 
         $this->products = $this->fetchProducts();
     }
@@ -93,10 +99,8 @@ final class ListProduct extends Component
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
 
-        if ($this->productCategory) {
-            $this->productParams['filter[with-productCategory][slug]'] = $this->productCategory;
-
-            $this->querySelectedProductCategory = $this->productCategory;
+        if ($this->querySelectedCategory) {
+            $this->productParams['filter[with-in-product-category][slug]'] = is_array($this->querySelectedCategory) ? implode(',', $this->querySelectedCategory) : $this->querySelectedCategory;
         }
     }
 

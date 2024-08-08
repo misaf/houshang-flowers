@@ -6,6 +6,7 @@ namespace App\Livewire\Lukani\Product;
 
 use App\Livewire\Lukani\Product\Pages\Style1\ListProduct;
 use App\Services\Api\Product\ProductCategoryService;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 final class ProductCategoryFilter extends Component
@@ -14,15 +15,24 @@ final class ProductCategoryFilter extends Component
 
     public array $productCategoryParams = [];
 
-    public string|null $querySelectedProductCategory = null;
+    public array|string|null $selected;
 
-    public array $selectedProductCategories = [];
+    // #[Url(as: 'category', history: true)]
+    // public array|string|null $querySelectedCategory = '';
 
-    public function mount(): void
+    public function mount(array|string $querySelectedCategory): void
     {
-        $this->selectedProductCategories[] = $this->querySelectedProductCategory;
+        $this->selected = $querySelectedCategory;
 
-        $this->initializeProductCategoryParams();
+        if ( ! is_array($querySelectedCategory)) {
+            $this->selected = [$querySelectedCategory];
+        }
+
+        // $this->dispatch('product-categories-updated', implode(',', $this->querySelectedCategory))->to(ListProduct::class);
+
+        // $this->querySelectedCategory = explode(',', $this->querySelectedCategory);
+
+        $this->initializeParams();
         $this->loadInitialData();
     }
 
@@ -33,23 +43,23 @@ final class ProductCategoryFilter extends Component
         ]);
     }
 
-    public function updatedSelectedProductCategories(): void
+    public function updatedSelected(): void
     {
-        $this->dispatch('product-categories-updated', $this->selectedProductCategories)->to(ListProduct::class);
+        $this->dispatch('product-categories-updated', $this->selected)->to(ListProduct::class);
     }
 
-    private function fetchProductCategories(): array
+    private function fetch(): array
     {
         $productCategoryService = new ProductCategoryService();
-        return $productCategoryService->listProductCategories($this->getProductCategoryParams());
+        return $productCategoryService->listProductCategories($this->getParams());
     }
 
-    private function getProductCategoryParams(): array
+    private function getParams(): array
     {
         return $this->productCategoryParams;
     }
 
-    private function initializeProductCategoryParams(): void
+    private function initializeParams(): void
     {
         $this->productCategoryParams = [
             'fields[products]' => 'name,slug',
@@ -60,6 +70,6 @@ final class ProductCategoryFilter extends Component
 
     private function loadInitialData(): void
     {
-        $this->productCategories = $this->fetchProductCategories();
+        $this->productCategories = $this->fetch();
     }
 }

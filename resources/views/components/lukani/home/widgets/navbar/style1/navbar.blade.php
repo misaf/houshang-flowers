@@ -161,7 +161,7 @@
                                                             <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
                                                                 <img src="{{ asset('assets/online-showcase.webp') }}" alt="online-showcase" class="object-cover object-center saturate-50">
                                                             </div>
-                                                            <a wire:navigate.hover href="{{ route('product-categories.show', 'best-selling') }}" class="mt-6 block font-medium text-gray-900 tracking-widest">
+                                                            <a wire:navigate.hover href="{{ route('products.index', ['category' => 'best-selling']) }}" class="mt-6 block font-medium text-gray-900 tracking-widest">
                                                                 <span class="absolute inset-0 z-10" aria-hidden="true"></span>
                                                                 {{ __('پرفروش ترین ها') }}
                                                             </a>
@@ -171,7 +171,7 @@
                                                             <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
                                                                 <img src="{{ asset('assets/best-sellers.webp') }}" alt="best-sellers" class="object-cover object-center saturate-50">
                                                             </div>
-                                                            <a wire:navigate.hover href="{{ route('product-categories.show', 'daily') }}" class="mt-6 block font-medium text-gray-900 tracking-widest">
+                                                            <a wire:navigate.hover href="{{ route('products.index', ['category' => 'daily']) }}" class="mt-6 block font-medium text-gray-900 tracking-widest">
                                                                 <span class="absolute inset-0 z-10" aria-hidden="true"></span>
                                                                 {{ __('ویترین آنلاین') }}
                                                             </a>
@@ -186,7 +186,7 @@
                                                                 <ul role="list" aria-labelledby="Clothing-heading" class="mt-6 space-y-6 sm:mt-4 sm:space-y-4">
                                                                     @foreach ($productCategories['data'] as $productCategory)
                                                                         <li class="flex">
-                                                                            <a wire:navigate.hover href="{{ route('product-categories.show', $productCategory['attributes']['slug']) }}" class="hover:text-gray-800">{{ $productCategory['attributes']['name'] }}</a>
+                                                                            <a wire:navigate.hover href="{{ route('products.index', ['category' => $productCategory['attributes']['slug']]) }}" class="hover:text-gray-800">{{ $productCategory['attributes']['name'] }}</a>
                                                                         </li>
                                                                     @endforeach
                                                                 </ul>
