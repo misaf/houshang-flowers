@@ -99,7 +99,7 @@ final class ListProduct extends Component
             'include'                    => 'productCategory,multimedia,latestProductPrice',
         ];
 
-        if ($this->querySelectedCategory) {
+        if (count($this->querySelectedCategory)) {
             $this->productParams['filter[with-in-product-category][slug]'] = is_array($this->querySelectedCategory) ? implode(',', $this->querySelectedCategory) : $this->querySelectedCategory;
         }
     }
