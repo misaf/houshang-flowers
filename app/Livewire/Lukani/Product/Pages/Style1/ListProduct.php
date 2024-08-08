@@ -39,12 +39,10 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array|string $selected): void
     {
-        if (isset($selected)) {
-            $this->querySelectedCategory = collect($selected)->first();
+        $this->querySelectedCategory = [];
 
-            if (count($selected) > 1) {
-                $this->querySelectedCategory = $selected;
-            }
+        if (count($selected)) {
+            $this->querySelectedCategory = collect($selected)->first();
 
             $this->productParams['filter[with-in-product-category][slug]'] = is_array($selected) ? implode(',', $selected) : $selected;
         }
