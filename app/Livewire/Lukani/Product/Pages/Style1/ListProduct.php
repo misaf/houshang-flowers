@@ -39,7 +39,7 @@ final class ListProduct extends Component
     #[On('product-categories-updated')]
     public function productCategoriesUpdated(array|string $selected): void
     {
-        if (isset($this->querySelectedCategory)) {
+        if (isset($selected)) {
             $this->querySelectedCategory = collect($selected)->first();
 
             if (count($selected) > 1) {
