@@ -18,7 +18,7 @@ final class ListProduct extends Component
     public array $products = [];
 
     #[Url(as: 'category', history: true)]
-    public array|string|null $querySelectedCategory;
+    public array|string|null $querySelectedCategory = [];
 
     public function loadMore(): void
     {
