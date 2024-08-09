@@ -14,7 +14,7 @@
                             <a wire:navigate.hover href="{{ route('products.index') }}" class="hover:underline">{{ __('محصولات') }}</a>
                         </li>
                         <li class="mb-4">
-                            <a href="#" class="hover:underline">{{ __('گیاهان لوکس') }}</a>
+                            <a wire:navigate.hover href="{{ route('products.index', ['category' => 'loks']) }}" class="hover:underline">{{ __('گیاهان لوکس') }}</a>
                         </li>
                         <li>
                             <a href="#" class="hover:underline">{{ __('پرسش و پاسخ') }}</a>

@@ -7,7 +7,7 @@
                     {{ $productCategory['attributes']['name'] }}
                 </h1>
 
-                <x-product.product :$productCategory />
+                <x-product.product :$productCategory :lazy="true" />
             </div>
         </section>
     @endforeach

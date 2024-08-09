@@ -44,7 +44,54 @@
             <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
                 <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                     <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-                        <x-responsive-image :results="$product" :item="$currentProduct" class="inset-0 h-96 w-full rounded-sm object-cover" />
+                        <div class="grid gap-4" x-data="contentManager()">
+                            <div x-html="defaultContent">
+                                <x-responsive-image :results="$product" :item="$currentProduct" class="h-auto max-w-full rounded-lg" />
+                            </div>
+                            <div class="grid grid-cols-5 gap-4">
+                                @php
+                                    $multimediaData = $currentProduct['relationships']['multimedia']['data'] ?? [];
+                                    $imageIds = collect($multimediaData)->pluck('id')->toArray();
+
+                                    $images = collect($product['included'])
+                                        ->where('type', 'multimedia')
+                                        ->whereIn('id', $imageIds);
+                                @endphp
+
+                                @foreach ($images as $item)
+                                    @php
+                                        $attributes = $item['attributes'] ?? [];
+                                        $fileName = pathinfo($attributes['file_name'] ?? '', PATHINFO_FILENAME);
+                                        $uuid = $attributes['uuid'] ?? null;
+                                    @endphp
+
+                                    @if ($uuid)
+                                        <div x-on:click="updateContent($el.innerHTML)" class="cursor-pointer">
+                                            <div>
+                                                <picture>
+                                                    <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(max-width: 640px)">
+                                                    <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(max-width: 1024px)">
+                                                    <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(min-width: 1025px)">
+                                                    <img src="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" class="h-auto max-w-full rounded-lg">
+                                                </picture>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @push('scripts')
+                            <script>
+                                function contentManager() {
+                                    return {
+                                        defaultContent: `<x-responsive-image :results="$product" :item="$currentProduct" class="h-auto max-w-full rounded-lg" />`,
+                                        updateContent(newContent) {
+                                            this.defaultContent = newContent;
+                                        }
+                                    }
+                                }
+                            </script>
+                        @endpush
                     </div>
 
                     <div class="mt-6 sm:mt-8 lg:mt-0">

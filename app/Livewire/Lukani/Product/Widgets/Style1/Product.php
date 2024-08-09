@@ -8,7 +8,7 @@ use App\Services\Api\Product\ProductCategoryService;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
-#[Lazy]
+#[Lazy(isolate: false)]
 final class Product extends Component
 {
     public function render()

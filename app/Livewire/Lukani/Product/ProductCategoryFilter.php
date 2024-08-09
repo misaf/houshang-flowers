@@ -37,7 +37,7 @@ final class ProductCategoryFilter extends Component
 
     private function fetch(): array
     {
-        $productCategoryService = new ProductCategoryService(); // Direct instantiation
+        $productCategoryService = new ProductCategoryService();
         return $productCategoryService->listProductCategories($this->productCategoryParams);
     }
 
