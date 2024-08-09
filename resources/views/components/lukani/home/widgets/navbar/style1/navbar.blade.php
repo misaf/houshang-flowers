@@ -92,19 +92,19 @@
         <div class="items-center hidden justify-between w-full" id="navbar-user">
             <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                    <a wire:navigate.hover href="{{ route('home') }}" class="block py-2 px-3 text-white bg-green-900 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">{{ __('خرید') }}</a>
+                    <a wire:navigate.hover wire:navigate.hover href="{{ route('home') }}" class="block py-2 px-3 text-white bg-green-900 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">{{ __('خرید') }}</a>
                 </li>
                 <li>
-                    <a wire:navigate.hover href="{{ route('products.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('محصولات') }}</a>
+                    <a wire:navigate.hover wire:navigate.hover href="{{ route('products.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('محصولات') }}</a>
                 </li>
                 <li>
-                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'best-selling']) }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('پرفروش ترین ها') }}</a>
+                    <a wire:navigate.hover wire:navigate.hover href="{{ route('products.index', ['category' => 'best-selling']) }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('پرفروش ترین ها') }}</a>
                 </li>
                 <li>
-                    <a wire:navigate.hover href="{{ route('blogs.posts.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('مجله گل و گیاه') }}</a>
+                    <a wire:navigate.hover wire:navigate.hover href="{{ route('blogs.posts.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('مجله گل و گیاه') }}</a>
                 </li>
                 <li>
-                    <a wire:navigate.hover href="{{ route('contacts.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('تماس با ما') }}</a>
+                    <a wire:navigate.hover wire:navigate.hover href="{{ route('contacts.index') }}" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">{{ __('تماس با ما') }}</a>
                 </li>
             </ul>
         </div>
@@ -165,45 +165,55 @@
         <div class="grid max-w-screen-xl px-4 py-5 mx-auto text-sm text-gray-500 dark:text-gray-400 md:grid-cols-3 md:px-6">
             <ul class="hidden mb-4 space-y-4 md:mb-0 md:block" aria-labelledby="mega-menu-full-image-button">
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Online Stores
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'mashyn-aaros']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('ماشین عروس') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Segmentation
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'gyah-apartmany']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('گیاه آپارتمانی') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Marketing CRM
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'loks']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('لوکس') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Online Stores
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'rz']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('رز') }}
+                    </a>
+                </li>
+                <li>
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'gyahan-gldar']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('گیاهان گلدار') }}
                     </a>
                 </li>
             </ul>
             <ul class="mb-4 space-y-4 md:mb-0">
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Our Blog
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'wedding-bounch-of-flowers']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('دسته گل عروس') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        Terms & Conditions
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'sbd-gl']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('سبد گل') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white">
-                        License
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'tag-gl']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('استند گل') }}
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="hover:underline hover:decoration-solid hover:white-white dark:hover:text-blue-500">
-                        Resources
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'dsth-gl']) }}" class="hover:underline hover:decoration-solid hover:white-white dark:hover:text-blue-500">
+                        {{ __('دسته گل') }}
+                    </a>
+                </li>
+                <li>
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'trhym']) }}" class="hover:underline hover:decoration-solid hover:white-white dark:hover:text-blue-500">
+                        {{ __('ترحیم') }}
                     </a>
                 </li>
             </ul>
