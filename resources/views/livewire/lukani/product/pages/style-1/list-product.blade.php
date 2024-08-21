@@ -45,9 +45,7 @@
                     @endif
                 </div>
                 <div class="w-full text-center">
-                    @if (isset($products['data']) && count($products['data']) > 0)
-                        <x-lukani.product.load-more-button />
-                    @endif
+                    <x-lukani.product.load-more-button />
                 </div>
             </div>
         </section>
