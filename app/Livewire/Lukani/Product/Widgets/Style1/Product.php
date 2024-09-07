@@ -15,7 +15,7 @@ final class Product extends Component
     {
         $productCategories = (new ProductCategoryService())->listProductCategories(
             queryParams: [
-                'fields[product-categories]' => 'name',
+                'fields[product-categories]' => 'name,slug',
                 'filter[status]'             => true,
                 'sort'                       => '-position',
                 'page[size]'                 => 4,

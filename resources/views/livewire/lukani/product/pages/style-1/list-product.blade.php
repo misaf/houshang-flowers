@@ -2,7 +2,7 @@
 
 <div class="relative flex">
     <!-- Right div -->
-    <div class="hidden lg:flex lg:flex-col fixed inset-y-0 right-0 w-1/3 bg-green-900 items-center justify-center z-10 space-y-8">
+    <div class="hidden lg:flex lg:flex-col fixed inset-y-0 right-0 w-1/4 bg-green-900 items-center justify-center z-10 space-y-8">
         <p class="text-2xl font-semibold text-white capitalize tracking-wide dark:text-white lg:text-5xl">
             {{ __('محصولات') }}
         </p>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Left div with two columns -->
-    <div class="w-full lg:w-2/3 bg-white overflow-y-auto lg:ms-auto lg:relative lg:z-0">
+    <div class="w-full lg:w-3/4 bg-white overflow-y-auto lg:ms-auto lg:relative lg:z-0">
         <section class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12 px-4">
             <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
                 <!-- Heading & Filters -->

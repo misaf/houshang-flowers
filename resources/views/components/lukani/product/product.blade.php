@@ -1,6 +1,6 @@
 <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
     <a wire:navigate.hover href="{{ route('products.show', [$product['attributes']['token'], $product['attributes']['slug']]) }}" class="group">
-        <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden bg-gray-200 xl:aspect-h-8 xl:aspect-w-7 rounded-sm">
+        <div class="aspect-square w-full overflow-hidden bg-gray-200 rounded-sm">
             <x-responsive-image :results="$products" :item="$product" class="h-full w-full object-cover object-center group-hover:opacity-75 transition ease-in-out delay-150 group-hover:-translate-y-4 group-hover:scale-110 group-hover:bg-white duration-300" />
         </div>
     </a>

@@ -6,7 +6,7 @@
 
 <div class="relative flex">
     <!-- Right div -->
-    <div class="hidden lg:flex lg:flex-col fixed inset-y-0 right-0 w-1/3 bg-green-900 items-center justify-center z-10 space-y-8">
+    <div class="hidden lg:flex lg:flex-col fixed inset-y-0 right-0 w-1/4 bg-green-900 items-center justify-center z-10 space-y-8">
         <p class="text-2xl font-semibold text-white capitalize tracking-wide dark:text-white lg:text-5xl">
             {{ $product['data'][0]['attributes']['name'] }}
         </p>
@@ -39,7 +39,7 @@
     </div>
 
     <!-- Left div with two columns -->
-    <div class="w-full lg:w-2/3 bg-white overflow-y-auto lg:ms-auto lg:relative lg:z-0">
+    <div class="w-full lg:w-3/4 bg-white overflow-y-auto lg:ms-auto lg:relative lg:z-0">
         <section class="py-8 bg-white md:py-16 dark:bg-gray-900 antialiased">
             <div class="max-w-screen-xl px-4 mx-auto 2xl:px-0">
                 <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
@@ -71,7 +71,7 @@
                                                 <picture>
                                                     <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(max-width: 640px)">
                                                     <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(max-width: 1024px)">
-                                                    <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(min-width: 1025px)">
+                                                    <source srcset="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" media="(min-width: 1024px)">
                                                     <img src="{{ \Storage::disk('panel')->url($uuid . '/conversions/' . $fileName . '-extra-large.webp') }}" class="h-auto max-w-full rounded-lg">
                                                 </picture>
                                             </div>
