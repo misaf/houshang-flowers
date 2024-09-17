@@ -46,7 +46,7 @@ final class ProductCategoryFilter extends Component
         $this->productCategoryParams = [
             'fields[products]' => 'name,slug',
             'sort'             => '-position',
-            'page[size]'       => 12,
+            'page[size]'       => 14,
         ];
     }
 
