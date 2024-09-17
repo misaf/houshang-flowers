@@ -19,7 +19,7 @@
 
                 <div class="mt-8 md:mx-10">
                     <div class="flex sm:justify-center sm:mt-0 gap-x-5">
-                        <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('Telegram') }}">
+                        <a href="https://wa.me/09129333034" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('Telegram') }}">
                             <x-bi-telegram class="w-4 h-4" />
                             <span class="sr-only">{{ __('Telegram') }}</span>
                         </a>
@@ -27,11 +27,7 @@
                             <x-bi-instagram class="w-4 h-4" />
                             <span class="sr-only">{{ __('Instagram') }}</span>
                         </a>
-                        <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('Twitter') }}">
-                            <x-bi-twitter class="w-4 h-4" />
-                            <span class="sr-only">{{ __('Twitter') }}</span>
-                        </a>
-                        <a href="#" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('WhatsApp') }}">
+                        <a href="https://wa.me/09129333034" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('WhatsApp') }}">
                             <x-bi-whatsapp class="w-4 h-4" />
                             <span class="sr-only">{{ __('WhatsApp') }}</span>
                         </a>
