@@ -27,7 +27,7 @@
                             <x-bi-instagram class="w-4 h-4" />
                             <span class="sr-only">{{ __('Instagram') }}</span>
                         </a>
-                        <a href="https://wa.me/09129333034" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('WhatsApp') }}">
+                        <a href="https://wa.me/+989129333034" class="text-gray-500 hover:text-gray-900 dark:hover:text-white" title="{{ __('WhatsApp') }}">
                             <x-bi-whatsapp class="w-4 h-4" />
                             <span class="sr-only">{{ __('WhatsApp') }}</span>
                         </a>
