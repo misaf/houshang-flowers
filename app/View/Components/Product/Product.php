@@ -52,9 +52,10 @@ final class Product extends Component
     private function defaultParams(): array
     {
         return [
-            'sort'       => 'random-position',
-            'include'    => 'multimedia,latestProductPrice',
-            'page[size]' => 4,
+            'filter[in_stock]' => 1,
+            'sort'             => 'random-position',
+            'include'          => 'multimedia,latestProductPrice',
+            'page[size]'       => 4,
         ];
     }
 }
