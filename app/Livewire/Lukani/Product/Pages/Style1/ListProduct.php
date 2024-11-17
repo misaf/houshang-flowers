@@ -20,6 +20,9 @@ final class ListProduct extends Component
     #[Url(as: 'category', history: true)]
     public array|string|null $querySelectedCategory = [];
 
+    #[Url(as: 'search', history: true)]
+    public array|string|null $querySearch = [];
+
     public function loadMore(): void
     {
         if ( ! $this->hasMorePages()) {
@@ -89,6 +92,10 @@ final class ListProduct extends Component
 
         if ($this->querySelectedCategory) {
             $this->productParams['filter[with-in-product-category][slug]'] = implode(',', (array) $this->querySelectedCategory);
+        }
+
+        if ($this->querySearch) {
+            $this->productParams['filter[search]'] = '%' . $this->querySearch . '%';
         }
     }
 
