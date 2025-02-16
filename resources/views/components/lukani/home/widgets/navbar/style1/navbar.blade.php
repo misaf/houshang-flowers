@@ -198,8 +198,8 @@
                     </a>
                 </li>
                 <li>
-                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'sbd-gl']) }}" class="hover:underline hover:decoration-solid hover:white-white">
-                        {{ __('سبد گل') }}
+                    <a wire:navigate.hover href="{{ route('products.index', ['category' => 'zarfe-gol']) }}" class="hover:underline hover:decoration-solid hover:white-white">
+                        {{ __('ظرف گل') }}
                     </a>
                 </li>
                 <li>
