@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+<div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
     @foreach ($products['data'] as $product)
         <a wire:navigate.hover href="{{ route('products.show', [$product['attributes']['token'], $product['attributes']['slug']]) }}" class="group">
             <div class="aspect-square w-full overflow-hidden bg-gray-200 rounded-sm">

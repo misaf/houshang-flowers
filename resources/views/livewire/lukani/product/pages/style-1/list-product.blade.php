@@ -36,7 +36,7 @@
                         <livewire:lukani.product.product-category-sort :lazy="false" />
                     </div>
                 </div>
-                <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-3">
+                <div class="mb-4 grid gap-4 sm:grid-cols-1 md:mb-8 lg:grid-cols-3 xl:grid-cols-3">
                     @if (isset($products['data']) && count($products['data']) > 0)
                         @forelse($products['data'] as $product)
                             <x-lukani.product.product :$products :$product />

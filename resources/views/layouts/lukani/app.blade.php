@@ -15,7 +15,7 @@
     @stack('stylesheets')
 
     <!-- Google tag (gtag.js) -->
-    <x-google-analytics />
+    {{-- <x-google-analytics /> --}}
 </head>
 
 <body>
