@@ -71,31 +71,10 @@
 
         <!-- Video Section -->
         <div>
-            <video id="video" controls preload="none" class="w-full">
+            <video autoplay muted loop playsinline class="w-full h-auto">
+                <source src="{{ asset('assets/output.webm') }}" type="video/webm">
                 Your browser does not support the video tag.
             </video>
-
-            @push('scripts')
-                <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var video = document.getElementById('video');
-                        if (video && Hls.isSupported()) {
-                            var hls = new Hls();
-                            hls.loadSource('{{ asset('assets/playlist.m3u8') }}');
-                            hls.attachMedia(video);
-                            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                                video.play();
-                            });
-                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                            video.src = '{{ asset('assets/playlist.m3u8') }}';
-                            video.addEventListener('canplay', function() {
-                                video.play();
-                            });
-                        }
-                    });
-                </script>
-            @endpush
         </div>
     </div>
 </section>
