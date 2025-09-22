@@ -15,7 +15,8 @@ final class LatestPrice extends Component
     public function render(): View|Closure|string
     {
         $inStock = $this->inStock();
-        $price = $this->getPrice();
+        // $price = $this->getPrice();
+        $price = 0;
 
         return view('components.lukani.product.latest-price', compact('inStock', 'price'));
     }
