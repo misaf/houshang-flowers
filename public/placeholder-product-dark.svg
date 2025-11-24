@@ -1,0 +1,27 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">No image available</title>
+  <desc id="desc">Dark theme product image placeholder.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#24211f"/>
+      <stop offset="1" stop-color="#171514"/>
+    </linearGradient>
+    <linearGradient id="vase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4640"/>
+      <stop offset="1" stop-color="#2f2b28"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <rect x="28" y="28" width="344" height="344" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.08"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M178 182 C160 151 166 122 196 105 C229 123 237 151 215 183" stroke="#8f8780" stroke-opacity="0.58" stroke-width="8"/>
+    <path d="M200 175 C189 210 158 227 132 214 C139 179 164 163 200 175Z" stroke="#6f7f62" stroke-opacity="0.58" stroke-width="8"/>
+    <path d="M202 176 C236 157 265 166 280 197 C252 220 221 214 202 176Z" stroke="#6f7f62" stroke-opacity="0.58" stroke-width="8"/>
+    <circle cx="174" cy="137" r="18" fill="#b76f6b" fill-opacity="0.42" stroke="#d8aaa3" stroke-opacity="0.38" stroke-width="5"/>
+    <circle cx="224" cy="138" r="18" fill="#b76f6b" fill-opacity="0.42" stroke="#d8aaa3" stroke-opacity="0.38" stroke-width="5"/>
+    <circle cx="201" cy="107" r="18" fill="#d0a15c" fill-opacity="0.4" stroke="#ead0a3" stroke-opacity="0.35" stroke-width="5"/>
+  </g>
+  <path d="M153 235 H247 L229 324 H171 Z" fill="url(#vase)" stroke="#fff7ed" stroke-opacity="0.12" stroke-width="4"/>
+  <path d="M166 254 H234" stroke="#fff7ed" stroke-opacity="0.16" stroke-width="5" stroke-linecap="round"/>
+  <text x="200" y="354" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#b8b0aa" text-anchor="middle">No Image</text>
+</svg>

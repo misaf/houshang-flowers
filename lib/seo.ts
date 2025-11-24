@@ -1,0 +1,293 @@
+import type { Metadata } from "next";
+import { getContactInfo, getSiteUrl } from "@/lib/config";
+import { routing, type Locale } from "@/i18n/routing";
+
+/** Brand name per locale (used for OG site name, JSON-LD, title templates). */
+export const SITE_NAME: Record<Locale, string> = {
+  fa: "مجتمع گل و گیاه هوشنگ",
+  en: "Houshang Flowers",
+};
+
+/** Default social-share image, resolved against `metadataBase`. */
+export const DEFAULT_OG_IMAGE = "/hero-florist-studio.png";
+
+/**
+ * Currency used in Product JSON-LD offers. ISO 4217 code — Iranian Rial.
+ * If the store actually prices in Toman, change this to a custom unit.
+ */
+export const PRICE_CURRENCY = "IRR";
+
+const OG_LOCALE: Record<Locale, string> = {
+  fa: "fa_IR",
+  en: "en_US",
+};
+
+function isLocale(value: string): value is Locale {
+  return (routing.locales as readonly string[]).includes(value);
+}
+
+function siteName(locale: string): string {
+  return isLocale(locale) ? SITE_NAME[locale] : SITE_NAME[routing.defaultLocale];
+}
+
+/**
+ * Strips HTML and collapses whitespace into a clean meta description,
+ * truncated to `max` characters with an ellipsis.
+ */
+export function plainText(input?: string | null, max = 160): string {
+  if (!input) return "";
+  const text = input
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+}
+
+/** Absolute URL for a site-root-relative path (defaults to the origin). */
+export function absoluteUrl(path = ""): string {
+  const base = getSiteUrl();
+  if (!path || path === "/") return base;
+  // Already absolute (e.g. a CDN image URL) — leave it untouched.
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${base}${path.startsWith("/") ? "" : "/"}${path}`;
+}
+
+/**
+ * Locale-prefixed, root-relative path. `path` is the locale-less route
+ * (e.g. "/products" or "" for the home page).
+ */
+export function localizedPath(locale: string, path = ""): string {
+  const clean = !path || path === "/" ? "" : path.startsWith("/") ? path : `/${path}`;
+  return `/${locale}${clean}`;
+}
+
+/**
+ * Canonical + hreflang alternates for a page. `path` is the locale-less
+ * route. Every locale gets an absolute alternate, plus an `x-default`
+ * pointing at the default locale.
+ */
+export function buildAlternates(
+  locale: string,
+  path = ""
+): NonNullable<Metadata["alternates"]> {
+  const languages: Record<string, string> = {};
+  for (const l of routing.locales) {
+    languages[l] = absoluteUrl(localizedPath(l, path));
+  }
+  languages["x-default"] = absoluteUrl(localizedPath(routing.defaultLocale, path));
+
+  return {
+    canonical: absoluteUrl(localizedPath(locale, path)),
+    languages,
+  };
+}
+
+export interface BuildMetadataParams {
+  locale: string;
+  /** Locale-less route, e.g. "/products". Omit/"" for home. */
+  path?: string;
+  title?: string;
+  description?: string;
+  /** Absolute or root-relative image URLs. Falls back to the default OG image. */
+  images?: string[];
+  type?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
+  /** When true, asks crawlers not to index this route (cart/checkout/etc.). */
+  noIndex?: boolean;
+}
+
+/**
+ * Builds a complete Metadata object: canonical + hreflang alternates,
+ * Open Graph, Twitter card, and optional noindex. Pages keep returning
+ * their own translated `title`/`description`; this wires up the rest.
+ */
+export function buildMetadata({
+  locale,
+  path = "",
+  title,
+  description,
+  images,
+  type = "website",
+  publishedTime,
+  modifiedTime,
+  noIndex = false,
+}: BuildMetadataParams): Metadata {
+  const ogImages = images && images.length > 0 ? images : [DEFAULT_OG_IMAGE];
+  const otherLocale = locale === "fa" ? "en" : "fa";
+
+  return {
+    title,
+    description,
+    alternates: buildAlternates(locale, path),
+    openGraph: {
+      type,
+      siteName: siteName(locale),
+      locale: OG_LOCALE[isLocale(locale) ? locale : routing.defaultLocale],
+      alternateLocale: OG_LOCALE[otherLocale],
+      url: absoluteUrl(localizedPath(locale, path)),
+      title,
+      description,
+      images: ogImages,
+      ...(type === "article" ? { publishedTime, modifiedTime } : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ogImages,
+    },
+    ...(noIndex
+      ? { robots: { index: false, follow: false, googleBot: { index: false, follow: false } } }
+      : {}),
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* JSON-LD structured-data builders                                    */
+/* ------------------------------------------------------------------ */
+
+type JsonLd = Record<string, unknown>;
+
+/** Organization / LocalBusiness — emit once site-wide (root layout). */
+export function organizationSchema(locale: string): JsonLd {
+  const contact = getContactInfo();
+  return {
+    "@context": "https://schema.org",
+    "@type": "Florist",
+    "@id": `${getSiteUrl()}/#organization`,
+    name: siteName(locale),
+    url: getSiteUrl(),
+    image: absoluteUrl(DEFAULT_OG_IMAGE),
+    logo: absoluteUrl(DEFAULT_OG_IMAGE),
+    telephone: contact.mobilePhone,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Tehran",
+      addressCountry: "IR",
+    },
+    openingHours: `Mo-Su ${contact.hoursOpen}-${contact.hoursClose}`,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: contact.mobilePhone,
+        contactType: "sales",
+      },
+      {
+        "@type": "ContactPoint",
+        telephone: contact.officePhone,
+        contactType: "customer service",
+      },
+    ],
+  };
+}
+
+/** WebSite + sitelinks search box — emit once site-wide (root layout). */
+export function websiteSchema(locale: string): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${getSiteUrl()}/#website`,
+    name: siteName(locale),
+    url: absoluteUrl(localizedPath(locale)),
+    inLanguage: locale,
+    publisher: { "@id": `${getSiteUrl()}/#organization` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${absoluteUrl(localizedPath(locale, "/products"))}?search={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export interface ProductSchemaInput {
+  name: string;
+  description?: string;
+  image?: string;
+  images?: string[];
+  price?: number;
+  sku?: string;
+  inStock?: boolean;
+  path: string;
+}
+
+/** Product rich result with an Offer. */
+export function productSchema(locale: string, product: ProductSchemaInput): JsonLd {
+  const images = (product.images && product.images.length > 0
+    ? product.images
+    : product.image
+      ? [product.image]
+      : [DEFAULT_OG_IMAGE]
+  ).map((src) => absoluteUrl(src));
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: images,
+    ...(product.sku ? { sku: product.sku } : {}),
+    brand: { "@type": "Brand", name: siteName(locale) },
+    offers: {
+      "@type": "Offer",
+      url: absoluteUrl(localizedPath(locale, product.path)),
+      priceCurrency: PRICE_CURRENCY,
+      ...(typeof product.price === "number" && product.price > 0
+        ? { price: product.price }
+        : {}),
+      availability:
+        product.inStock === false
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
+    },
+  };
+}
+
+export interface ArticleSchemaInput {
+  title: string;
+  description?: string;
+  image?: string;
+  publishedAt?: string;
+  modifiedAt?: string;
+  path: string;
+}
+
+/** BlogPosting rich result. */
+export function articleSchema(locale: string, article: ArticleSchemaInput): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: article.title,
+    description: article.description,
+    image: [absoluteUrl(article.image || DEFAULT_OG_IMAGE)],
+    inLanguage: locale,
+    mainEntityOfPage: absoluteUrl(localizedPath(locale, article.path)),
+    ...(article.publishedAt ? { datePublished: article.publishedAt } : {}),
+    ...(article.modifiedAt || article.publishedAt
+      ? { dateModified: article.modifiedAt || article.publishedAt }
+      : {}),
+    author: { "@type": "Organization", name: siteName(locale) },
+    publisher: { "@id": `${getSiteUrl()}/#organization` },
+  };
+}
+
+/** Breadcrumb trail. `items` are ordered [{ name, path }] (locale-less paths). */
+export function breadcrumbSchema(
+  locale: string,
+  items: { name: string; path: string }[]
+): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(localizedPath(locale, item.path)),
+    })),
+  };
+}

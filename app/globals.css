@@ -1,0 +1,290 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Geist Mono Fallback", ui-monospace, monospace;
+  --font-display: var(--font-bricolage), "Bricolage Grotesque Fallback", ui-sans-serif, system-ui, sans-serif;
+  /* Golzār bloom spectrum — the rotating field palette (consumed via var()) */
+  --color-rose: var(--rose);
+  --color-marigold: var(--marigold);
+  --color-iris: var(--iris);
+  --color-leaf: var(--leaf);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-storefront-surface: var(--storefront-surface);
+  --color-storefront-brand: var(--storefront-brand);
+  --color-storefront-brand-foreground: var(--storefront-brand-foreground);
+  --color-storefront-brand-soft: var(--storefront-brand-soft);
+  --color-storefront-brand-muted: var(--storefront-brand-muted);
+  --color-storefront-text-muted: var(--storefront-text-muted);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root.dark {
+  /* Golzār — the flower-bed at night: warm charcoal, blooms turned up */
+  --background: oklch(0.185 0.006 70);
+  --foreground: oklch(0.95 0.004 95);
+  --card: oklch(0.225 0.007 70);
+  --card-foreground: oklch(0.95 0.004 95);
+  --popover: oklch(0.225 0.007 70);
+  --popover-foreground: oklch(0.95 0.004 95);
+  /* primary flips light in the dark so filled pills stay confident */
+  --primary: oklch(0.93 0.006 95);
+  --primary-foreground: oklch(0.2 0.008 70);
+  --secondary: oklch(0.27 0.008 72);
+  --secondary-foreground: oklch(0.93 0.006 95);
+  --muted: oklch(0.27 0.008 72);
+  --muted-foreground: oklch(0.72 0.008 80);
+  --accent: oklch(0.3 0.009 72);
+  --accent-foreground: oklch(0.95 0.006 95);
+  --destructive: oklch(0.64 0.2 22);
+  --border: oklch(0.95 0.01 90 / 12%);
+  --input: oklch(0.95 0.01 90 / 16%);
+  /* ring: rose — the warmest bloom doubles as the focus colour */
+  --ring: oklch(0.7 0.17 18);
+  /* the bloom spectrum, brightened for dark grounds */
+  --rose: oklch(0.7 0.175 18);
+  --marigold: oklch(0.82 0.16 68);
+  --iris: oklch(0.62 0.16 290);
+  --leaf: oklch(0.66 0.11 160);
+  --storefront-surface: oklch(0.225 0.007 70);
+  --storefront-brand: oklch(0.16 0.006 70);
+  --storefront-brand-foreground: oklch(0.96 0.004 95);
+  --storefront-brand-soft: oklch(0.245 0.008 70);
+  --storefront-brand-muted: oklch(0.72 0.008 80);
+  --storefront-text-muted: oklch(0.72 0.008 80);
+}
+
+:root {
+  /* Golzār — the flower-bed by color, by day */
+  --radius: 0.75rem;
+  --font-persian: var(--font-vazirmatn), Tahoma, Arial, sans-serif;
+  /* porcelain: a clean warm white that lets the blooms shout */
+  --background: oklch(0.984 0.004 95);
+  --foreground: oklch(0.18 0.008 70);
+  --card: oklch(0.998 0.001 95);
+  --card-foreground: oklch(0.18 0.008 70);
+  --popover: oklch(0.998 0.001 95);
+  --popover-foreground: oklch(0.18 0.008 70);
+  /* primary: warm ink — confident, the only "dark" in the chrome */
+  --primary: oklch(0.2 0.008 70);
+  --primary-foreground: oklch(0.984 0.004 95);
+  /* soft warm gray surfaces — colour is reserved for the blooms */
+  --secondary: oklch(0.955 0.004 90);
+  --secondary-foreground: oklch(0.24 0.008 70);
+  --muted: oklch(0.955 0.004 90);
+  --muted-foreground: oklch(0.48 0.008 75);
+  --accent: oklch(0.95 0.005 90);
+  --accent-foreground: oklch(0.24 0.008 70);
+  --destructive: oklch(0.6 0.2 25);
+  --border: oklch(0.9 0.004 85);
+  --input: oklch(0.9 0.004 85);
+  /* ring: rose — the warmest bloom doubles as the focus colour */
+  --ring: oklch(0.64 0.19 18);
+  /* the bloom spectrum — the rotating field palette */
+  --rose: oklch(0.64 0.19 18);
+  --marigold: oklch(0.78 0.155 65);
+  --iris: oklch(0.46 0.17 290);
+  --leaf: oklch(0.5 0.095 160);
+  --storefront-surface: oklch(0.998 0.001 95);
+  --storefront-brand: oklch(0.2 0.008 70);
+  --storefront-brand-foreground: oklch(0.984 0.004 95);
+  --storefront-brand-soft: oklch(0.955 0.004 90);
+  --storefront-brand-muted: oklch(0.48 0.008 75);
+  --storefront-text-muted: oklch(0.48 0.008 75);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-geist-sans), sans-serif;
+    /* monochrome canvas — plain porcelain, colour reserved for focus + the footer seam */
+  }
+  .locale-fa {
+    line-height: 1.85;
+  }
+  .locale-en {
+    font-family: var(--font-geist-sans), sans-serif;
+  }
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+}
+
+/* fa locale → BYekan for every text node, including elements that opt into
+   the Latin font-sans / font-mono / font-display utilities. Unlayered so it
+   outranks Tailwind's utility layer. */
+.locale-fa,
+.locale-fa .font-sans,
+.locale-fa .font-mono,
+.locale-fa .font-display {
+  font-family: var(--font-persian);
+}
+/* Persian display: BYekan at its heaviest, never the grotesque */
+.locale-fa .font-display {
+  letter-spacing: 0;
+  font-weight: 800;
+}
+
+/* ── Golzār signature ───────────────────────────────────────────
+   Flowers are colour first, but the chrome stays monochrome: structural
+   markers below render in ink/neutral, and the "petal swatch" (a colour
+   dot + name) is how you read and navigate the spectrum.            */
+@layer components {
+  /* Monochrome: bands are plain porcelain. The structural markers below
+     stay, but rendered in ink/neutral — colour lives only on focus, the
+     hero colour-picker, and the footer seam. */
+  /* the paint-swatch marker that opens each band — now an ink bar */
+  .golzar-swatch-bar {
+    height: 0.625rem;
+    width: 4rem;
+    border-radius: 999px;
+    background: var(--foreground);
+  }
+  /* The petal dot — a neutral ink dot */
+  .petal-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--muted-foreground);
+  }
+  /* The swatch tab — a quiet neutral bar atop a product card */
+  .swatch-tab {
+    height: 0.375rem;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--foreground) 22%, transparent);
+    transition: height 0.25s ease;
+  }
+  .group:hover .swatch-tab {
+    height: 0.625rem;
+  }
+  /* A neutral hairline seam, used between sections */
+  .golzar-seam {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--muted-foreground);
+  }
+  .golzar-seam::before,
+  .golzar-seam::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklch, var(--foreground) 22%, transparent) 18%,
+      color-mix(in oklch, var(--foreground) 22%, transparent) 82%,
+      transparent
+    );
+  }
+}
+
+@keyframes storefront-section-enter {
+  from {
+    opacity: 0.68;
+    transform: translateY(1.5rem) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@layer utilities {
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    html.storefront-snap {
+      scroll-padding-top: 6rem;
+      scroll-snap-type: y proximity;
+      scroll-behavior: smooth;
+    }
+
+    .storefront-snap-panel {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    @supports (animation-timeline: view()) {
+      .storefront-snap-panel > div {
+        animation: storefront-section-enter both ease-out;
+        animation-timeline: view();
+        animation-range: entry 0% cover 28%;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.storefront-snap {
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+    }
+
+    .storefront-snap-panel,
+    .storefront-snap-panel > div {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  /* ── The bloom open ───────────────────────────────────────────
+     A single page-load moment: the thesis settles up while the
+     colour blocks unfurl like petals. Motion lives only here, and
+     only when the visitor hasn't asked for less of it.            */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes golzar-rise {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    @keyframes golzar-bloom-in {
+      from {
+        opacity: 0;
+        transform: scale(0.55) rotate(-8deg);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+    .golzar-rise {
+      animation: golzar-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .golzar-bloom-in {
+      animation: golzar-bloom-in 0.9s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+    }
+  }
+}
