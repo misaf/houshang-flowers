@@ -297,6 +297,33 @@ function transformProducts(products: ProductDto[]): Product[] {
   return products.map(transformProduct);
 }
 
+function normalizeSearchText(value: string | undefined): string {
+  return value
+    ?.toLocaleLowerCase()
+    .replace(/[\s\-_]+/g, "")
+    .trim() ?? "";
+}
+
+function productMatchesSearch(product: Product, search: string): boolean {
+  const normalizedSearch = search.toLocaleLowerCase().trim();
+  const compactSearch = normalizeSearchText(search);
+
+  if (!normalizedSearch) return true;
+
+  const candidates = [
+    product.name,
+    product.token,
+  ].filter(Boolean) as string[];
+
+  return candidates.some((candidate) => {
+    const normalizedCandidate = candidate.toLocaleLowerCase();
+    return (
+      normalizedCandidate.includes(normalizedSearch) ||
+      normalizeSearchText(candidate).includes(compactSearch)
+    );
+  });
+}
+
 function transformCategory(category: ProductCategoryDto): ProductCategory {
   return {
     id: parseNumericId(category.id),
@@ -330,6 +357,35 @@ function emptyProductsResult(page: number, perPage: number): FetchProductsResult
   };
 }
 
+function filteredProductsResult(
+  products: Product[],
+  search: string,
+  page: number,
+  perPage: number
+): FetchProductsResult {
+  const matchedProducts = products.filter((product) =>
+    productMatchesSearch(product, search)
+  );
+  const total = matchedProducts.length;
+  const lastPage = Math.max(1, Math.ceil(total / perPage));
+  const currentPage = Math.min(page, lastPage);
+  const fromIndex = (currentPage - 1) * perPage;
+  const pageProducts = matchedProducts.slice(fromIndex, fromIndex + perPage);
+
+  return {
+    products: pageProducts,
+    pagination: {
+      currentPage,
+      lastPage,
+      perPage,
+      total,
+      from: total === 0 ? 0 : fromIndex + 1,
+      to: fromIndex + pageProducts.length,
+    },
+    links: extractCollectionLinks(undefined),
+  };
+}
+
 async function resolveProductCategoryId(slug: string): Promise<string | null> {
   const categories = await fetchProductCategories();
   const category = categories.find((item) => item.slug === slug);
@@ -342,13 +398,13 @@ export async function fetchProducts(
 ): Promise<FetchProductsResult> {
   const { page = 1, perPage = 15, category, search, slug, sort } = params;
   const queryParams = createPageQueryParams(page, perPage);
+  const normalizedSearch = search?.trim();
   let path = "products";
 
   queryParams.append(
     "include",
     "multimedia,productCategory,latestProductPrice,productPrices"
   );
-  appendOptionalQueryParam(queryParams, "filter[search]", search);
   appendOptionalQueryParam(queryParams, "filter[slug]", slug);
   appendOptionalQueryParam(queryParams, "sort", sort);
 
@@ -360,6 +416,38 @@ export async function fetchProducts(
     }
 
     path = `product-categories/${categoryId}/products`;
+  }
+
+  if (normalizedSearch && !slug) {
+    const searchPerPage = 100;
+    const allProducts: Product[] = [];
+    let searchPage = 1;
+    let lastSearchPage = 1;
+
+    do {
+      const searchQueryParams = createPageQueryParams(searchPage, searchPerPage);
+      searchQueryParams.append(
+        "include",
+        "multimedia,productCategory,latestProductPrice,productPrices"
+      );
+      appendOptionalQueryParam(searchQueryParams, "sort", sort);
+
+      const response = await apiClient.get<ProductDto[]>(path, {
+        query: searchQueryParams,
+        next: { revalidate: 10 },
+        mode: "cors",
+        credentials: "omit",
+      });
+
+      allProducts.push(...transformProducts(response.data));
+      lastSearchPage = getPagination(response.meta?.page, {
+        page: searchPage,
+        perPage: searchPerPage,
+      }).lastPage;
+      searchPage += 1;
+    } while (searchPage <= lastSearchPage);
+
+    return filteredProductsResult(allProducts, normalizedSearch, page, perPage);
   }
 
   const response = await apiClient.get<ProductDto[]>(path, {
