@@ -6,6 +6,12 @@ import { PageShell } from "@/components/layout/page-shell";
 import { ThemedProductImage } from "@/components/themed-product-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Carousel,
@@ -70,6 +76,7 @@ export default function ProductDetailClient({
   const [relatedImageErrorIds, setRelatedImageErrorIds] = useState<Set<number>>(
     new Set()
   );
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   const addProductToCart = useCallback(
     (targetProduct: Product) => {
@@ -168,6 +175,12 @@ export default function ProductDetailClient({
 	                        </span>
 	                      </div>
 	                    ) : (
+                        <button
+                          type="button"
+                          aria-label={product.name}
+                          className="relative block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          onClick={() => setIsImageDialogOpen(true)}
+                        >
 	                      <ThemedProductImage
 	                        src={detailImage}
 	                        alt={product.name}
@@ -177,6 +190,7 @@ export default function ProductDetailClient({
 	                        unoptimized
 	                        onError={() => setHasImageError(true)}
 	                      />
+                        </button>
 	                    )}
 	                  </div>
 
@@ -533,6 +547,24 @@ export default function ProductDetailClient({
               )}
             </div>
           </section>
+
+          <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
+            <DialogContent className="max-w-[calc(100vw-1rem)] gap-0 p-2 sm:max-w-6xl sm:p-3">
+              <DialogTitle className="sr-only">{product.name}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {product.name}
+              </DialogDescription>
+              <div className="relative h-[82vh] max-h-[760px] w-full overflow-hidden rounded-md bg-secondary">
+                <ThemedProductImage
+                  src={detailImage}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-2 sm:p-4"
+                  unoptimized
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         </>
       ) : null}
 
