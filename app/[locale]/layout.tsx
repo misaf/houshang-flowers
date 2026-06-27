@@ -98,6 +98,8 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const direction = locale === "fa" ? "rtl" : "ltr";
 
+  const localeClassName = locale === "fa" ? "locale-fa" : "locale-en";
+
   return (
     <html
       suppressHydrationWarning
@@ -105,7 +107,7 @@ export default async function LocaleLayout({
       dir={direction}
       className={`${vazirmatn.variable} ${geistSans.variable} ${geistMono.variable} ${bricolage.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className={`font-sans antialiased ${localeClassName}`}>
         <JsonLd data={[organizationSchema(locale), websiteSchema(locale)]} />
         <ThemeProvider
           attribute="class"
@@ -118,9 +120,7 @@ export default async function LocaleLayout({
               <CartProvider>
                 <FavoritesProvider>
                   <OrderProvider>
-                    <div className={locale === "fa" ? "locale-fa" : "locale-en"}>
-                      {children}
-                    </div>
+                    {children}
                     <Cart />
                     <Toaster />
                   </OrderProvider>
