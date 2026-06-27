@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, ImageOff } from "lucide-react";
+import { ThemedProductImage } from "@/components/themed-product-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -57,30 +57,30 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
   const isLowQuantity = product.quantity != null && product.quantity < 2;
 
   return (
-    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-lg">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm transition-colors hover:bg-muted/40">
       {/* the swatch tab — a paint-chip of this band's bloom colour */}
-      <div className="px-3 pt-3">
-        <span className="swatch-tab block w-10" aria-hidden="true" />
+      <div className="px-2.5 pt-2.5 lg:px-3 lg:pt-3">
+        <span className="swatch-tab block w-8 lg:w-10" aria-hidden="true" />
       </div>
 
-      <div className="relative mt-3 aspect-[4/5] overflow-hidden bg-secondary/50">
+      <div className="relative mt-2 aspect-square overflow-hidden bg-secondary/50 sm:aspect-[5/6] lg:mt-3 lg:aspect-[4/5]">
         <Link href={detailHref} className="block h-full w-full">
           {hasImageError ? (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-card text-muted-foreground">
-              <span className="flex size-14 items-center justify-center rounded-full bg-background/75 shadow-sm ring-1 ring-border">
-                <ImageOff className="h-6 w-6" />
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-card text-muted-foreground">
+              <span className="flex size-10 items-center justify-center rounded-full bg-background/75 shadow-sm ring-1 ring-border sm:size-12">
+                <ImageOff className="h-5 w-5" />
               </span>
-              <span className="max-w-28 text-center text-xs font-semibold leading-5">
+              <span className="max-w-24 text-center text-[11px] font-semibold leading-4">
                 {t("products.imageUnavailable") || "Image unavailable"}
               </span>
             </div>
           ) : (
-            <Image
+            <ThemedProductImage
               src={normalizeImageUrl(product.image)}
               alt={product.name}
               width={360}
               height={450}
-              className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-[1.04]"
+              className="h-full w-full object-contain p-1.5 transition-transform duration-500 group-hover:scale-[1.04] sm:p-2 lg:p-3"
               unoptimized
               loading="lazy"
               onError={() => setHasImageError(true)}
@@ -89,18 +89,18 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
         </Link>
       </div>
 
-      <div className="flex min-h-20 flex-1 flex-col gap-2 px-4 pb-2 pt-4">
-        <h3 className="line-clamp-2 min-h-10 text-sm font-semibold leading-5">
+      <div className="flex min-h-16 flex-1 flex-col gap-1.5 px-3 pb-1.5 pt-3 lg:min-h-20 lg:gap-2 lg:px-4 lg:pb-2 lg:pt-4">
+        <h3 className="line-clamp-2 min-h-9 text-xs font-semibold leading-[1.35] sm:text-sm sm:leading-5 lg:min-h-10">
           <Link
             href={detailHref}
             className="flex items-start gap-2 transition-colors hover:text-foreground/70"
           >
-            <span className="petal-dot mt-1.5" aria-hidden="true" />
+            <span className="petal-dot mt-1 size-2 lg:mt-1.5 lg:size-2.5" aria-hidden="true" />
             <span className="min-w-0">{product.name}</span>
           </Link>
         </h3>
         {isLowQuantity ? (
-          <p className="ms-4 truncate text-xs font-semibold leading-4 text-foreground">
+          <p className="ms-4 truncate text-[11px] font-semibold leading-4 text-foreground lg:text-xs">
             {t("products.remainingQuantity", {
               quantity: new Intl.NumberFormat(locale).format(
                 product.quantity as number
@@ -110,11 +110,11 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
         ) : null}
       </div>
 
-      <div className="mt-auto flex justify-end px-4 pb-4 pt-2 text-end">
+      <div className="mt-auto flex justify-end px-3 pb-3 pt-1 text-end lg:px-4 lg:pb-4 lg:pt-2">
         <span
           dir="ltr"
           className={cn(
-            "block truncate text-base font-bold leading-6",
+            "block truncate text-xs font-bold leading-5 sm:text-sm lg:text-base lg:leading-6",
             inStock ? "text-card-foreground" : "text-muted-foreground"
           )}
         >
@@ -147,11 +147,11 @@ function HomeProductsCarousel({ products, locale, t }: HomeProductsCarouselProps
       }}
       className="w-full"
     >
-      <CarouselContent className="-ms-4">
+      <CarouselContent className="-ms-1.5 sm:-ms-2">
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="basis-[82%] ps-4 sm:basis-1/2 lg:basis-1/4 xl:basis-1/5"
+            className="basis-[46%] ps-1.5 sm:basis-1/3 sm:ps-2 md:basis-1/4 lg:basis-1/4 xl:basis-1/5"
           >
             <HomeProductCard product={product} locale={locale} t={t} />
           </CarouselItem>
