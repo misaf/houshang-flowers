@@ -376,5 +376,15 @@
     "subscribed": "Subscribed!",
     "success": "Thank you for subscribing! We'll be in touch.",
     "error": "Failed to subscribe. Please try again."
+  },
+  "errors": {
+    "notFoundEyebrow": "404",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The page you're looking for may have moved or no longer exists. Let's get you back on track.",
+    "errorEyebrow": "Error",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "An unexpected error occurred on our end. You can try again, or head back home.",
+    "tryAgain": "Try again",
+    "backHome": "Back to home"
   }
 }
