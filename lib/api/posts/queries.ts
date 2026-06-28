@@ -138,6 +138,7 @@ export function transformPost(post: PostDto): Post {
     id: parseNumericId(post.id),
     title: post.name,
     content: stringifyRichText(post.description),
+    richContent: post.description,
     excerpt,
     slug: post.slug,
     image: getFirstRelatedImage(post),

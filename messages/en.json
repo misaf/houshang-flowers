@@ -312,6 +312,13 @@
   "blog": {
     "title": "Blog",
     "subtitle": "Read our latest articles and updates",
+    "eyebrow": "Field notes",
+    "latestEntry": "Latest entry",
+    "allCategories": "All",
+    "browseBy": "Browse by topic",
+    "searchPlaceholder": "Search the journal",
+    "moreEntries": "More from the Journal",
+    "errorDescription": "This entry may have moved or is no longer available. Head back to the journal to keep reading.",
     "allPosts": "All Posts",
     "postAvailable": "post available",
     "postsAvailable": "posts available",

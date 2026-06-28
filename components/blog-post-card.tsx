@@ -89,7 +89,7 @@ export function BlogPostCard({
             className={cn(
               "line-clamp-2 transition-colors",
               compact
-                ? "text-sm leading-5 text-foreground group-hover:text-muted-foreground"
+                ? "text-sm leading-5 text-storefront-brand-foreground group-hover:text-storefront-brand-foreground/70 dark:text-foreground dark:group-hover:text-muted-foreground"
                 : "font-display text-xl font-medium leading-7 group-hover:text-muted-foreground"
             )}
           >

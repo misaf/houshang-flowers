@@ -53,6 +53,8 @@ export interface Post {
   id: number;
   title: string;
   content: string;
+  /** Raw TipTap rich-text document (or HTML/markdown string) for rendering. */
+  richContent?: unknown;
   excerpt: string;
   slug: string;
   image?: string;

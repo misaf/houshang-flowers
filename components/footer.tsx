@@ -114,6 +114,11 @@ export function Footer({ showNewsletter = true }: FooterProps) {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/blog" className={linkClassName}>
+                    {t("blog.title")}
+                  </Link>
+                </li>
+                <li>
                   <span className={mutedTextClassName}>
                     {t("footer.careers")}
                   </span>

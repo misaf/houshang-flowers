@@ -2,8 +2,15 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import BlogPostsClient from "./blog-client";
-import { fetchBlogPostsWithDetails, type FetchBlogPostsResult } from "@/lib/api";
-import type { Post as BlogPost } from "@/lib/api/posts/types";
+import {
+  fetchBlogPostCategories,
+  fetchBlogPostsWithDetails,
+  type FetchBlogPostsResult,
+} from "@/lib/api";
+import type {
+  Post as BlogPost,
+  PostCategory,
+} from "@/lib/api/posts/types";
 import { buildMetadata } from "@/lib/seo";
 
 function readFirst(value: string | string[] | undefined): string | undefined {
@@ -52,19 +59,30 @@ export default async function BlogPosts({
   let initialPosts: BlogPost[] = [];
   let initialPagination: FetchBlogPostsResult["pagination"] | null = null;
   let initialError: string | null = null;
+  let categories: PostCategory[] = [];
 
-  try {
-    const result = await fetchBlogPostsWithDetails({
+  const [postsResult, categoriesResult] = await Promise.allSettled([
+    fetchBlogPostsWithDetails({
       page: 1,
       perPage: 12,
       category: selectedCategory !== "all" ? selectedCategory : undefined,
       search: searchQuery || undefined,
-    });
-    initialPosts = result.posts;
-    initialPagination = result.pagination;
-  } catch (error) {
+    }),
+    fetchBlogPostCategories(),
+  ]);
+
+  if (postsResult.status === "fulfilled") {
+    initialPosts = postsResult.value.posts;
+    initialPagination = postsResult.value.pagination;
+  } else {
     initialError =
-      error instanceof Error ? error.message : "Failed to load blog posts";
+      postsResult.reason instanceof Error
+        ? postsResult.reason.message
+        : "Failed to load blog posts";
+  }
+
+  if (categoriesResult.status === "fulfilled") {
+    categories = categoriesResult.value;
   }
 
   return (
@@ -74,6 +92,7 @@ export default async function BlogPosts({
         initialPagination={initialPagination}
         initialError={initialError}
         initialQueryKey={initialQueryKey}
+        categories={categories}
       />
     </Suspense>
   );

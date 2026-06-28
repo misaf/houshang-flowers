@@ -312,6 +312,13 @@
   "blog": {
     "title": "وبلاگ",
     "subtitle": "مقالات و به‌روزرسانی‌های جدید ما را بخوانید",
+    "eyebrow": "یادداشت‌ها",
+    "latestEntry": "تازه‌ترین مطلب",
+    "allCategories": "همه",
+    "browseBy": "مرور بر اساس موضوع",
+    "searchPlaceholder": "جستجو در مجله",
+    "moreEntries": "مطالب بیشتر از مجله",
+    "errorDescription": "این مطلب جابه‌جا شده یا دیگر در دسترس نیست. برای ادامه مطالعه به مجله بازگردید.",
     "allPosts": "همه پست‌ها",
     "postAvailable": "پست",
     "postsAvailable": "پست",

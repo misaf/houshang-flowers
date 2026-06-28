@@ -4,15 +4,16 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageShell } from "@/components/layout/page-shell";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { SafeImage } from "@/components/ui/safe-image";
+import { RichText } from "@/components/rich-text";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
-import { fetchBlogPost } from "@/lib/api";
+import { fetchBlogPost, fetchBlogPostsWithDetails } from "@/lib/api";
+import type { Post as BlogPost } from "@/lib/api/posts/types";
+import { PLACEHOLDER_IMAGE } from "@/lib/image";
+import { RelatedEntries } from "./related-entries";
 import type { Locale } from "@/i18n/routing";
 import { formatLocaleDate } from "@/lib/date";
-import { sanitizeHtmlContent } from "@/lib/utils";
 import {
   articleSchema,
   breadcrumbSchema,
@@ -86,24 +87,46 @@ export default async function BlogPostDetail({
         : t("blog.loadPostError");
   }
 
-  const safePostContent = sanitizeHtmlContent(post?.content);
+  const hasLeadImage = Boolean(post?.image && post.image !== PLACEHOLDER_IMAGE);
+
+  // The latest entries close the article — a quiet invitation to keep reading.
+  let relatedPosts: BlogPost[] = [];
+  if (post) {
+    try {
+      const result = await fetchBlogPostsWithDetails({ page: 1, perPage: 4 });
+      relatedPosts = result.posts
+        .filter((entry) => entry.id !== post!.id)
+        .slice(0, 3);
+    } catch {
+      // Related entries are optional — never block the article on them.
+    }
+  }
 
   return (
     <PageShell>
       {error ? (
-        <section className="py-24">
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <Alert variant="destructive">
-              <AlertDescription>
-                <p>{error}</p>
-                <Button asChild variant="outline" className="mt-4 gap-2">
-                  <Link href="/blog">
-                    <BackArrow className="h-4 w-4" />
-                    {t("blog.backToBlog")}
-                  </Link>
-                </Button>
-              </AlertDescription>
-            </Alert>
+        <section className="bg-background pb-20 pt-28 sm:pb-28 sm:pt-32">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+            <span className="golzar-seam mx-auto mb-8 max-w-[10rem]">
+              <span className="h-px flex-1" aria-hidden="true" />
+              <span className="petal-dot" aria-hidden="true" />
+              <span className="h-px flex-1" aria-hidden="true" />
+            </span>
+            <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              {t("blog.eyebrow")}
+            </p>
+            <h1 className="font-display mt-4 text-3xl tracking-tight text-foreground sm:text-4xl">
+              {error}
+            </h1>
+            <p className="mt-4 leading-7 text-muted-foreground">
+              {t("blog.errorDescription")}
+            </p>
+            <Button asChild className="mt-8 gap-2">
+              <Link href="/blog">
+                <BackArrow className="h-4 w-4" />
+                {t("blog.backToBlog")}
+              </Link>
+            </Button>
           </div>
         </section>
       ) : post ? (
@@ -125,57 +148,81 @@ export default async function BlogPostDetail({
               ]),
             ]}
           />
-          <section className="relative h-[22rem] overflow-hidden bg-storefront-brand dark:bg-storefront-surface sm:h-[28rem]">
-            <SafeImage
-              src={post.image || "/hero-florist-studio.png"}
-              alt={post.image ? post.title : ""}
-              fill
-              className="object-cover opacity-70"
-              priority
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-storefront-brand via-storefront-brand/45 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0">
-              <div className="mx-auto max-w-4xl px-4 pb-10 sm:px-6 lg:px-8">
+          {/* Masthead — porcelain, title-led, no photo overlay */}
+          <header className="bg-background pt-28 sm:pt-32">
+            <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+              <Link
+                href="/blog"
+                className="group inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <BackArrow className="size-3.5 transition-transform duration-300 group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0.5" />
+                {t("blog.backToBlog")}
+              </Link>
+
+              {/* Petal-seam eyebrow — the shared page-H1 marker used sitewide */}
+              <span className="golzar-seam mb-3 mt-8 max-w-[7rem]">
+                <span className="petal-dot" aria-hidden="true" />
+                <span className="h-px flex-1" aria-hidden="true" />
+              </span>
+
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <span>{t("blog.eyebrow")}</span>
                 {post.category && (
-                  <Badge variant="secondary" className="mb-4 bg-card/90 text-primary backdrop-blur">
-                    {post.category}
-                  </Badge>
+                  <>
+                    <span aria-hidden="true">/</span>
+                    <span className="text-foreground">{post.category}</span>
+                  </>
                 )}
-                <h1 className="max-w-3xl text-3xl font-bold leading-tight text-white sm:text-5xl">
-                  {post.title}
-                </h1>
+              </div>
+
+              <h1 className="font-display mt-3 text-4xl leading-[1.1] tracking-tight text-foreground [.locale-fa_&]:leading-[1.45] sm:text-5xl lg:text-6xl">
+                {post.title}
+              </h1>
+
+              <div className="mt-5 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                {formatLocaleDate(
+                  post.publishedAt || post.createdAt,
+                  locale as Locale
+                )}
               </div>
             </div>
-          </section>
+          </header>
 
-          <article className="bg-background py-12 dark:bg-background sm:py-16">
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-              <Button asChild variant="ghost" className="mb-8 gap-2">
-                <Link href="/blog">
-                  <BackArrow className="h-4 w-4" />
-                  {t("blog.backToBlog")}
-                </Link>
-              </Button>
-
-              <div className="mb-8 rounded-lg border border-border bg-card p-5 text-card-foreground shadow-sm">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    {formatLocaleDate(
-                      post.publishedAt || post.createdAt,
-                      locale as Locale
-                    )}
-                  </div>
+          {/* Lead image — an honest editorial figure with the offset frame */}
+          {hasLeadImage && (
+            <figure className="mx-auto mt-10 max-w-5xl px-4 sm:mt-12 sm:px-6 lg:px-8">
+              <div className="relative">
+                <div
+                  aria-hidden="true"
+                  className="absolute -inset-3 rounded-2xl border border-border"
+                />
+                <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-border bg-muted">
+                  <SafeImage
+                    src={post.image}
+                    alt={post.title}
+                    fill
+                    sizes="(min-width: 1024px) 64rem, 100vw"
+                    className="object-cover"
+                    priority
+                    unoptimized
+                  />
                 </div>
               </div>
+            </figure>
+          )}
 
-              <div
-                className="prose prose-zinc max-w-none rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm dark:prose-invert sm:p-8"
-                dangerouslySetInnerHTML={{ __html: safePostContent }}
+          {/* Article body — TipTap rich text rendered on porcelain */}
+          <article className="bg-background py-12 sm:py-16">
+            <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+              <RichText
+                content={post.richContent ?? post.content}
+                className="prose prose-zinc max-w-none dark:prose-invert prose-headings:font-display prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-foreground prose-a:font-medium prose-a:text-foreground prose-a:underline prose-a:decoration-border prose-a:underline-offset-4 hover:prose-a:decoration-foreground prose-strong:text-foreground prose-img:rounded-xl"
               />
             </div>
           </article>
+
+          <RelatedEntries posts={relatedPosts} />
         </>
       ) : null}
     </PageShell>
