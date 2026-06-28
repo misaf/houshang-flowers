@@ -15,6 +15,44 @@ import {
 // Deduplicate the product fetch across generateMetadata + the page render.
 const getProduct = cache((slug: string) => fetchProductBySlug(slug));
 
+// Related products are secondary — fetched without blocking the product render
+// and streamed in via <Suspense> on the client. Errors degrade to an empty list.
+async function loadRelatedProducts(product: Product): Promise<Product[]> {
+  try {
+    const currentProductId = product.id;
+    const relatedResult = await fetchProductsWithDetails({
+      page: 1,
+      perPage: 16,
+      category: product.categorySlug,
+      sort: "random-position",
+    });
+
+    const relatedProducts = relatedResult.products.filter(
+      (candidate) => candidate.id !== currentProductId
+    );
+
+    if (relatedProducts.length < 8) {
+      const fallbackResult = await fetchProductsWithDetails({
+        page: 1,
+        perPage: 16,
+        sort: "random-position",
+      });
+      const relatedIds = new Set(relatedProducts.map((item) => item.id));
+      for (const candidate of fallbackResult.products) {
+        if (candidate.id === currentProductId || relatedIds.has(candidate.id)) {
+          continue;
+        }
+        relatedIds.add(candidate.id);
+        relatedProducts.push(candidate);
+      }
+    }
+
+    return relatedProducts.slice(0, 12);
+  } catch {
+    return [];
+  }
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -66,51 +104,21 @@ export default async function ProductDetailPage({
   const { locale, slug } = await params;
 
   let initialProduct: Product | null = null;
-  let initialRelatedProducts: Product[] = [];
   let initialError: string | null = null;
 
   try {
     initialProduct = await getProduct(slug);
-
     if (!initialProduct) {
       initialError = "NOT_FOUND";
-    } else {
-      const currentProductId = initialProduct.id;
-      const relatedResult = await fetchProductsWithDetails({
-        page: 1,
-        perPage: 16,
-        category: initialProduct.categorySlug,
-        sort: "random-position",
-      });
-
-      const relatedProducts = relatedResult.products.filter(
-        (candidate) => candidate.id !== currentProductId
-      );
-
-      if (relatedProducts.length < 8) {
-        const fallbackResult = await fetchProductsWithDetails({
-          page: 1,
-          perPage: 16,
-          sort: "random-position",
-        });
-        const relatedIds = new Set(relatedProducts.map((item) => item.id));
-        const fallbackProducts = fallbackResult.products.filter((candidate) => {
-          if (candidate.id === currentProductId || relatedIds.has(candidate.id)) {
-            return false;
-          }
-
-          relatedIds.add(candidate.id);
-          return true;
-        });
-
-        relatedProducts.push(...fallbackProducts);
-      }
-
-      initialRelatedProducts = relatedProducts.slice(0, 12);
     }
   } catch (error) {
     initialError = error instanceof Error ? error.message : "Failed to load product";
   }
+
+  // Kick off the related fetch without awaiting — streamed on the client.
+  const relatedProductsPromise = initialProduct
+    ? loadRelatedProducts(initialProduct)
+    : Promise.resolve<Product[]>([]);
 
   const structuredData = initialProduct
     ? [
@@ -137,7 +145,7 @@ export default async function ProductDetailPage({
       {structuredData && <JsonLd data={structuredData} />}
       <ProductDetailClient
         initialProduct={initialProduct}
-        initialRelatedProducts={initialRelatedProducts}
+        relatedProductsPromise={relatedProductsPromise}
         initialError={initialError}
       />
     </>

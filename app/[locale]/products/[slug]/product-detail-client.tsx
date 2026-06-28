@@ -1,11 +1,12 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { Suspense, use, useCallback, useMemo, useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { ThemedProductImage } from "@/components/themed-product-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -53,13 +54,13 @@ import { toast } from "sonner";
 
 interface ProductDetailClientProps {
   initialProduct: Product | null;
-  initialRelatedProducts: Product[];
+  relatedProductsPromise: Promise<Product[]>;
   initialError: string | null;
 }
 
 export default function ProductDetailClient({
   initialProduct,
-  initialRelatedProducts,
+  relatedProductsPromise,
   initialError,
 }: ProductDetailClientProps) {
   const { t, locale } = useTranslations();
@@ -69,7 +70,6 @@ export default function ProductDetailClient({
   const BackArrow = isRTL ? ArrowRight : ArrowLeft;
 
   const product = initialProduct;
-  const relatedProducts = initialRelatedProducts;
   const error = initialError ?? (initialProduct ? null : "NOT_FOUND");
   const productIsFavorite = product ? isFavorite(product.id) : false;
   const formatRemainingQuantity = useCallback(
@@ -80,9 +80,6 @@ export default function ProductDetailClient({
     [locale, t]
   );
   const [hasImageError, setHasImageError] = useState(false);
-  const [relatedImageErrorIds, setRelatedImageErrorIds] = useState<Set<number>>(
-    new Set()
-  );
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   const addProductToCart = useCallback(
@@ -434,140 +431,9 @@ export default function ProductDetailClient({
                 </h2>
                 <div className="mt-3 h-1 w-24 rounded-full bg-foreground" />
               </div>
-
-	              {relatedProducts.length > 0 ? (
-	                <Carousel
-	                  opts={{
-	                    align: "start",
-	                    loop: false,
-	                    direction: isRTL ? "rtl" : "ltr",
-	                  }}
-	                  className="w-full"
-	                >
-	                  <CarouselContent className="mx-0">
-	                  {relatedProducts.map((relatedProduct) => {
-                    const relatedHref = `/products/${createReadableResourcePath(
-                      relatedProduct.id,
-                      relatedProduct.slug
-                    )}`;
-                    const hasRelatedImageError = relatedImageErrorIds.has(
-                      relatedProduct.id
-                    );
-
-                    const inStock = relatedProduct.inStock !== false;
-                    const hasPrice = Number(relatedProduct.price) > 0 && inStock;
-                    const displayPrice = formatLocalizedPrice(
-                      relatedProduct.price,
-                      locale,
-                      relatedProduct.formattedPrice
-                    );
-
-	                    return (
-	                      <CarouselItem
-	                        key={relatedProduct.id}
-		                        className="basis-[58%] px-0 sm:basis-[36%] md:basis-1/4 lg:basis-1/5 xl:basis-[14.285714%]"
-	                      >
-		                        <div className="group flex h-full flex-col items-center border-e border-border px-3">
-		                        <Link href={relatedHref} className="relative block aspect-[4/5] w-full overflow-hidden rounded-md bg-storefront-brand-soft dark:bg-storefront-brand-soft">
-                          {hasRelatedImageError ? (
-                            <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-                              <ImageOff className="h-7 w-7" />
-                            </div>
-                          ) : (
-                            <ThemedProductImage
-                              src={normalizeImageUrl(relatedProduct.image)}
-                              alt={relatedProduct.name}
-	                              width={240}
-	                              height={300}
-	                              className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03]"
-                              unoptimized
-                              loading="lazy"
-                              onError={() =>
-                                setRelatedImageErrorIds((previousIds) => {
-                                  if (previousIds.has(relatedProduct.id)) {
-                                    return previousIds;
-                                  }
-                                  const nextIds = new Set(previousIds);
-                                  nextIds.add(relatedProduct.id);
-                                  return nextIds;
-                                })
-                              }
-                            />
-                          )}
-                        </Link>
-		                        <div className="min-h-11 w-full flex-1 px-1 pb-2 pt-3 text-center">
-		                          <div className="min-h-5 text-[11px] font-semibold leading-5 sm:text-xs">
-		                            <Link href={relatedHref} className="block truncate text-center transition-colors hover:text-primary">
-	                              {relatedProduct.name}
-	                            </Link>
-	                          </div>
-	                          {relatedProduct.quantity != null &&
-	                          relatedProduct.quantity < 2 ? (
-	                            <p className="mt-1 max-w-full truncate text-[11px] font-semibold leading-4 text-primary">
-	                              {formatRemainingQuantity(relatedProduct.quantity)}
-	                            </p>
-	                          ) : null}
-		                        </div>
-			                        <div className="mt-auto flex w-full justify-center px-1 pb-1 pt-1 text-center">
-	                          <span
-	                            className={cn(
-	                              "block truncate text-sm font-bold leading-5",
-                              inStock
-                                ? "text-foreground"
-                                : "text-muted-foreground"
-                            )}
-                          >
-                            {inStock
-                              ? hasPrice
-                                ? displayPrice
-                                : t("products.priceOnRequest")
-                              : t("products.outOfStock")}
-		                          </span>
-		                        </div>
-		                        </div>
-	                      </CarouselItem>
-	                    );
-	                  })}
-	                  </CarouselContent>
-	                  <CarouselPrevious
-	                    className={`z-10 bg-card/95 shadow-md hover:bg-card ${
-	                      isRTL ? "right-2 left-auto md:-right-4" : "left-2 right-auto md:-left-4"
-	                    }`}
-	                  >
-	                    {isRTL ? (
-	                      <ArrowRight className="h-4 w-4" />
-	                    ) : (
-	                      <ArrowLeft className="h-4 w-4" />
-	                    )}
-	                    <span className="sr-only">{t("common.previousSlide")}</span>
-	                  </CarouselPrevious>
-	                  <CarouselNext
-	                    className={`z-10 bg-card/95 shadow-md hover:bg-card ${
-	                      isRTL ? "left-2 right-auto md:-left-4" : "right-2 left-auto md:-right-4"
-	                    }`}
-	                  >
-	                    {isRTL ? (
-	                      <ArrowLeft className="h-4 w-4" />
-	                    ) : (
-	                      <ArrowRight className="h-4 w-4" />
-	                    )}
-	                    <span className="sr-only">{t("common.nextSlide")}</span>
-	                  </CarouselNext>
-	                </Carousel>
-	              ) : (
-                <Empty className="py-10">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Package className="h-6 w-6" />
-                    </EmptyMedia>
-                    <EmptyTitle>{t("products.noProducts") || "No products found"}</EmptyTitle>
-                    <EmptyDescription>
-                      {t("products.noProductsInCategory") ||
-                        "There are no products available in this category."}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              )}
+              <Suspense fallback={<RelatedProductsSkeleton />}>
+                <RelatedProductsContent promise={relatedProductsPromise} isRTL={isRTL} />
+              </Suspense>
             </div>
           </section>
 
@@ -592,5 +458,177 @@ export default function ProductDetailClient({
       ) : null}
 
     </PageShell>
+  );
+}
+
+function RelatedProductsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="flex flex-col items-center px-3">
+          <Skeleton className="aspect-[4/5] w-full rounded-md" />
+          <Skeleton className="mt-3 h-4 w-3/4" />
+          <Skeleton className="mt-2 h-4 w-1/2" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Related products are streamed in via <Suspense> so the main product paints
+ * first; `use()` unwraps the server-provided promise once it resolves.
+ */
+function RelatedProductsContent({
+  promise,
+  isRTL,
+}: {
+  promise: Promise<Product[]>;
+  isRTL: boolean;
+}) {
+  const relatedProducts = use(promise);
+  const { t, locale } = useTranslations();
+  const [relatedImageErrorIds, setRelatedImageErrorIds] = useState<Set<number>>(
+    new Set()
+  );
+
+  const formatRemainingQuantity = (quantity: number) =>
+    t("products.remainingQuantity", {
+      quantity: new Intl.NumberFormat(locale).format(quantity),
+    });
+
+  if (relatedProducts.length === 0) {
+    return (
+      <Empty className="py-10">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Package className="h-6 w-6" />
+          </EmptyMedia>
+          <EmptyTitle>{t("products.noProducts") || "No products found"}</EmptyTitle>
+          <EmptyDescription>
+            {t("products.noProductsInCategory") ||
+              "There are no products available in this category."}
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
+  return (
+    <Carousel
+      opts={{ align: "start", loop: false, direction: isRTL ? "rtl" : "ltr" }}
+      className="w-full"
+    >
+      <CarouselContent className="mx-0">
+        {relatedProducts.map((relatedProduct) => {
+          const relatedHref = `/products/${createReadableResourcePath(
+            relatedProduct.id,
+            relatedProduct.slug
+          )}`;
+          const hasRelatedImageError = relatedImageErrorIds.has(relatedProduct.id);
+          const inStock = relatedProduct.inStock !== false;
+          const hasPrice = Number(relatedProduct.price) > 0 && inStock;
+          const displayPrice = formatLocalizedPrice(
+            relatedProduct.price,
+            locale,
+            relatedProduct.formattedPrice
+          );
+
+          return (
+            <CarouselItem
+              key={relatedProduct.id}
+              className="basis-[58%] px-0 sm:basis-[36%] md:basis-1/4 lg:basis-1/5 xl:basis-[14.285714%]"
+            >
+              <div className="group flex h-full flex-col items-center border-e border-border px-3">
+                <Link
+                  href={relatedHref}
+                  className="relative block aspect-[4/5] w-full overflow-hidden rounded-md bg-storefront-brand-soft outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring dark:bg-storefront-brand-soft"
+                >
+                  {hasRelatedImageError ? (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <ImageOff className="h-7 w-7" />
+                    </div>
+                  ) : (
+                    <ThemedProductImage
+                      src={normalizeImageUrl(relatedProduct.image)}
+                      alt={relatedProduct.name}
+                      width={240}
+                      height={300}
+                      className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03]"
+                      unoptimized
+                      loading="lazy"
+                      onError={() =>
+                        setRelatedImageErrorIds((previousIds) => {
+                          if (previousIds.has(relatedProduct.id)) {
+                            return previousIds;
+                          }
+                          const nextIds = new Set(previousIds);
+                          nextIds.add(relatedProduct.id);
+                          return nextIds;
+                        })
+                      }
+                    />
+                  )}
+                </Link>
+                <div className="min-h-11 w-full flex-1 px-1 pb-2 pt-3 text-center">
+                  <div className="min-h-5 text-[11px] font-semibold leading-5 sm:text-xs">
+                    <Link
+                      href={relatedHref}
+                      className="block truncate rounded-sm text-center outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {relatedProduct.name}
+                    </Link>
+                  </div>
+                  {relatedProduct.quantity != null &&
+                  relatedProduct.quantity < 2 ? (
+                    <p className="mt-1 max-w-full truncate text-[11px] font-semibold leading-4 text-primary">
+                      {formatRemainingQuantity(relatedProduct.quantity)}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="mt-auto flex w-full justify-center px-1 pb-1 pt-1 text-center">
+                  <span
+                    className={cn(
+                      "block truncate text-sm font-bold leading-5",
+                      inStock ? "text-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    {inStock
+                      ? hasPrice
+                        ? displayPrice
+                        : t("products.priceOnRequest")
+                      : t("products.outOfStock")}
+                  </span>
+                </div>
+              </div>
+            </CarouselItem>
+          );
+        })}
+      </CarouselContent>
+      <CarouselPrevious
+        className={`z-10 bg-card/95 shadow-md hover:bg-card ${
+          isRTL ? "right-2 left-auto md:-right-4" : "left-2 right-auto md:-left-4"
+        }`}
+      >
+        {isRTL ? (
+          <ArrowRight className="h-4 w-4" />
+        ) : (
+          <ArrowLeft className="h-4 w-4" />
+        )}
+        <span className="sr-only">{t("common.previousSlide")}</span>
+      </CarouselPrevious>
+      <CarouselNext
+        className={`z-10 bg-card/95 shadow-md hover:bg-card ${
+          isRTL ? "left-2 right-auto md:-left-4" : "right-2 left-auto md:-right-4"
+        }`}
+      >
+        {isRTL ? (
+          <ArrowLeft className="h-4 w-4" />
+        ) : (
+          <ArrowRight className="h-4 w-4" />
+        )}
+        <span className="sr-only">{t("common.nextSlide")}</span>
+      </CarouselNext>
+    </Carousel>
   );
 }
