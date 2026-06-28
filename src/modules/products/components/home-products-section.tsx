@@ -24,6 +24,7 @@ import {
 } from "@/shared/components/ui/carousel";
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
+import { formatRemainingQuantity } from "../lib/format";
 import type { Product } from "@/modules/products";
 
 interface HomeProductCategory {
@@ -112,11 +113,7 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
         </h3>
         {isLowQuantity ? (
           <p className="ms-4 truncate text-[11px] font-semibold leading-4 text-foreground lg:text-xs">
-            {t("products.remainingQuantity", {
-              quantity: new Intl.NumberFormat(locale).format(
-                product.quantity as number
-              ),
-            })}
+            {formatRemainingQuantity(t, locale, product.quantity as number)}
           </p>
         ) : null}
       </div>

@@ -38,6 +38,7 @@ import {
 import { fetchProductsWithDetails, type FetchProductsResult } from "@/modules/products";
 import { useProductCategories } from "@/modules/products";
 import type { Product } from "@/modules/products";
+import { buildProductsQueryKey, getProductsApiSort } from "../lib/keys";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
 import { RichText, hasRichTextContent } from "@/shared/components/rich-text";
@@ -133,21 +134,6 @@ interface ProductsClientProps {
   initialPagination: FetchProductsResult["pagination"] | null;
   initialError: string | null;
   initialQueryKey: string;
-}
-
-function buildProductsQueryKey(
-  category: string | undefined,
-  search: string,
-  apiSort: string | undefined
-): string {
-  const order = apiSort ?? "client-sort";
-  return `${category ?? "all"}|${search}|${order}`;
-}
-
-function getProductsApiSort(sort: SortValue): string | undefined {
-  if (sort === "newest") return "-id";
-  if (sort === "oldest") return "id";
-  return undefined;
 }
 
 export default function ProductsClient({
@@ -312,17 +298,13 @@ export default function ProductsClient({
         });
 
         setProducts((previousProducts) => {
-          const mergedProducts = reset
-            ? result.products
-            : [
-                ...previousProducts,
-                ...result.products.filter(
-                  (incoming) =>
-                    !previousProducts.some(
-                      (existing) => existing.id === incoming.id
-                    )
-                ),
-              ];
+          if (reset) return sortProducts(result.products);
+
+          const existingIds = new Set(previousProducts.map((p) => p.id));
+          const mergedProducts = [
+            ...previousProducts,
+            ...result.products.filter((incoming) => !existingIds.has(incoming.id)),
+          ];
 
           return sortProducts(mergedProducts);
         });

@@ -47,6 +47,7 @@ import { useCart } from "@/modules/cart";
 import { useFavorites } from "@/modules/account";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import type { Product } from "@/modules/products";
+import { formatRemainingQuantity } from "../lib/format";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
 import { PLACEHOLDER_IMAGE } from "@/shared/lib/image";
@@ -72,11 +73,8 @@ export default function ProductDetailClient({
   const product = initialProduct;
   const error = initialError ?? (initialProduct ? null : "NOT_FOUND");
   const productIsFavorite = product ? isFavorite(product.id) : false;
-  const formatRemainingQuantity = useCallback(
-    (quantity: number) =>
-      t("products.remainingQuantity", {
-        quantity: new Intl.NumberFormat(locale).format(quantity),
-      }),
+  const formatQuantity = useCallback(
+    (quantity: number) => formatRemainingQuantity(t, locale, quantity),
     [locale, t]
   );
   const [hasImageError, setHasImageError] = useState(false);
@@ -318,7 +316,7 @@ export default function ProductDetailClient({
 	                    {product.quantity != null && product.quantity < 2 ? (
 	                      <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
 	                        <Package className="size-4" />
-	                        {formatRemainingQuantity(product.quantity)}
+	                        {formatQuantity(product.quantity)}
 	                      </p>
 	                    ) : null}
 
@@ -492,11 +490,6 @@ function RelatedProductsContent({
     new Set()
   );
 
-  const formatRemainingQuantity = (quantity: number) =>
-    t("products.remainingQuantity", {
-      quantity: new Intl.NumberFormat(locale).format(quantity),
-    });
-
   if (relatedProducts.length === 0) {
     return (
       <Empty className="py-10">
@@ -582,7 +575,7 @@ function RelatedProductsContent({
                   {relatedProduct.quantity != null &&
                   relatedProduct.quantity < 2 ? (
                     <p className="mt-1 max-w-full truncate text-[11px] font-semibold leading-4 text-primary">
-                      {formatRemainingQuantity(relatedProduct.quantity)}
+                      {formatRemainingQuantity(t, locale, relatedProduct.quantity)}
                     </p>
                   ) : null}
                 </div>

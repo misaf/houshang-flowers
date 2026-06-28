@@ -38,12 +38,9 @@ export function CategoryMediaImage({
       };
     }
 
+    // resolvedSrc already shows normalizedSrc; only swap to the placeholder if
+    // the preload fails, so a successful load needs no extra state update.
     const image = new window.Image();
-    image.onload = () => {
-      if (!isCancelled) {
-        setResolvedSrc(normalizedSrc);
-      }
-    };
     image.onerror = () => {
       if (!isCancelled) {
         setResolvedSrc(PLACEHOLDER_IMAGE);

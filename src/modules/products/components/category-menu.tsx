@@ -38,6 +38,8 @@ interface CategoryDisplayItem {
   image?: string;
 }
 
+const CATEGORY_ICONS = [Flower2, Sparkles, Leaf];
+
 export function CategoryMenu() {
   const { t, locale } = useTranslations();
   const searchParams = useSearchParams();
@@ -52,7 +54,7 @@ export function CategoryMenu() {
     return apiCategories.map((cat, index) => ({
       value: cat.slug,
       name: cat.name,
-      icon: index % 3 === 0 ? Flower2 : index % 3 === 1 ? Sparkles : Leaf,
+      icon: CATEGORY_ICONS[index % CATEGORY_ICONS.length],
       description: cat.description || undefined,
       featured: index < 3,
       image: cat.image,

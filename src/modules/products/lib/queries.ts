@@ -240,9 +240,13 @@ function getRelatedImages(product: ProductDto): string[] {
   const media = product.multimedia ?? product.media;
   const list = Array.isArray(media) ? media : media ? [media] : [];
   const urls: string[] = [];
+  const seen = new Set<string>();
   for (const item of list) {
     const url = buildImageUrl(item);
-    if (url && !urls.includes(url)) urls.push(url);
+    if (url && !seen.has(url)) {
+      seen.add(url);
+      urls.push(url);
+    }
   }
   return urls;
 }

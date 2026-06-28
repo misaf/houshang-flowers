@@ -3,6 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import ProductsClient from "./components/products-client";
 import { fetchProductsWithDetails } from "./lib/queries";
+import {
+  buildProductsQueryKey,
+  getProductsApiSort,
+  type ProductSortValue,
+} from "./lib/keys";
 import type { FetchProductsResult, Product } from "./types";
 import { buildMetadata } from "@/shared/seo";
 
@@ -21,8 +26,6 @@ function normalizeSearch(value: string | undefined): string {
   return value?.trim() || "";
 }
 
-type ProductSortValue = "newest" | "oldest" | "price-asc" | "price-desc";
-
 function normalizeSort(value: string | undefined): ProductSortValue | undefined {
   if (
     value === "newest" ||
@@ -34,21 +37,6 @@ function normalizeSort(value: string | undefined): ProductSortValue | undefined 
   }
 
   return undefined;
-}
-
-function getProductsApiSort(sort: ProductSortValue | undefined): string | undefined {
-  if (!sort || sort === "newest") return "-id";
-  if (sort === "oldest") return "id";
-  return undefined;
-}
-
-function buildProductsQueryKey(
-  category: string | undefined,
-  search: string,
-  apiSort: string | undefined
-): string {
-  const order = apiSort ?? "client-sort";
-  return `${category ?? "all"}|${search}|${order}`;
 }
 
 export async function generateMetadata({
