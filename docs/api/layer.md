@@ -6,10 +6,10 @@ Keep all API logic centralized.
 
 Guidelines:
 
-- Reuse `lib/api/client.ts`.
-- Reuse existing resource modules under `lib/api/`.
+- Reuse `src/shared/api/client.ts`.
+- Reuse existing feature resource modules under `src/modules/<feature>/lib/`.
 - Keep network requests out of presentation-only components.
-- Place new API functionality inside the existing API layer.
+- Place new API functionality inside the owning feature module.
 - Keep resource types, mappers, and serializers close to their corresponding API module.
 - Avoid duplicating fetch logic across components.
 - Prefer extending existing resource modules over creating new ones.
@@ -68,7 +68,7 @@ Primary backend resources currently include:
 - `/transactions`
 - `/users`
 
-Resource modules surfaced in the UI today: `products`, `posts` (blog), and `faqs` (FAQ page + contact accordion; categories via `/faq-categories` and the `faqCategory` relationship). The `transactions` and `users` modules exist as scaffolding and are **not yet wired into any UI** — cart, account, and checkout currently run on client-side `localStorage` state (`contexts/`), and checkout is a demo flow. Do not assume a live transaction or auth integration without confirming it in the code or in Vendra.
+Resource modules surfaced in the UI today: `products`, `blog` (posts), and `faq` (FAQ page + contact accordion; categories via `/faq-categories` and the `faqCategory` relationship). Cart, account, and checkout currently run on client-side `localStorage` state in `src/modules/cart` and `src/modules/account`, and checkout is a demo flow. Do not assume a live transaction or auth integration without confirming it in the code or in Vendra.
 
 Only consume relationship routes that already exist in:
 

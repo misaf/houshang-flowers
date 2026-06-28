@@ -24,7 +24,7 @@ React Query / Hooks
 API Resource Module
         |
         v
-lib/api/client.ts
+src/shared/api/client.ts
         |
         v
 Laravel JSON:API Backend

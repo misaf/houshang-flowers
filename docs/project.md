@@ -6,6 +6,7 @@ Use this file as the entry point for repository context. Read the always-read fi
 
 - `docs/project/overview.md` for the storefront overview and backend source of truth.
 - `docs/project/structure.md` for repository layout and ownership boundaries.
+- `docs/project/module-boundaries.md` for feature module import rules and shared-code criteria.
 
 ## Read When Relevant
 

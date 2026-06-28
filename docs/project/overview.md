@@ -4,7 +4,7 @@
 
 Houshang Flowers is a multilingual flower-shop storefront built with **Next.js App Router**, **React**, **TypeScript**, **Tailwind CSS v4**, and **shadcn/ui** components powered by **Radix UI** primitives. The storefront consumes a **Laravel JSON:API** backend.
 
-Use shadcn/ui as the primary UI foundation across public storefront sections, forms, and interactive surfaces. Existing `components/ui/` primitives should be reused before custom controls are introduced.
+Use shadcn/ui as the primary UI foundation across public storefront sections, forms, and interactive surfaces. Existing `src/shared/components/ui/` primitives should be reused before custom controls are introduced.
 
 The currently supported locales are **Persian (`fa`)** and **English (`en`)**, with additional locales expected in the future. Always write code that scales to an arbitrary number of locales rather than assuming only two languages will ever exist.
 

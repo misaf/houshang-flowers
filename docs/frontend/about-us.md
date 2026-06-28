@@ -42,14 +42,14 @@ Only display information verified by project content, backend APIs, or confirmed
 
 The About Us page lives under:
 
-- `app/[locale]/about/page.tsx`
-- `app/[locale]/about/about-us.tsx`
+- `src/app/[locale]/about/page.tsx`
+- `src/modules/about/components/about-us.tsx`
 
 Requirements:
 
-- Keep route files inside `app/[locale]/about/`.
+- Keep route files inside `src/app/[locale]/about/` thin.
 - Localize metadata using `next-intl/server`.
-- Preserve locale-aware navigation using `@/i18n/navigation`.
+- Preserve locale-aware navigation using `@/shared/i18n/navigation`.
 - Use a Server Component as the page shell.
 - Use Client Components only where browser interactivity is required.
 - Reuse `PageShell`.

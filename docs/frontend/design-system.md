@@ -30,7 +30,7 @@ Use shadcn/ui as the default UI and UX foundation for storefront sections, forms
 
 Requirements:
 
-- Reuse existing primitives from `components/ui/` before creating custom controls.
+- Reuse existing primitives from `src/shared/components/ui/` before creating custom controls.
 - Prefer shadcn/Radix patterns for:
   - buttons
   - inputs
@@ -47,7 +47,7 @@ Requirements:
 - Keep custom section layouts visually compatible with the existing shadcn/ui theme tokens.
 - Extend shadcn/ui components through composition and variants before introducing one-off styles.
 - Preserve Radix accessibility behavior when wrapping or composing primitives.
-- Do not bypass existing `components/ui/` primitives for common UI patterns without a strong reason.
+- Do not bypass existing `src/shared/components/ui/` primitives for common UI patterns without a strong reason.
 
 ---
 

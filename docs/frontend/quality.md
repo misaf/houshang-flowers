@@ -119,7 +119,7 @@ Requirements:
 
 Requirements:
 
-- Build forms and interactive controls with existing shadcn/ui primitives from `components/ui/` whenever available.
+- Build forms and interactive controls with existing shadcn/ui primitives from `src/shared/components/ui/` whenever available.
 - Use shadcn/Radix patterns for validation messages, labels, dialogs, sheets, dropdowns, tabs, alerts, and command/search interactions.
 - Support keyboard interaction.
 - Support touch interaction.

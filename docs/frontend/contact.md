@@ -36,13 +36,13 @@ Only display verified business information.
 
 The Contact page lives under:
 
-- `app/[locale]/contact/page.tsx`
-- `app/[locale]/contact/contact-client.tsx`
+- `src/app/[locale]/contact/page.tsx`
+- `src/modules/contact/components/contact-client.tsx`
 
 Requirements:
 
-- Keep route files inside `app/[locale]/contact/`.
-- Use `app/[locale]/contact/page.tsx` as the Server Component page shell.
+- Keep route files inside `src/app/[locale]/contact/`.
+- Use `src/app/[locale]/contact/page.tsx` as the thin route shell.
 - Use `contact-client.tsx` only for browser interactivity.
 - Localize metadata using `next-intl/server`.
 - Preserve locale-aware routing.
@@ -55,7 +55,7 @@ Requirements:
 
 Verified contact values live in environment configuration, not in components or translation files.
 
-- Read contact values with `getContactInfo()` from `lib/config.ts`.
+- Read contact values with `getContactInfo()` from `src/shared/lib/config.ts`.
 - Read them in `page.tsx` (Server Component) and pass them to `ContactClient` as a `contactInfo` prop.
 - Because they are read server-side and passed as props, the env vars do **not** need the `NEXT_PUBLIC_` prefix.
 - Env vars (with in-code defaults): `CONTACT_MOBILE_PHONE`, `CONTACT_OFFICE_PHONE`, `CONTACT_HOURS_OPEN`, `CONTACT_HOURS_CLOSE`.
@@ -66,7 +66,7 @@ Verified contact values live in environment configuration, not in components or 
 
 The contact aside surfaces FAQs from the backend.
 
-- Use the `lib/api/faqs/` resource module (`queries.ts`, `keys.ts`, `types.ts`), modeled on the existing `lib/api/posts/` module.
+- Use the `src/modules/faq` public API.
 - Fetch with the `useFaqs()` hook through the shared `apiClient`; never hardcode FAQ content.
 - The `/faqs` JSON:API resource exposes `name` (question) and `description` (answer); map them in the API layer, not the component.
 - Request `sort=position` and also sort by `position` client-side as a safety net.

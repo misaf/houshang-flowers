@@ -58,5 +58,5 @@ Before implementing any UI work:
   - interactive UI
 - Push `"use client"` as low as practical.
 - Keep data fetching inside Server Components whenever practical.
-- Use `@/i18n/navigation` for locale-aware navigation.
-- Route files belong under `app/[locale]/...`.
+- Use `@/shared/i18n/navigation` for locale-aware navigation.
+- Route files belong under `src/app/[locale]/...`.

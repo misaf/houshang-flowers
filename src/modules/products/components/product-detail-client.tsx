@@ -1,0 +1,634 @@
+"use client";
+
+import { Link } from "@/shared/i18n/navigation";
+import { Suspense, use, useCallback, useMemo, useState } from "react";
+import { PageShell } from "@/shared/components/layout/page-shell";
+import { ThemedProductImage } from "./themed-product-image";
+import { Button } from "@/shared/components/ui/button";
+import { Card } from "@/shared/components/ui/card";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
+import { Alert, AlertDescription } from "@/shared/components/ui/alert";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/shared/components/ui/empty";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "@/shared/components/ui/carousel";
+import {
+  ArrowLeft,
+	  ArrowRight,
+	  MapPin,
+	  Hash,
+	  Heart,
+	  ImageOff,
+	  Package,
+	  ShoppingBag,
+	  PackageCheck,
+	  Share2,
+	  Truck,
+  Sparkles,
+  Palette,
+	} from "lucide-react";
+import { useCart } from "@/modules/cart";
+import { useFavorites } from "@/modules/account";
+import { useTranslations } from "@/shared/hooks/use-translations";
+import type { Product } from "@/modules/products";
+import { createReadableResourcePath } from "@/shared/lib/slug-url";
+import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
+import { PLACEHOLDER_IMAGE } from "@/shared/lib/image";
+import { toast } from "sonner";
+
+interface ProductDetailClientProps {
+  initialProduct: Product | null;
+  relatedProductsPromise: Promise<Product[]>;
+  initialError: string | null;
+}
+
+export default function ProductDetailClient({
+  initialProduct,
+  relatedProductsPromise,
+  initialError,
+}: ProductDetailClientProps) {
+  const { t, locale } = useTranslations();
+  const { addToCart, openCart } = useCart();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const isRTL = locale === "fa";
+  const BackArrow = isRTL ? ArrowRight : ArrowLeft;
+
+  const product = initialProduct;
+  const error = initialError ?? (initialProduct ? null : "NOT_FOUND");
+  const productIsFavorite = product ? isFavorite(product.id) : false;
+  const formatRemainingQuantity = useCallback(
+    (quantity: number) =>
+      t("products.remainingQuantity", {
+        quantity: new Intl.NumberFormat(locale).format(quantity),
+      }),
+    [locale, t]
+  );
+  const [hasImageError, setHasImageError] = useState(false);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
+  const addProductToCart = useCallback(
+    (targetProduct: Product) => {
+      addToCart(targetProduct);
+      toast.success(t("common.addedToCart", { name: targetProduct.name }), {
+        action: { label: t("common.viewCart"), onClick: openCart },
+      });
+    },
+    [addToCart, openCart, t]
+  );
+
+  const galleryImages = useMemo(() => {
+    if (!product) return [] as string[];
+    const sources = product.images?.length ? product.images : [product.image];
+    const normalized = sources
+      .filter(Boolean)
+      .map((src) => normalizeImageUrl(src));
+    return Array.from(new Set(normalized));
+  }, [product]);
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const detailImage = selectedImage ?? galleryImages[0] ?? PLACEHOLDER_IMAGE;
+
+  const handleShare = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const shareUrl = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: product?.name, url: shareUrl });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success(t("common.linkCopied"));
+      } else {
+        toast.error(t("common.shareFailed"));
+      }
+    } catch {
+      /* user cancelled the native share sheet — no feedback needed */
+    }
+  }, [product, t]);
+
+  return (
+    <PageShell>
+      {error ? (
+        <section className="py-16">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <Alert variant="destructive">
+              <AlertDescription>
+                <p>
+                  {error === "NOT_FOUND"
+                    ? t("products.detailNotFound") || "Product not found"
+                    : error}
+                </p>
+                <Button asChild variant="outline" className="mt-4 gap-2">
+                  <Link href="/products">
+                    <BackArrow className="h-4 w-4" />
+                    {t("products.detailBack") || "Back to products"}
+                  </Link>
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        </section>
+      ) : product ? (
+        <>
+	          <section className="bg-background pb-12 pt-32 dark:bg-background sm:pb-14 sm:pt-36">
+	            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		              <nav
+		                aria-label={t("products.breadcrumb") || "Breadcrumb"}
+		                className="relative z-10 mb-6 text-sm"
+		              >
+		                <ol className="flex flex-wrap items-center gap-2">
+		                  <li>
+		                    <Link
+		                      href="/products"
+		                      className="rounded-sm text-muted-foreground outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+		                    >
+		                      {t("common.products")}
+		                    </Link>
+		                  </li>
+		                  {product.category ? (
+		                    <li className="flex items-center gap-2">
+		                      <span className="text-muted-foreground" aria-hidden="true">/</span>
+		                      <span className="font-semibold text-primary" aria-current="page">
+		                        {product.category}
+		                      </span>
+		                    </li>
+		                  ) : null}
+		                </ol>
+		              </nav>
+
+	              <Card className="grid gap-0 overflow-hidden rounded-lg border-border bg-card p-0 shadow-xl shadow-storefront-brand/5 lg:grid-cols-2">
+	                <div className="p-3 sm:p-4">
+	                  <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-secondary">
+                    <span aria-hidden="true" className="absolute start-3 top-3 z-10 h-1.5 w-10 rounded-full bg-foreground/25" />
+	                    {hasImageError ? (
+	                      <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-muted-foreground">
+	                        <span className="flex size-16 items-center justify-center rounded-full bg-background/75 shadow-sm ring-1 ring-border">
+	                          <ImageOff className="h-7 w-7" />
+	                        </span>
+	                        <span className="text-sm font-semibold">
+	                          {t("products.imageUnavailable") || "Image unavailable"}
+	                        </span>
+	                      </div>
+	                    ) : (
+                        <button
+                          type="button"
+                          aria-label={product.name}
+                          className="relative block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          onClick={() => setIsImageDialogOpen(true)}
+                        >
+	                      <ThemedProductImage
+	                        src={detailImage}
+	                        alt={product.name}
+	                        fill
+	                        className="object-contain p-5"
+	                        priority
+	                        unoptimized
+	                        onError={() => setHasImageError(true)}
+	                      />
+                        </button>
+	                    )}
+	                  </div>
+
+	                  {galleryImages.length > 1 ? (
+	                    <div className="mt-3 flex flex-wrap items-center gap-2">
+	                      {galleryImages.map((image, index) => {
+	                        const isActive = image === detailImage;
+	                        return (
+	                          <button
+	                            key={image}
+	                            type="button"
+	                            onClick={() => {
+	                              setSelectedImage(image);
+	                              setHasImageError(false);
+	                            }}
+	                            className={`relative aspect-square size-16 overflow-hidden rounded-md border-2 bg-storefront-brand-soft shadow-sm dark:bg-storefront-brand-soft ${
+	                              isActive
+	                                ? "border-primary"
+	                                : "border-transparent hover:border-primary/40"
+	                            }`}
+	                            aria-label={`${product.name} ${index + 1}`}
+	                            aria-pressed={isActive}
+	                          >
+	                            <ThemedProductImage
+	                              src={image}
+	                              alt=""
+	                              fill
+	                              className="object-contain p-1"
+	                              unoptimized
+	                            />
+	                          </button>
+	                        );
+	                      })}
+	                    </div>
+	                  ) : null}
+	                </div>
+
+                <div className="relative grid gap-4 border-t border-border p-4 sm:p-6 lg:border-t-0 lg:gap-5">
+                  <div className="absolute end-4 top-4 flex flex-col gap-2 sm:end-6 sm:top-6">
+                    <button
+                      type="button"
+                      onClick={() => toggleFavorite(product)}
+                      aria-pressed={productIsFavorite}
+                      aria-label={
+                        productIsFavorite
+                          ? t("common.removeFromFavorites") || "Remove from favorites"
+                          : t("common.favorites") || "Add to favorites"
+                      }
+                      title={
+                        productIsFavorite
+                          ? t("common.removeFromFavorites") || "Remove from favorites"
+                          : t("common.favorites") || "Add to favorites"
+                      }
+                      className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Heart
+                        className={`size-5 shrink-0 ${
+                          productIsFavorite
+                            ? "fill-primary text-primary"
+                            : ""
+                        }`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleShare}
+                      aria-label={t("common.share") || "Share"}
+                      title={t("common.share") || "Share"}
+                      className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Share2 className="size-5 shrink-0" />
+                    </button>
+                  </div>
+
+	                  <div className="flex min-w-0 flex-col justify-center gap-6 pe-12">
+		                    <div className="flex flex-wrap items-center gap-2">
+		                      {product.token ? (
+                        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-storefront-brand-soft px-3 py-1 text-xs font-semibold text-primary">
+                          <Hash className="size-3.5" />
+                          {t("products.productToken") || "Product Code"}:
+                          <span dir="ltr">{product.token}</span>
+                        </span>
+	                      ) : null}
+	                    </div>
+
+	                    <div>
+	                      <span className="golzar-seam mb-3 max-w-[7rem]">
+                          <span className="petal-dot" aria-hidden="true" />
+                          <span className="h-px flex-1" aria-hidden="true" />
+                        </span>
+                        <h1 className="font-display text-3xl leading-tight tracking-tight text-card-foreground sm:text-4xl lg:text-5xl">
+	                        {product.name}
+	                      </h1>
+	                    </div>
+
+                    {product.inStock !== false ? (
+                      <p className="text-3xl font-bold text-card-foreground">
+                        {Number(product.price) > 0
+                          ? formatLocalizedPrice(
+                              product.price,
+                              locale,
+                              product.formattedPrice
+                            )
+                          : t("products.priceOnRequest")}
+                      </p>
+                    ) : null}
+
+	                    {product.description ? (
+	                      <p className="text-base leading-8 text-muted-foreground">
+	                        {product.description}
+	                      </p>
+	                    ) : null}
+
+	                    {product.quantity != null && product.quantity < 2 ? (
+	                      <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+	                        <Package className="size-4" />
+	                        {formatRemainingQuantity(product.quantity)}
+	                      </p>
+	                    ) : null}
+
+	                    <div className="flex flex-wrap items-center gap-3">
+                      {Number(product.price) > 0 && product.inStock !== false ? (
+	                        <Button size="lg" className="gap-2" onClick={() => addProductToCart(product)}>
+                          <ShoppingBag className="size-4" />
+                          {t("common.addToCart")}
+                        </Button>
+                      ) : (
+	                        <Button asChild size="lg">
+                          <Link
+                            href={{
+                              pathname: "/contact",
+                              query: { subject: product.name },
+                            }}
+                          >
+                            {t("products.contactForPrice") || "Contact for Price"}
+                          </Link>
+                        </Button>
+                      )}
+
+	                      <Button asChild size="lg" variant="outline">
+	                        <Link href="/contact">
+	                          {t("contact.title") || "Contact Us"}
+	                        </Link>
+	                      </Button>
+	                    </div>
+
+	                    <div className="grid gap-4 border-t border-border pt-5">
+                      {[
+                        {
+                          Icon: Sparkles,
+                          title: t("home.serviceFreshnessTitle"),
+                          text: t("home.serviceFreshnessText"),
+                          badge: "bg-secondary text-muted-foreground ring-border",
+                        },
+                        {
+                          Icon: Palette,
+                          title: t("home.serviceDesignTitle"),
+                          text: t("home.serviceDesignText"),
+                          badge: "bg-secondary text-muted-foreground ring-border",
+                        },
+                        {
+                          Icon: PackageCheck,
+                          title: t("home.servicePreparationTitle"),
+                          text: t("home.servicePreparationText"),
+                          badge: "bg-secondary text-muted-foreground ring-border",
+                        },
+                      ].map(({ Icon, title, text, badge }) => (
+                        <div key={title} className="flex items-start gap-3">
+                          <span
+                            className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full ring-1 ${badge}`}
+                          >
+                            <Icon className="size-4" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-card-foreground">
+                              {title}
+                            </p>
+                            <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
+                              {text}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="border-t border-border pt-4">
+	                      <div className="mb-3 flex items-center gap-2 text-sm font-bold text-card-foreground">
+	                        <PackageCheck className="size-4 shrink-0 text-primary" />
+	                        {t("products.deliveryTitle")}
+	                      </div>
+	                      <div className="grid gap-3 sm:grid-cols-2">
+	                        <div className="flex gap-3">
+	                          <Truck className="mt-0.5 size-4 shrink-0 text-primary" />
+	                          <div>
+	                            <p className="text-sm font-semibold text-card-foreground">
+	                              {t("products.deliveryLocal")}
+	                            </p>
+	                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+	                              {t("products.deliveryLocalDescription")}
+	                            </p>
+	                          </div>
+	                        </div>
+	                        <div className="flex gap-3">
+	                          <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+	                          <div>
+	                            <p className="text-sm font-semibold text-card-foreground">
+	                              {t("products.deliveryPickup")}
+	                            </p>
+	                            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+	                              {t("products.deliveryPickupDescription")}
+	                            </p>
+	                          </div>
+	                        </div>
+	                      </div>
+	                    </div>
+	                  </div>
+                </div>
+              </Card>
+            </div>
+          </section>
+
+          <section className="border-t border-border bg-background py-16">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="mb-8">
+                <h2 className="font-display text-2xl leading-tight text-foreground sm:text-3xl">
+                  {t("products.detailRelatedTitle") || "Related Products"}
+                </h2>
+                <div className="mt-3 h-1 w-24 rounded-full bg-foreground" />
+              </div>
+              <Suspense fallback={<RelatedProductsSkeleton />}>
+                <RelatedProductsContent promise={relatedProductsPromise} isRTL={isRTL} />
+              </Suspense>
+            </div>
+          </section>
+
+          <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
+            <DialogContent className="max-w-[calc(100vw-1rem)] gap-0 p-2 sm:max-w-6xl sm:p-3">
+              <DialogTitle className="sr-only">{product.name}</DialogTitle>
+              <DialogDescription className="sr-only">
+                {product.name}
+              </DialogDescription>
+              <div className="relative h-[82vh] max-h-[760px] w-full overflow-hidden rounded-md bg-secondary">
+                <ThemedProductImage
+                  src={detailImage}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-2 sm:p-4"
+                  unoptimized
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
+      ) : null}
+
+    </PageShell>
+  );
+}
+
+function RelatedProductsSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="flex flex-col items-center px-3">
+          <Skeleton className="aspect-[4/5] w-full rounded-md" />
+          <Skeleton className="mt-3 h-4 w-3/4" />
+          <Skeleton className="mt-2 h-4 w-1/2" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Related products are streamed in via <Suspense> so the main product paints
+ * first; `use()` unwraps the server-provided promise once it resolves.
+ */
+function RelatedProductsContent({
+  promise,
+  isRTL,
+}: {
+  promise: Promise<Product[]>;
+  isRTL: boolean;
+}) {
+  const relatedProducts = use(promise);
+  const { t, locale } = useTranslations();
+  const [relatedImageErrorIds, setRelatedImageErrorIds] = useState<Set<number>>(
+    new Set()
+  );
+
+  const formatRemainingQuantity = (quantity: number) =>
+    t("products.remainingQuantity", {
+      quantity: new Intl.NumberFormat(locale).format(quantity),
+    });
+
+  if (relatedProducts.length === 0) {
+    return (
+      <Empty className="py-10">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <Package className="h-6 w-6" />
+          </EmptyMedia>
+          <EmptyTitle>{t("products.noProducts") || "No products found"}</EmptyTitle>
+          <EmptyDescription>
+            {t("products.noProductsInCategory") ||
+              "There are no products available in this category."}
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
+  return (
+    <Carousel
+      opts={{ align: "start", loop: false, direction: isRTL ? "rtl" : "ltr" }}
+      className="w-full"
+    >
+      <CarouselContent className="mx-0">
+        {relatedProducts.map((relatedProduct) => {
+          const relatedHref = `/products/${createReadableResourcePath(
+            relatedProduct.id,
+            relatedProduct.slug
+          )}`;
+          const hasRelatedImageError = relatedImageErrorIds.has(relatedProduct.id);
+          const inStock = relatedProduct.inStock !== false;
+          const hasPrice = Number(relatedProduct.price) > 0 && inStock;
+          const displayPrice = formatLocalizedPrice(
+            relatedProduct.price,
+            locale,
+            relatedProduct.formattedPrice
+          );
+
+          return (
+            <CarouselItem
+              key={relatedProduct.id}
+              className="basis-[58%] px-0 sm:basis-[36%] md:basis-1/4 lg:basis-1/5 xl:basis-[14.285714%]"
+            >
+              <div className="group flex h-full flex-col items-center border-e border-border px-3">
+                <Link
+                  href={relatedHref}
+                  className="relative block aspect-[4/5] w-full overflow-hidden rounded-md bg-storefront-brand-soft outline-none transition-shadow focus-visible:ring-2 focus-visible:ring-ring dark:bg-storefront-brand-soft"
+                >
+                  {hasRelatedImageError ? (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <ImageOff className="h-7 w-7" />
+                    </div>
+                  ) : (
+                    <ThemedProductImage
+                      src={normalizeImageUrl(relatedProduct.image)}
+                      alt={relatedProduct.name}
+                      width={240}
+                      height={300}
+                      className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-[1.03]"
+                      unoptimized
+                      loading="lazy"
+                      onError={() =>
+                        setRelatedImageErrorIds((previousIds) => {
+                          if (previousIds.has(relatedProduct.id)) {
+                            return previousIds;
+                          }
+                          const nextIds = new Set(previousIds);
+                          nextIds.add(relatedProduct.id);
+                          return nextIds;
+                        })
+                      }
+                    />
+                  )}
+                </Link>
+                <div className="min-h-11 w-full flex-1 px-1 pb-2 pt-3 text-center">
+                  <div className="min-h-5 text-[11px] font-semibold leading-5 sm:text-xs">
+                    <Link
+                      href={relatedHref}
+                      className="block truncate rounded-sm text-center outline-none transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      {relatedProduct.name}
+                    </Link>
+                  </div>
+                  {relatedProduct.quantity != null &&
+                  relatedProduct.quantity < 2 ? (
+                    <p className="mt-1 max-w-full truncate text-[11px] font-semibold leading-4 text-primary">
+                      {formatRemainingQuantity(relatedProduct.quantity)}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="mt-auto flex w-full justify-center px-1 pb-1 pt-1 text-center">
+                  <span
+                    className={cn(
+                      "block truncate text-sm font-bold leading-5",
+                      inStock ? "text-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    {inStock
+                      ? hasPrice
+                        ? displayPrice
+                        : t("products.priceOnRequest")
+                      : t("products.outOfStock")}
+                  </span>
+                </div>
+              </div>
+            </CarouselItem>
+          );
+        })}
+      </CarouselContent>
+      <CarouselPrevious
+        className={`z-10 bg-card/95 shadow-md hover:bg-card ${
+          isRTL ? "right-2 left-auto md:-right-4" : "left-2 right-auto md:-left-4"
+        }`}
+      >
+        {isRTL ? (
+          <ArrowRight className="h-4 w-4" />
+        ) : (
+          <ArrowLeft className="h-4 w-4" />
+        )}
+        <span className="sr-only">{t("common.previousSlide")}</span>
+      </CarouselPrevious>
+      <CarouselNext
+        className={`z-10 bg-card/95 shadow-md hover:bg-card ${
+          isRTL ? "left-2 right-auto md:-left-4" : "right-2 left-auto md:-right-4"
+        }`}
+      >
+        {isRTL ? (
+          <ArrowLeft className="h-4 w-4" />
+        ) : (
+          <ArrowRight className="h-4 w-4" />
+        )}
+        <span className="sr-only">{t("common.nextSlide")}</span>
+      </CarouselNext>
+    </Carousel>
+  );
+}

@@ -81,7 +81,7 @@ Each section should:
 
 The homepage includes a condensed blog showcase below the category sections.
 
-- Posts are fetched server-side in `app/[locale]/page.tsx` and passed to the client as initial data.
+- Posts are fetched server-side in `src/modules/home/page.tsx` and passed to the client as initial data through the thin `src/app/[locale]/page.tsx` route wrapper.
 - Rendered via `components/blog-section.tsx` / `blog-carousel.tsx`; reuse these rather than building a new list.
 - Use real API posts only (see `docs/frontend/blog.md`); never fabricate articles.
 - Keep it secondary to product discovery and link through to `/blog`.

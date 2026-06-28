@@ -12,6 +12,34 @@ const eslintConfig = defineConfig([
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "@/components/*",
+                "@/contexts/*",
+                "@/hooks/*",
+                "@/i18n/*",
+                "@/lib/*",
+              ],
+              message:
+                "Use the modular structure: import shared code from @/shared/* or feature code from @/modules/<feature>.",
+            },
+            {
+              group: [
+                "@/modules/*/components/*",
+                "@/modules/*/hooks/*",
+                "@/modules/*/lib/*",
+                "@/modules/*/types",
+              ],
+              message:
+                "Do not import module internals from outside the module. Use the module barrel, e.g. @/modules/products.",
+            },
+          ],
+        },
+      ],
     },
   },
   {

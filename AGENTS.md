@@ -17,15 +17,16 @@ Before making code changes, read the relevant guide indexes, then open only the 
 
 - This is **Houshang Flowers**, a `fa`/`en` multilingual flower-shop storefront. More locales may be added later.
 - Current surfaces: home, products listing, product detail, blog (list + post), about, contact, cart, and checkout.
-- Product, category, blog, and FAQ content is API-backed. Cart, favorites, and order history are **client-side localStorage state** (`contexts/`); the account panel and checkout run on that local state. Checkout payment is a **simulated demo flow** with no backend submission.
+- Product, category, blog, and FAQ content is API-backed. Cart, favorites, and order history are **client-side localStorage state** in `src/modules/cart` and `src/modules/account`; the account panel and checkout run on that local state. Checkout payment is a **simulated demo flow** with no backend submission.
 - The Laravel backend API lives at `https://github.com/misaf/vendra`. Treat it as the source of truth for API contracts.
-- Use App Router conventions under `app/[locale]/`. Preserve locale-aware routing and Persian RTL support.
+- Use App Router conventions under `src/app/[locale]/`. Preserve locale-aware routing and Persian RTL support.
 - For the `fa` locale, use BYekan as the primary Persian UI font.
 
 ### Development
 
 - Reuse existing components, hooks, API utilities, mappers, and design patterns before creating new ones.
-- Use shadcn/ui and `components/ui/` primitives as the default foundation for all interactive surfaces.
+- Use shadcn/ui and `src/shared/components/ui/` primitives as the default foundation for all interactive surfaces.
+- Keep feature code under `src/modules/<feature>/`. Code outside a module should import from that module's `index.ts` public barrel, not from its `components/`, `hooks/`, `lib/`, or `types.ts` internals.
 - Do not invent backend routes, API fields, or fake data when real API data exists.
 - For user-visible text, update both `messages/en.json` and `messages/fa.json` unless there is a clear locale-specific reason.
 - Keep changes scoped to the user's request. Do not introduce unrelated refactors.

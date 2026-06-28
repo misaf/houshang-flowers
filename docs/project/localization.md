@@ -24,8 +24,8 @@ Examples:
 
 Guidelines:
 
-- Route files live under `app/[locale]/`.
-- Prefer navigation helpers from `@/i18n/navigation`.
+- Route files live under `src/app/[locale]/`.
+- Prefer navigation helpers from `@/shared/i18n/navigation`.
 - Use locale-independent route paths (for example `/products`) when generating links.
 - Use raw Next.js navigation APIs only when absolutely necessary.
 
@@ -35,7 +35,7 @@ Guidelines:
 
 When introducing a new locale, update all required localization resources, including:
 
-- `i18n/routing.ts`
+- `src/shared/i18n/routing.ts`
 - `messages/{locale}.json`
 - Layout metadata
 - Locale-aware formatting helpers
