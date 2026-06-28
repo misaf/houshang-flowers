@@ -1,7 +1,0 @@
-# Local development only.
-# Disables TLS certificate verification for backend requests made by the
-# Next.js app container. Do not use this override in production.
-services:
-  app:
-    environment:
-      NODE_TLS_REJECT_UNAUTHORIZED: "0"

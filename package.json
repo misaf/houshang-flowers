@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "node --use-system-ca ./node_modules/next/dist/bin/next dev",
-    "dev:https": "node server.js",
-    "generate-cert": "node generate-cert.js",
     "build": "NODE_OPTIONS=--use-system-ca next build",
     "start": "node --use-system-ca ./node_modules/next/dist/bin/next start",
     "lint": "eslint",

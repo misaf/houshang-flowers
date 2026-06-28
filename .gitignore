@@ -19,7 +19,6 @@
 /.next/
 /.pnp
 /build
-/certificates
 /coverage
 /node_modules
 /out/
