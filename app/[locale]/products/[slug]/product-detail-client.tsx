@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -144,22 +151,29 @@ export default function ProductDetailClient({
         <>
 	          <section className="bg-background pb-12 pt-32 dark:bg-background sm:pb-14 sm:pt-36">
 	            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-		              <div className="relative z-10 mb-6 flex flex-wrap items-center gap-2 text-sm">
-	                  <Link
-	                    href="/products"
-	                    className="text-muted-foreground transition-colors hover:text-foreground hover:underline"
-	                  >
-	                    {t("common.products")}
-	                  </Link>
-		                {product.category ? (
-		                  <>
-		                    <span className="text-muted-foreground">/</span>
-		                    <span className="font-semibold text-primary">
-		                      {product.category}
-		                    </span>
-		                  </>
-		                ) : null}
-		              </div>
+		              <nav
+		                aria-label={t("products.breadcrumb") || "Breadcrumb"}
+		                className="relative z-10 mb-6 text-sm"
+		              >
+		                <ol className="flex flex-wrap items-center gap-2">
+		                  <li>
+		                    <Link
+		                      href="/products"
+		                      className="rounded-sm text-muted-foreground outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+		                    >
+		                      {t("common.products")}
+		                    </Link>
+		                  </li>
+		                  {product.category ? (
+		                    <li className="flex items-center gap-2">
+		                      <span className="text-muted-foreground" aria-hidden="true">/</span>
+		                      <span className="font-semibold text-primary" aria-current="page">
+		                        {product.category}
+		                      </span>
+		                    </li>
+		                  ) : null}
+		                </ol>
+		              </nav>
 
 	              <Card className="grid gap-0 overflow-hidden rounded-lg border-border bg-card p-0 shadow-xl shadow-storefront-brand/5 lg:grid-cols-2">
 	                <div className="p-3 sm:p-4">
@@ -233,6 +247,7 @@ export default function ProductDetailClient({
                     <button
                       type="button"
                       onClick={() => toggleFavorite(product)}
+                      aria-pressed={productIsFavorite}
                       aria-label={
                         productIsFavorite
                           ? t("common.removeFromFavorites") || "Remove from favorites"
@@ -540,10 +555,18 @@ export default function ProductDetailClient({
 	                  </CarouselNext>
 	                </Carousel>
 	              ) : (
-                <div className="rounded-2xl border border-dashed border-border p-8 text-center text-muted-foreground">
-                  <Package className="mx-auto mb-3 h-6 w-6" />
-                  {t("products.noProducts") || "No products found"}
-                </div>
+                <Empty className="py-10">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Package className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("products.noProducts") || "No products found"}</EmptyTitle>
+                    <EmptyDescription>
+                      {t("products.noProductsInCategory") ||
+                        "There are no products available in this category."}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
               )}
             </div>
           </section>

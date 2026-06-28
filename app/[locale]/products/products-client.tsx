@@ -2,7 +2,6 @@
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
-import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
@@ -568,7 +567,7 @@ export default function ProductsClient({
                         className={cn(
                           "inline-flex min-h-8 shrink-0 items-center rounded-full border px-3 text-xs font-semibold transition-colors sm:min-h-0 sm:rounded-none sm:border-0 sm:px-0",
                           isActive
-                            ? "border-primary/25 bg-storefront-brand-soft text-primary sm:bg-transparent"
+                            ? "border-primary/25 bg-storefront-brand-soft text-primary sm:bg-transparent sm:font-bold sm:underline sm:decoration-2 sm:underline-offset-4"
                             : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary sm:bg-transparent"
                         )}
                       >
@@ -592,7 +591,10 @@ export default function ProductsClient({
           {error && (
             <Alert variant="destructive" className="mb-8">
               <AlertDescription>
-                <p>{error}</p>
+                <p>
+                  {t("products.loadError") ||
+                    "We couldn't load the products just now. Please check your connection and try again."}
+                </p>
                 <Button
                   variant="outline"
                   className="mt-4"
@@ -605,20 +607,21 @@ export default function ProductsClient({
           )}
 
           {loading ? (
-            <div className="grid grid-cols-2 gap-2 sm:gap-4 xl:grid-cols-4">
-              {[...Array(6)].map((_, i) => (
-                <Card key={i} className="overflow-hidden">
-                  <Skeleton className="aspect-[5/4] w-full" />
-                  <CardHeader>
+            <div className="grid grid-cols-2 items-stretch gap-px bg-border sm:grid-cols-2 xl:grid-cols-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex h-full flex-col bg-card">
+                  <div className="aspect-square sm:aspect-[4/5]">
+                    <Skeleton className="h-full w-full rounded-none" />
+                  </div>
+                  <div className="flex min-h-24 flex-1 flex-col gap-2 px-3 pb-2 pt-3 sm:px-4 sm:pt-4">
+                    <Skeleton className="h-5 w-16 rounded-full" />
+                    <Skeleton className="mt-1 h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                  <div className="flex justify-end px-3 pb-3 pt-2 sm:px-4 sm:pb-4">
                     <Skeleton className="h-4 w-20" />
-                    <Skeleton className="mt-2 h-6 w-full" />
-                    <Skeleton className="mt-2 h-4 w-3/4" />
-                  </CardHeader>
-                  <CardFooter className="flex items-center justify-between">
-                    <Skeleton className="h-8 w-24" />
-                    <Skeleton className="h-10 w-32" />
-                  </CardFooter>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           ) : products.length === 0 ? (
@@ -678,7 +681,10 @@ export default function ProductsClient({
                         className="absolute inset-x-0 top-0 z-10 h-0.5 origin-center scale-x-0 bg-foreground transition-transform duration-300 group-hover:scale-x-100"
                       />
                       <div className="relative aspect-square overflow-hidden bg-card sm:aspect-[4/5]">
-                        <Link href={detailHref} className="block h-full w-full">
+                        <Link
+                          href={detailHref}
+                          className="block h-full w-full rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                        >
                           {hasImageError ? (
                             <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-card text-muted-foreground">
                               <span className="flex size-14 items-center justify-center rounded-full bg-background/75 shadow-sm ring-1 ring-border">
@@ -716,7 +722,7 @@ export default function ProductsClient({
 	                        <h3 className="line-clamp-2 min-h-10 text-xs font-semibold leading-5 sm:text-sm">
                           <Link
                             href={detailHref}
-                            className="flex items-start gap-2 transition-colors hover:text-foreground/70"
+                            className="flex items-start gap-2 rounded-sm outline-none transition-colors hover:text-foreground/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                           >
                             <span className="petal-dot mt-1.5" aria-hidden="true" />
                             <span className="min-w-0">{product.name}</span>
@@ -748,15 +754,29 @@ export default function ProductsClient({
                 })}
               </div>
 
-              <div ref={observerTarget} className="h-10" />
-              {loadingMore && (
+              {/* Infinite scroll sentinel (progressive enhancement) */}
+              <div ref={observerTarget} className="h-px" aria-hidden="true" />
+              {loadingMore ? (
                 <div className="mt-8 flex items-center justify-center">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   <span className="ms-2 text-sm text-muted-foreground">
                     {t("products.loadingMore") || "Loading more products..."}
                   </span>
                 </div>
-              )}
+              ) : hasMore ? (
+                // Manual fallback so keyboard/screen-reader users can advance
+                // and everyone can reach the footer past the grid.
+                <div className="mt-8 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      loadProducts((pagination?.currentPage ?? 1) + 1, false)
+                    }
+                  >
+                    {t("products.loadMore") || "Load more products"}
+                  </Button>
+                </div>
+              ) : null}
               {!hasMore && products.length > 0 && (
                 <div className="mt-8 text-center">
                   <p className="text-sm text-muted-foreground">
