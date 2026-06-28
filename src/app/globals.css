@@ -139,7 +139,7 @@
   }
 }
 
-/* fa locale → BYekan for every text node, including elements that opt into
+/* fa locale → Vazirmatn for every text node, including elements that opt into
    the Latin font-sans / font-mono / font-display utilities. Unlayered so it
    outranks Tailwind's utility layer. */
 .locale-fa,
@@ -148,7 +148,7 @@
 .locale-fa .font-display {
   font-family: var(--font-persian);
 }
-/* Persian display: BYekan at its heaviest, never the grotesque */
+/* Persian display: Vazirmatn at its heaviest, never the grotesque */
 .locale-fa .font-display {
   letter-spacing: 0;
   font-weight: 800;
