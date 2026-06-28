@@ -6,9 +6,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-cardo), ui-serif, Georgia, Cambria, "Times New Roman", serif;
-  --font-mono: var(--font-cardo), ui-serif, Georgia, Cambria, "Times New Roman", serif;
-  --font-display: var(--font-cardo), ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   /* Golzār bloom spectrum — the rotating field palette (consumed via var()) */
   --color-rose: var(--rose);
   --color-marigold: var(--marigold);
@@ -122,14 +122,14 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: var(--font-cardo), serif;
+    font-family: var(--font-geist), sans-serif;
     /* monochrome canvas — plain porcelain, colour reserved for focus + the footer seam */
   }
   .locale-fa {
     line-height: 1.85;
   }
   .locale-en {
-    font-family: var(--font-cardo), serif;
+    font-family: var(--font-geist), sans-serif;
   }
   .font-display {
     font-family: var(--font-display);
