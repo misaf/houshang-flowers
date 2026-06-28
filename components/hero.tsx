@@ -37,10 +37,22 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
     { token: "var(--leaf)", label: t("home.colorLeaf") },
   ];
 
+  const heroMobile = t("home.heroMobile");
+  const heroOffice = t("home.heroOffice");
   const contactItems = [
     { icon: MapPin, value: t("home.heroAddress") },
-    { icon: Smartphone, value: t("home.heroMobile"), dir: "ltr" as const },
-    { icon: Phone, value: t("home.heroOffice"), dir: "ltr" as const },
+    {
+      icon: Smartphone,
+      value: heroMobile,
+      dir: "ltr" as const,
+      href: `tel:${heroMobile.replace(/[^\d+]/g, "")}`,
+    },
+    {
+      icon: Phone,
+      value: heroOffice,
+      dir: "ltr" as const,
+      href: `tel:${heroOffice.replace(/[^\d+]/g, "")}`,
+    },
   ];
   const socialLinks = [
     {
@@ -145,15 +157,29 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
           >
             {contactItems.map((item) => {
               const Icon = item.icon;
-              return (
-                <span
-                  key={item.value}
-                  className="flex items-center gap-2 text-sm text-muted-foreground"
-                >
+              const inner = (
+                <>
                   <Icon className="size-4 shrink-0 text-muted-foreground" />
                   <span dir={item.dir} className="truncate">
                     {item.value}
                   </span>
+                </>
+              );
+
+              return item.href ? (
+                <a
+                  key={item.value}
+                  href={item.href}
+                  className="flex items-center gap-2 rounded-sm text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {inner}
+                </a>
+              ) : (
+                <span
+                  key={item.value}
+                  className="flex items-center gap-2 text-sm text-muted-foreground"
+                >
+                  {inner}
                 </span>
               );
             })}

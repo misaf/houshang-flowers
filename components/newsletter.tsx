@@ -80,6 +80,7 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
                     <Input
                       type="email"
                       placeholder={t("newsletter.emailPlaceholder") || "Enter your email"}
+                      aria-label={t("newsletter.emailPlaceholder") || "Enter your email"}
                       className="min-w-0 border-border bg-card/80"
                       suppressHydrationWarning
                       {...field}
@@ -105,12 +106,12 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
           </form>
         </Form>
         {error && (
-          <Alert variant="destructive" className="mt-2">
+          <Alert variant="destructive" role="alert" className="mt-2">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         {isSubmitted && (
-          <Alert className="mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary">
+          <Alert role="status" aria-live="polite" className="mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary">
             <CheckCircle2 className="h-4 w-4" />
             <AlertDescription>
               {t("newsletter.success") || "Thank you for subscribing!"}
@@ -167,6 +168,7 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
                           <Input
                             type="email"
                             placeholder={t("newsletter.emailPlaceholder") || "Enter your email address"}
+                            aria-label={t("newsletter.emailPlaceholder") || "Enter your email address"}
                             className="h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card"
                             suppressHydrationWarning
                             {...field}
@@ -204,13 +206,13 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
             </Form>
 
             {error && (
-              <Alert variant="destructive" className="mt-4">
+              <Alert variant="destructive" role="alert" className="mt-4">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             {isSubmitted && (
-              <Alert className="mt-4 border-border bg-secondary text-foreground">
+              <Alert role="status" aria-live="polite" className="mt-4 border-border bg-secondary text-foreground">
                 <CheckCircle2 className="h-4 w-4" />
                 <AlertDescription>
                   {t("newsletter.success") || "Thank you for subscribing! Check your email for confirmation."}

@@ -42,10 +42,14 @@ function SectionLabel({
   onDark?: boolean;
   centered?: boolean;
 }) {
+  // On the dark brand bands, ink-coloured `--primary` collapses into the
+  // background (light mode); use the band's light foreground token instead.
   const tone = onDark
-    ? "text-primary"
-    : "text-primary dark:text-primary";
-  const rule = onDark ? "bg-primary" : "bg-primary";
+    ? "text-storefront-brand-foreground dark:text-primary"
+    : "text-primary";
+  const rule = onDark
+    ? "bg-storefront-brand-foreground/60 dark:bg-primary"
+    : "bg-primary";
 
   return (
     <p className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] ${centered ? "justify-center" : ""} ${tone}`}>

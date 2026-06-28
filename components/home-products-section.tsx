@@ -2,10 +2,18 @@
 
 import { Link } from "@/i18n/navigation";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, ImageOff } from "lucide-react";
+import { ArrowLeft, ArrowRight, Flower2, ImageOff } from "lucide-react";
 import { ThemedProductImage } from "@/components/themed-product-image";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
@@ -64,7 +72,10 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
       </div>
 
       <div className="relative mt-2 aspect-square overflow-hidden bg-secondary/50 sm:aspect-[5/6] lg:mt-3 lg:aspect-[4/5]">
-        <Link href={detailHref} className="block h-full w-full">
+        <Link
+          href={detailHref}
+          className="block h-full w-full rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        >
           {hasImageError ? (
             <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-card text-muted-foreground">
               <span className="flex size-10 items-center justify-center rounded-full bg-background/75 shadow-sm ring-1 ring-border sm:size-12">
@@ -93,7 +104,7 @@ function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
         <h3 className="line-clamp-2 min-h-9 text-xs font-semibold leading-[1.35] sm:text-sm sm:leading-5 lg:min-h-10">
           <Link
             href={detailHref}
-            className="flex items-start gap-2 transition-colors hover:text-foreground/70"
+            className="flex items-start gap-2 rounded-sm outline-none transition-colors hover:text-foreground/70 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <span className="petal-dot mt-1 size-2 lg:mt-1.5 lg:size-2.5" aria-hidden="true" />
             <span className="min-w-0">{product.name}</span>
@@ -203,9 +214,9 @@ function ProductCategorySectionHeader({
           <span className="petal-dot" aria-hidden="true" />
           <span className="golzar-swatch-bar" aria-hidden="true" />
         </span>
-        <h3 className="font-display truncate text-4xl leading-[1.05] text-foreground sm:text-5xl">
+        <h2 className="font-display truncate text-4xl leading-[1.05] text-foreground sm:text-5xl">
           {category.title}
-        </h3>
+        </h2>
         {category.description ? (
           <p className="mt-3 line-clamp-1 max-w-xl text-sm text-muted-foreground">
             {category.description}
@@ -275,9 +286,28 @@ export function HomeProductsSection({
           <ProductCategorySkeleton />
         </div>
       ) : categories.length === 0 ? (
-        <p className="mx-auto max-w-7xl px-4 py-10 text-sm text-muted-foreground sm:px-6 sm:py-14 lg:px-8">
-          {t("products.noProducts") || "No products found"}
-        </p>
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Flower2 className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>{t("products.noProducts") || "No products found"}</EmptyTitle>
+              <EmptyDescription>
+                {t("products.noProductsInCategory") ||
+                  "There are no products available right now. Check back soon."}
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button asChild className="gap-2">
+                <Link href="/products">
+                  {t("common.shopNow") || "Shop Now"}
+                  <ArrowIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+            </EmptyContent>
+          </Empty>
+        </div>
       ) : (
         <div className="storefront-product-sections">
           {categories.map((category) => (

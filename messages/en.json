@@ -369,7 +369,7 @@
     "subscribe": "Subscribe",
     "subscribing": "Subscribing...",
     "subscribed": "Subscribed!",
-    "success": "Thank you for subscribing! Check your email for confirmation.",
+    "success": "Thank you for subscribing! We'll be in touch.",
     "error": "Failed to subscribe. Please try again."
   }
 }
