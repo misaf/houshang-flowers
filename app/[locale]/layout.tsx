@@ -122,7 +122,9 @@ export default async function LocaleLayout({
                   <OrderProvider>
                     {children}
                     <Cart />
-                    <Toaster />
+                    <Toaster
+                      position={direction === "rtl" ? "bottom-left" : "bottom-right"}
+                    />
                   </OrderProvider>
                 </FavoritesProvider>
               </CartProvider>
