@@ -12,6 +12,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Link } from "@/i18n/navigation";
 import { Heart, Package, User, Trash2, ShoppingBag, Calendar } from "lucide-react";
 import { useTranslations } from "@/hooks/use-translations";
@@ -79,20 +87,24 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
             {/* Favorites Tab */}
             <TabsContent value="favorites" className="mt-4">
               {favorites.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Heart className="mb-4 h-16 w-16 text-muted-foreground" />
-                  <p className="text-lg font-medium text-foreground">
-                    {t("common.emptyFavorites")}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {t("common.addSomeFavorites")}
-                  </p>
-                  <Button asChild className="mt-4">
-                    <Link href="/products" onClick={() => onOpenChange(false)}>
-                      {t("common.shopNow")}
-                    </Link>
-                  </Button>
-                </div>
+                <Empty className="py-12">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Heart className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("common.emptyFavorites")}</EmptyTitle>
+                    <EmptyDescription>
+                      {t("common.addSomeFavorites")}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button asChild>
+                      <Link href="/products" onClick={() => onOpenChange(false)}>
+                        {t("common.shopNow")}
+                      </Link>
+                    </Button>
+                  </EmptyContent>
+                </Empty>
               ) : (
                 <div className="space-y-4">
                   {favorites.map((item) => (
@@ -163,20 +175,24 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
             {/* Order History Tab */}
             <TabsContent value="orders" className="mt-4">
               {orders.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Package className="mb-4 h-16 w-16 text-muted-foreground" />
-                  <p className="text-lg font-medium text-foreground">
-                    {t("common.emptyOrders")}
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {t("common.startShopping")}
-                  </p>
-                  <Button asChild className="mt-4">
-                    <Link href="/products" onClick={() => onOpenChange(false)}>
-                      {t("common.shopNow")}
-                    </Link>
-                  </Button>
-                </div>
+                <Empty className="py-12">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Package className="h-6 w-6" />
+                    </EmptyMedia>
+                    <EmptyTitle>{t("common.emptyOrders")}</EmptyTitle>
+                    <EmptyDescription>
+                      {t("common.startShopping")}
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button asChild>
+                      <Link href="/products" onClick={() => onOpenChange(false)}>
+                        {t("common.shopNow")}
+                      </Link>
+                    </Button>
+                  </EmptyContent>
+                </Empty>
               ) : (
                 <div className="space-y-4">
                   {orders.map((order) => (
@@ -258,7 +274,7 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
                       <User className="h-10 w-10 text-muted-foreground" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Profile settings coming soon
+                      {t("common.profileComingSoon")}
                     </p>
                   </div>
                 </CardContent>

@@ -7,7 +7,6 @@ import { Newsletter } from "@/components/newsletter";
 import { Flower2, ShieldCheck } from "lucide-react";
 
 const linkClassName = "text-sm text-muted-foreground transition-colors hover:text-primary";
-const mutedTextClassName = "text-sm text-muted-foreground/75";
 
 interface FooterProps {
   showNewsletter?: boolean;
@@ -102,7 +101,7 @@ export function Footer({ showNewsletter = true }: FooterProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
             <div>
               <h3 className="text-sm font-bold text-foreground">
               {t("footer.company")}
@@ -117,11 +116,6 @@ export function Footer({ showNewsletter = true }: FooterProps) {
                   <Link href="/blog" className={linkClassName}>
                     {t("blog.title")}
                   </Link>
-                </li>
-                <li>
-                  <span className={mutedTextClassName}>
-                    {t("footer.careers")}
-                  </span>
                 </li>
                 <li>
                   <Link href="/contact" className={linkClassName}>
@@ -141,33 +135,6 @@ export function Footer({ showNewsletter = true }: FooterProps) {
                   </Link>
                 </li>
                 <li>
-                  <span className={mutedTextClassName}>
-                    {t("footer.newArrivals")}
-                  </span>
-                </li>
-                <li>
-                  <span className={mutedTextClassName}>
-                    {t("footer.sale")}
-                  </span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-foreground">
-                {t("footer.support")}
-              </h3>
-              <ul className="mt-4 space-y-2">
-                <li>
-                  <span className={mutedTextClassName}>
-                    {t("footer.shipping")}
-                  </span>
-                </li>
-                <li>
-                  <span className={mutedTextClassName}>
-                    {t("footer.returns")}
-                  </span>
-                </li>
-                <li>
                   <Link href="/faq" className={linkClassName}>
                     {t("footer.faq")}
                   </Link>
@@ -180,19 +147,37 @@ export function Footer({ showNewsletter = true }: FooterProps) {
               </h3>
               <ul className="mt-4 space-y-2">
                 <li>
-                  <span className={mutedTextClassName}>
+                  <a
+                    href="https://www.instagram.com/houshangflower"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={t("home.heroInstagramLabel")}
+                    className={linkClassName}
+                  >
                     Instagram
-                  </span>
+                  </a>
                 </li>
                 <li>
-                  <span className={mutedTextClassName}>
-                    Twitter
-                  </span>
+                  <a
+                    href="https://t.me/houshangflowers"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={t("home.heroTelegramLabel")}
+                    className={linkClassName}
+                  >
+                    Telegram
+                  </a>
                 </li>
                 <li>
-                  <span className={mutedTextClassName}>
-                    Facebook
-                  </span>
+                  <a
+                    href="https://wa.me/+989129333034"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={t("home.heroWhatsAppLabel")}
+                    className={linkClassName}
+                  >
+                    WhatsApp
+                  </a>
                 </li>
               </ul>
             </div>
@@ -206,7 +191,7 @@ export function Footer({ showNewsletter = true }: FooterProps) {
           />
           {showEnamadFallback ? (
             <p className="mb-3 text-center text-xs text-muted-foreground">
-              نماد اعتماد در حال بارگذاری نیست. لطفا فیلترشکن یا افزونه مسدودکننده را بررسی کنید.
+              {t("footer.enamadFallback")}
             </p>
           ) : null}
           <p className="text-center text-sm text-muted-foreground">

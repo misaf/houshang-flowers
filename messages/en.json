@@ -52,6 +52,7 @@
     "favorites": "Favorites",
     "orderHistory": "Order History",
     "profile": "Profile",
+    "profileComingSoon": "Profile settings coming soon",
     "myAccount": "My Account",
     "emptyFavorites": "Your favorites list is empty",
     "addSomeFavorites": "Add some products to your favorites",
@@ -299,6 +300,7 @@
     "returns": "Returns",
     "faq": "FAQ",
     "connect": "Connect",
+    "enamadFallback": "The trust seal isn't loading. Please check your VPN or any ad-blocking extension.",
     "copyright": "© 2024 Houshang Flowers. All rights reserved."
   },
   "search": {

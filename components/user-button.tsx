@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { UserPanel } from "./user-panel";
 import { User } from "lucide-react";
+import { useTranslations } from "@/hooks/use-translations";
 
 export function UserButton() {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslations();
 
   return (
     <>
@@ -14,7 +16,7 @@ export function UserButton() {
         variant="ghost"
         size="icon"
         onClick={() => setOpen(true)}
-        aria-label="User Panel"
+        aria-label={t("common.myAccount")}
       >
         <User className="h-5 w-5" />
       </Button>
