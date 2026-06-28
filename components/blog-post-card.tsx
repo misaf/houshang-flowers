@@ -37,7 +37,10 @@ export function BlogPostCard({
   const ArrowIcon = ["fa", "ar", "he"].includes(locale) ? ArrowLeft : ArrowRight;
 
   return (
-    <Link href={`/blog/${createReadableResourcePath(post.id, post.slug)}`}>
+    <Link
+      href={`/blog/${createReadableResourcePath(post.id, post.slug)}`}
+      className="block rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+    >
       <Card
         className={cn(
           "group relative flex h-full flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1",
@@ -81,8 +84,10 @@ export function BlogPostCard({
         <CardHeader className={cn("flex-1", compact ? "gap-1 px-0.5 py-0" : "px-5")}>
           {showDate ? (
             <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              {formatDate(post.publishedAt || post.createdAt)}
+              <Calendar className="h-4 w-4" aria-hidden="true" />
+              <time dateTime={post.publishedAt || post.createdAt}>
+                {formatDate(post.publishedAt || post.createdAt)}
+              </time>
             </div>
           ) : null}
           <CardTitle

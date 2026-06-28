@@ -180,11 +180,13 @@ export default async function BlogPostDetail({
               </h1>
 
               <div className="mt-5 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
-                <Calendar className="h-3.5 w-3.5" />
-                {formatLocaleDate(
-                  post.publishedAt || post.createdAt,
-                  locale as Locale
-                )}
+                <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+                <time dateTime={post.publishedAt || post.createdAt}>
+                  {formatLocaleDate(
+                    post.publishedAt || post.createdAt,
+                    locale as Locale
+                  )}
+                </time>
               </div>
             </div>
           </header>

@@ -22,7 +22,7 @@ export function FeaturedBlogPostCard({
   return (
     <Link
       href={`/blog/${createReadableResourcePath(post.id, post.slug)}`}
-      className="group relative block h-full min-h-72 overflow-hidden rounded-2xl ring-1 ring-white/10"
+      className="group relative block h-full min-h-72 overflow-hidden rounded-2xl ring-1 ring-white/10 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       {hasImageError ? (
         <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-storefront-brand/40 text-storefront-brand-foreground">

@@ -5,6 +5,7 @@ import { PageShell } from "@/components/layout/page-shell";
 import { BlogPostCard } from "@/components/blog-post-card";
 import { Link } from "@/i18n/navigation";
 import { Card, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/components/ui/empty";
@@ -38,12 +39,14 @@ function FeaturedPost({
   post,
   metaText,
   dateText,
+  dateValue,
   readMoreText,
   isRtl,
 }: {
   post: BlogPost;
   metaText: string;
   dateText: string;
+  dateValue: string;
   readMoreText: string;
   isRtl: boolean;
 }) {
@@ -97,8 +100,8 @@ function FeaturedPost({
           ) : null}
 
           <div className="mt-5 flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-            <Calendar className="h-3.5 w-3.5" />
-            {dateText}
+            <Calendar className="h-3.5 w-3.5" aria-hidden="true" />
+            <time dateTime={dateValue}>{dateText}</time>
           </div>
 
           <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
@@ -311,14 +314,20 @@ export default function BlogPostsClient({
               role="search"
               className="relative w-full lg:max-w-xs"
             >
-              <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <button
+                type="submit"
+                aria-label={t("blog.searchAction") || "Search"}
+                className="absolute start-1 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Search className="h-4 w-4" aria-hidden="true" />
+              </button>
               <Input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 aria-label={t("blog.searchPlaceholder") || "Search the journal"}
                 placeholder={t("blog.searchPlaceholder") || "Search the journal"}
-                className="h-11 rounded-full bg-card ps-9 pe-4"
+                className="h-11 rounded-full bg-card ps-11 pe-4"
               />
             </form>
           </div>
@@ -329,7 +338,7 @@ export default function BlogPostsClient({
               aria-label={t("blog.browseBy") || "Browse by topic"}
               className="mt-10"
             >
-              <div className="-mx-1 flex items-stretch gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="-mx-1 flex items-stretch gap-1 overflow-x-auto px-1 [mask-image:linear-gradient(to_right,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {ledgerItems.map((item) => {
                   const isActive = selectedCategory === item.value;
 
@@ -400,7 +409,10 @@ export default function BlogPostsClient({
             {error && (
               <Alert variant="destructive" className="mb-8">
                 <AlertDescription>
-                  <p>{error}</p>
+                  <p>
+                    {t("blog.loadError") ||
+                      "We couldn't load the journal just now. Please check your connection and try again."}
+                  </p>
                   <button
                     className="mt-4 text-sm underline"
                     onClick={() => {
@@ -415,18 +427,33 @@ export default function BlogPostsClient({
             )}
 
             {loading ? (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {[...Array(6)].map((_, i) => (
-                  <Card key={i} className="overflow-hidden">
-                    <Skeleton className="aspect-video w-full" />
-                    <CardHeader>
-                      <Skeleton className="h-4 w-20" />
-                      <Skeleton className="mt-2 h-6 w-full" />
-                      <Skeleton className="mt-2 h-4 w-3/4" />
-                    </CardHeader>
-                  </Card>
-                ))}
-              </div>
+              <>
+                {!searchQuery && (
+                  <div className="mb-12 border-b border-border pb-12 sm:mb-14 sm:pb-14">
+                    <div className="grid gap-6 lg:grid-cols-12 lg:items-center lg:gap-10">
+                      <Skeleton className="aspect-[16/10] w-full rounded-2xl lg:col-span-7" />
+                      <div className="lg:col-span-5">
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="mt-4 h-10 w-full" />
+                        <Skeleton className="mt-3 h-10 w-3/4" />
+                        <Skeleton className="mt-5 h-4 w-40" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {[...Array(6)].map((_, i) => (
+                    <Card key={i} className="overflow-hidden">
+                      <Skeleton className="aspect-video w-full" />
+                      <CardHeader>
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="mt-2 h-6 w-full" />
+                        <Skeleton className="mt-2 h-4 w-3/4" />
+                      </CardHeader>
+                    </Card>
+                  ))}
+                </div>
+              </>
             ) : posts.length === 0 ? (
               <Empty className="py-12">
                 <EmptyHeader>
@@ -436,10 +463,16 @@ export default function BlogPostsClient({
                   <EmptyTitle>{t("blog.noPosts") || "No posts found"}</EmptyTitle>
                   <EmptyDescription>
                     {searchQuery
-                      ? `We couldn't find any posts matching "${searchQuery}". Try adjusting your search.`
-                      : "There are no blog posts available."}
+                      ? t("blog.noResultsDescription", { query: searchQuery })
+                      : t("blog.noPostsDescription") ||
+                        "There are no blog posts available yet. Check back soon."}
                   </EmptyDescription>
                 </EmptyHeader>
+                {searchQuery && (
+                  <Button onClick={handleClearSearch} variant="outline">
+                    {t("blog.clearSearch") || "Clear search"}
+                  </Button>
+                )}
               </Empty>
             ) : (
               <>
@@ -451,6 +484,7 @@ export default function BlogPostsClient({
                       dateText={formatDate(
                         featuredPost.publishedAt || featuredPost.createdAt
                       )}
+                      dateValue={featuredPost.publishedAt || featuredPost.createdAt}
                       readMoreText={t("blog.readMore") || "Read More"}
                       isRtl={isRtl}
                     />
@@ -470,16 +504,29 @@ export default function BlogPostsClient({
                   </div>
                 )}
 
-                {/* Infinite scroll sentinel and loading indicator */}
-                <div ref={observerTarget} className="h-10" />
-                {loadingMore && (
+                {/* Infinite scroll sentinel (progressive enhancement) */}
+                <div ref={observerTarget} className="h-px" aria-hidden="true" />
+                {loadingMore ? (
                   <div className="mt-8 flex items-center justify-center">
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     <span className="ms-2 text-sm text-muted-foreground">
                       {t("blog.loadingMore") || "Loading more posts..."}
                     </span>
                   </div>
-                )}
+                ) : hasMore ? (
+                  // Manual fallback so keyboard/screen-reader users can advance
+                  // and everyone can reach the footer past the feed.
+                  <div className="mt-8 flex justify-center">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        loadPosts((pagination?.currentPage ?? 1) + 1, false)
+                      }
+                    >
+                      {t("blog.loadMore") || "Load more posts"}
+                    </Button>
+                  </div>
+                ) : null}
                 {!hasMore && posts.length > 0 && (
                   <div className="mt-10">
                     <span className="golzar-seam mx-auto max-w-xs">
