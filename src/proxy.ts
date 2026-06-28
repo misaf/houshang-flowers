@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
-import { routing } from "./src/shared/i18n/routing";
+import { routing } from "./shared/i18n/routing";
 
-export default createMiddleware(routing);
+export const proxy = createMiddleware(routing);
 
 export const config = {
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
