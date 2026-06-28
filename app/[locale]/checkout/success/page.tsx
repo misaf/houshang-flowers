@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "@/hooks/use-translations";
 import { CheckCircle2 } from "lucide-react";
 
@@ -14,12 +14,14 @@ export default function CheckoutSuccess() {
     <PageShell showFooter={false}>
       {/* Success Content */}
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md" role="status" aria-live="polite">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-storefront-brand-soft">
               <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl">{t("checkout.successTitle")}</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none">
+              {t("checkout.successTitle")}
+            </h1>
             <CardDescription className="text-base">
               {t("checkout.successDescription")}
             </CardDescription>

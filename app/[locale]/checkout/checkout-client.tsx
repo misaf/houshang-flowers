@@ -13,7 +13,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrderContext";
 import { useTranslations } from "@/hooks/use-translations";
 import { formatLocalizedPrice } from "@/lib/utils";
-import { ShoppingBag, CreditCard, MapPin, ArrowRight, Loader2 } from "lucide-react";
+import { ShoppingBag, MapPin, ArrowRight, Loader2 } from "lucide-react";
 import { SafeImage } from "@/components/ui/safe-image";
 
 const SHIPPING_FEE = 10.0;
@@ -40,10 +40,6 @@ export default function CheckoutClient() {
     city: "",
     zipCode: "",
     country: "",
-    cardNumber: "",
-    cardName: "",
-    expiryDate: "",
-    cvv: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -55,7 +51,7 @@ export default function CheckoutClient() {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate payment processing
+    // Submit the order request (no online payment — handled offline/on contact)
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const { subtotal, shipping, tax, total } = getOrderTotals(getTotalPrice());
@@ -229,76 +225,6 @@ export default function CheckoutClient() {
                       autoComplete="country-name"
                       required
                       value={formData.country}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Payment Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-display flex items-center gap-3 text-xl">
-                  <span className="flex size-9 items-center justify-center rounded-full bg-secondary text-muted-foreground ring-1 ring-border">
-                    <CreditCard className="h-5 w-5" />
-                  </span>
-                  {t("checkout.paymentInformation")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cardNumber">{t("checkout.cardNumber")}</Label>
-                  <Input
-                    id="cardNumber"
-                    name="cardNumber"
-                    placeholder="1234 5678 9012 3456"
-                    autoComplete="cc-number"
-                    inputMode="numeric"
-                    required
-                    maxLength={19}
-                    value={formData.cardNumber}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cardName">{t("checkout.cardName")}</Label>
-                  <Input
-                    id="cardName"
-                    name="cardName"
-                    autoComplete="cc-name"
-                    required
-                    value={formData.cardName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="expiryDate">{t("checkout.expiryDate")}</Label>
-                    <Input
-                      id="expiryDate"
-                      name="expiryDate"
-                      placeholder="MM/YY"
-                      autoComplete="cc-exp"
-                      inputMode="numeric"
-                      required
-                      maxLength={5}
-                      value={formData.expiryDate}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cvv">{t("checkout.cvv")}</Label>
-                    <Input
-                      id="cvv"
-                      name="cvv"
-                      type="password"
-                      placeholder="123"
-                      autoComplete="cc-csc"
-                      inputMode="numeric"
-                      required
-                      maxLength={4}
-                      value={formData.cvv}
                       onChange={handleInputChange}
                     />
                   </div>
