@@ -111,7 +111,7 @@ export default async function LocaleLayout({
         <JsonLd data={[organizationSchema(locale), websiteSchema(locale)]} />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
