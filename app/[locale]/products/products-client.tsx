@@ -1,8 +1,4 @@
 "use client";
-import type { JSONContent } from "@tiptap/core";
-import { renderToReactElement } from "@tiptap/static-renderer/pm/react";
-import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
@@ -22,7 +18,6 @@ import { ThemedProductImage } from "@/components/themed-product-image";
 import { useTranslations } from "@/hooks/use-translations";
 import { useSearchParams } from "next/navigation";
 import {
-  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -46,6 +41,7 @@ import { useProductCategories } from "@/lib/api/products/queries";
 import type { Product } from "@/lib/api/products/types";
 import { createReadableResourcePath } from "@/lib/slug-url";
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/lib/utils";
+import { RichText, hasRichTextContent } from "@/components/rich-text";
 
 type SortValue = "newest" | "oldest" | "price-asc" | "price-desc";
 type EffectiveSortValue = SortValue | "api-order";
@@ -63,177 +59,18 @@ const SORT_OPTIONS: Array<{
 
 const CATEGORY_PAGE_SIZE = 10;
 
-const TIPTAP_RENDER_EXTENSIONS = [
-  StarterKit,
-  TextAlign.configure({
-    types: ["heading", "paragraph"],
-    alignments: ["start", "end", "left", "center", "right", "justify"],
-  }),
-];
-
-function isTiptapDocument(value: unknown): value is JSONContent {
-  return Boolean(
-    value &&
-      typeof value === "object" &&
-      "type" in value &&
-      (value as { type?: unknown }).type === "doc"
-  );
-}
-
-function hasRenderableRichText(value: unknown): boolean {
-  if (typeof value === "string") {
-    return value.trim().length > 0;
-  }
-
-  if (!isTiptapDocument(value)) {
-    return false;
-  }
-
-  return Array.isArray(value.content) && value.content.length > 0;
-}
-
-function renderInlineMarkdown(text: string): ReactNode[] {
-  const tokens: ReactNode[] = [];
-  const pattern = /(\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|\*\*([^*]+)\*\*|`([^`]+)`|\*([^*]+)\*)/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = pattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      tokens.push(text.slice(lastIndex, match.index));
-    }
-
-    if (match[2] && match[3]) {
-      tokens.push(
-        <a
-          key={`link-${match.index}`}
-          href={match[3]}
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-foreground underline underline-offset-4 hover:text-foreground/70"
-        >
-          {match[2]}
-        </a>
-      );
-    } else if (match[4]) {
-      tokens.push(
-        <strong key={`strong-${match.index}`} className="font-bold">
-          {match[4]}
-        </strong>
-      );
-    } else if (match[5]) {
-      tokens.push(
-        <code
-          key={`code-${match.index}`}
-          className="rounded bg-muted px-1 py-0.5 text-[0.9em]"
-        >
-          {match[5]}
-        </code>
-      );
-    } else if (match[6]) {
-      tokens.push(
-        <em key={`em-${match.index}`} className="italic">
-          {match[6]}
-        </em>
-      );
-    }
-
-    lastIndex = pattern.lastIndex;
-  }
-
-  if (lastIndex < text.length) {
-    tokens.push(text.slice(lastIndex));
-  }
-
-  return tokens;
-}
 
 function CategoryRichTextDescription({ content }: { content: unknown }) {
-  if (!hasRenderableRichText(content)) {
-    return null;
-  }
-
-  let richTextContent: ReactNode = null;
-
-  if (isTiptapDocument(content)) {
-    try {
-      richTextContent = renderToReactElement({
-        content,
-        extensions: TIPTAP_RENDER_EXTENSIONS,
-        staticEditorOptions: { textDirection: "auto" },
-      });
-    } catch {
-      richTextContent = null;
-    }
-  }
-
-  if (richTextContent) {
-    return (
-      <section className="mt-10 rounded-lg border border-border bg-card p-5 text-card-foreground shadow-sm shadow-storefront-brand/[0.03] sm:p-6">
-        <div className="space-y-4 text-sm leading-7 [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-primary/80 [&_blockquote]:border-s-2 [&_blockquote]:border-primary/30 [&_blockquote]:ps-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-card-foreground [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-card-foreground [&_ol]:list-inside [&_ol]:list-decimal [&_ul]:list-inside [&_ul]:list-disc">
-          {richTextContent}
-        </div>
-      </section>
-    );
-  }
-
-  if (typeof content !== "string") {
-    return null;
-  }
-
-  const blocks = content
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean);
-
-  if (blocks.length === 0) {
+  if (!hasRichTextContent(content)) {
     return null;
   }
 
   return (
     <section className="mt-10 rounded-lg border border-border bg-card p-5 text-card-foreground shadow-sm shadow-storefront-brand/[0.03] sm:p-6">
-      <div className="space-y-4 text-sm leading-7">
-        {blocks.map((block, index) => {
-          if (block.startsWith("### ")) {
-            return (
-              <h3
-                key={index}
-                className="text-base font-bold text-card-foreground"
-              >
-                {renderInlineMarkdown(block.slice(4))}
-              </h3>
-            );
-          }
-
-          if (block.startsWith("## ")) {
-            return (
-              <h2
-                key={index}
-                className="text-lg font-bold text-card-foreground"
-              >
-                {renderInlineMarkdown(block.slice(3))}
-              </h2>
-            );
-          }
-
-          const lines = block.split("\n").map((line) => line.trim());
-          const listItems = lines
-            .filter((line) => /^[-*]\s+/.test(line))
-            .map((line) => line.replace(/^[-*]\s+/, ""));
-
-          if (listItems.length === lines.length) {
-            return (
-              <ul key={index} className="list-inside list-disc space-y-1">
-                {listItems.map((item, itemIndex) => (
-                  <li key={itemIndex}>{renderInlineMarkdown(item)}</li>
-                ))}
-              </ul>
-            );
-          }
-
-          return <p key={index}>{renderInlineMarkdown(block)}</p>;
-        })}
-      </div>
+      <RichText
+        content={content}
+        className="space-y-4 text-sm leading-7 [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-primary/80 [&_blockquote]:border-s-2 [&_blockquote]:border-primary/30 [&_blockquote]:ps-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-card-foreground [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-card-foreground [&_img]:rounded-lg [&_ol]:list-inside [&_ol]:list-decimal [&_ul]:list-inside [&_ul]:list-disc"
+      />
     </section>
   );
 }
