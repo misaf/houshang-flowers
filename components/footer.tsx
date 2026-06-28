@@ -163,9 +163,9 @@ export function Footer({ showNewsletter = true }: FooterProps) {
                   </span>
                 </li>
                 <li>
-                  <span className={mutedTextClassName}>
+                  <Link href="/faq" className={linkClassName}>
                     {t("footer.faq")}
-                  </span>
+                  </Link>
                 </li>
               </ul>
             </div>

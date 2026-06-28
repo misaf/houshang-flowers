@@ -63,6 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/blog", { changeFrequency: "weekly", priority: 0.7, lastModified: now }),
     entry("/about", { changeFrequency: "monthly", priority: 0.5 }),
     entry("/contact", { changeFrequency: "monthly", priority: 0.5 }),
+    entry("/faq", { changeFrequency: "monthly", priority: 0.5 }),
   ];
 
   const [products, posts] = await Promise.all([

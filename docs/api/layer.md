@@ -63,11 +63,12 @@ Primary backend resources currently include:
 - `/blog-posts`
 - `/blog-post-categories`
 - `/faqs`
+- `/faq-categories`
 - `/multimedia`
 - `/transactions`
 - `/users`
 
-Resource modules surfaced in the UI today: `products`, `posts` (blog), and `faqs`. The `transactions` and `users` modules exist as scaffolding and are **not yet wired into any UI** — cart, account, and checkout currently run on client-side `localStorage` state (`contexts/`), and checkout is a demo flow. Do not assume a live transaction or auth integration without confirming it in the code or in Vendra.
+Resource modules surfaced in the UI today: `products`, `posts` (blog), and `faqs` (FAQ page + contact accordion; categories via `/faq-categories` and the `faqCategory` relationship). The `transactions` and `users` modules exist as scaffolding and are **not yet wired into any UI** — cart, account, and checkout currently run on client-side `localStorage` state (`contexts/`), and checkout is a demo flow. Do not assume a live transaction or auth integration without confirming it in the code or in Vendra.
 
 Only consume relationship routes that already exist in:
 

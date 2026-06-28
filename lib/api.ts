@@ -30,3 +30,15 @@ export type {
   Post,
   PostCategory,
 } from "@/lib/api/posts/types";
+
+export {
+  fetchFaqs,
+  fetchFaqCategories,
+  useFaqs,
+  useFaqCategories,
+} from "@/lib/api/faqs/queries";
+export type {
+  Faq,
+  FaqCategory,
+  FetchFaqsParams,
+} from "@/lib/api/faqs/types";

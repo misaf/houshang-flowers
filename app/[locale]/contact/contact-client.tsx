@@ -17,12 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "@/hooks/use-translations";
+import { Link } from "@/i18n/navigation";
 import type { ContactInfo } from "@/lib/config";
 import { useFaqs } from "@/lib/api/faqs/queries";
 import type { LucideIcon } from "lucide-react";
 import {
+  ArrowRight,
   ArrowUpRight,
   CalendarClock,
   CheckCircle2,
@@ -229,7 +232,26 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
 }
 
 function ContactFaqCard({ t }: { t: (key: string) => string }) {
-  const { data: faqs } = useFaqs({ perPage: 5 });
+  const { data: faqs, isPending } = useFaqs({ perPage: 5 });
+
+  // Secondary content: skeleton while loading, hide entirely on error/empty.
+  if (isPending) {
+    return (
+      <Card className="rounded-lg border-border bg-card shadow-sm">
+        <CardContent className="p-5">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="size-5 text-muted-foreground" />
+            <h2 className="text-lg font-semibold">{t("contact.faqTitle")}</h2>
+          </div>
+          <div className="mt-4 space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <Skeleton key={i} className="h-5 w-full" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!faqs || faqs.length === 0) {
     return null;
@@ -245,7 +267,7 @@ function ContactFaqCard({ t }: { t: (key: string) => string }) {
         <div className="mt-3 divide-y divide-border">
           {faqs.map((faq) => (
             <details key={faq.id} className="group py-3">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-sm text-sm font-medium text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <span>{faq.question}</span>
                 <ChevronDown className="size-4 shrink-0 text-muted-foreground motion-safe:transition-transform group-open:rotate-180" />
               </summary>
@@ -257,6 +279,13 @@ function ContactFaqCard({ t }: { t: (key: string) => string }) {
             </details>
           ))}
         </div>
+        <Link
+          href="/faq"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-sm text-sm font-medium text-foreground underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {t("contact.faqViewAll")}
+          <ArrowRight className="size-4 rtl:rotate-180" />
+        </Link>
       </CardContent>
     </Card>
   );

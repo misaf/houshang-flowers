@@ -27,8 +27,8 @@ import {
   ArrowRight,
   ChevronDown,
   Flower2,
+  HelpCircle,
   Home,
-  Info,
   Menu,
   Phone,
   ShoppingBag,
@@ -122,10 +122,10 @@ export function Header({ showNav = true }: HeaderProps) {
 
   const homeHref = "/";
   const productsHref = "/products";
-  const aboutHref = "/about";
+  const faqHref = "/faq";
   const contactHref = "/contact";
   const mobileSecondaryNavLinks = [
-    { href: aboutHref, label: t("common.about"), icon: Info },
+    { href: faqHref, label: t("common.faq"), icon: HelpCircle },
     { href: contactHref, label: t("common.contact"), icon: Phone },
   ];
   const featuredMobileCategories = apiCategories.slice(0, 3);
@@ -176,8 +176,8 @@ export function Header({ showNav = true }: HeaderProps) {
               <Suspense fallback={null}>
                 <CategoryMenu />
               </Suspense>
-              <NavLink href={aboutHref} isActive={isPathActive(pathname, aboutHref)} icon={Info}>
-                {t("common.about")}
+              <NavLink href={faqHref} isActive={isPathActive(pathname, faqHref)} icon={HelpCircle}>
+                {t("common.faq")}
               </NavLink>
               <NavLink
                 href={contactHref}

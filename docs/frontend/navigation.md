@@ -42,10 +42,10 @@ The primary navigation should include at minimum:
 
 - Home
 - Products
-- About Us
+- FAQ
 - Contact Us
 
-Additional navigation items may be added when required by the business.
+Additional navigation items may be added when required by the business. (About Us remains reachable from the footer.)
 
 The header should also provide quick access to:
 
