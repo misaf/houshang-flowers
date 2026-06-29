@@ -154,6 +154,15 @@
   font-weight: 800;
 }
 
+/* Comfortable, consistent control size — every button is floored at a 44×44px
+   tap area on all devices, the size a fingertip needs and a uniform baseline on
+   desktop too. Covers asChild link-buttons (they carry data-slot="button") and
+   even buttons that hardcode a smaller height, since min-height beats height. */
+[data-slot="button"] {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+}
+
 /* ── Golzār signature ───────────────────────────────────────────
    Flowers are colour first, but the chrome stays monochrome: structural
    markers below render in ink/neutral, and the "petal swatch" (a colour

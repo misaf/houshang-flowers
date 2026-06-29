@@ -110,7 +110,6 @@ export function Cart() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
                           disabled={item.quantity <= 1}
                           aria-label={t("common.decreaseQuantity")}
                           onClick={() =>
@@ -125,7 +124,6 @@ export function Cart() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
                           aria-label={t("common.increaseQuantity")}
                           onClick={() =>
                             updateQuantity(item.id, item.quantity + 1)
@@ -137,7 +135,7 @@ export function Cart() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        className="text-destructive hover:text-destructive"
                         aria-label={t("common.removeItem")}
                         onClick={() => removeFromCart(item.id)}
                       >

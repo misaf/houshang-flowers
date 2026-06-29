@@ -240,7 +240,7 @@ export function Header({ showNav = true }: HeaderProps) {
                     </div>
 
                     <SheetClose asChild>
-                      <Button asChild className="h-12 justify-between rounded-full">
+                      <Button asChild className="justify-between rounded-full">
                         <Link href={productsHref}>
                           {t("common.shopNow")}
                           <ArrowIcon className="size-4" />

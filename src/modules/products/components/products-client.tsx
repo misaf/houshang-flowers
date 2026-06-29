@@ -510,7 +510,7 @@ export default function ProductsClient({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="mt-2 h-8 w-full justify-center gap-1.5 rounded-md text-xs font-semibold text-primary hover:bg-muted hover:text-primary"
+                  className="mt-2 w-full justify-center gap-1.5 rounded-md text-xs font-semibold text-primary hover:bg-muted hover:text-primary"
                   onClick={() =>
                     setVisibleCategoryCount((currentCount) =>
                       Math.min(

@@ -109,7 +109,7 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
                   key={chip.label}
                   asChild
                   variant="outline"
-                  className="group h-10 rounded-full border-border bg-card px-4 text-sm font-semibold text-foreground hover:bg-card"
+                  className="group rounded-full border-border bg-card px-4 text-sm font-semibold text-foreground hover:bg-card"
                 >
                   <Link href="/products">
                     <span
@@ -132,7 +132,7 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
               <Button
                 asChild
                 size="lg"
-                className="h-12 rounded-full px-7 text-base shadow-sm"
+                className="rounded-full px-7 text-base shadow-sm"
               >
                 <Link href="/products">
                   {t("common.shopNow")}
@@ -143,7 +143,7 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
                 asChild
                 size="lg"
                 variant="ghost"
-                className="h-12 rounded-full px-5 text-base text-foreground hover:bg-secondary"
+                className="rounded-full px-5 text-base text-foreground hover:bg-secondary"
               >
                 <Link href="/contact">{consultText}</Link>
               </Button>

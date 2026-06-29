@@ -30,6 +30,7 @@ const trustKeys = ["trustPoint1", "trustPoint2", "trustPoint3"];
 const trustIcons = [Flower2, Sparkles, PackageCheck];
 
 // Shared brand-band CTA button styles, used by the hero and final-CTA pairs.
+// Height comes from the global 44px button floor in globals.css.
 const ctaPrimaryClass =
   "bg-storefront-brand-foreground text-storefront-brand shadow-none hover:bg-storefront-brand-foreground/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90";
 const ctaOutlineClass =
@@ -39,10 +40,12 @@ function SectionLabel({
   children,
   onDark = false,
   centered = false,
+  as: Tag = "p",
 }: {
   children: React.ReactNode;
   onDark?: boolean;
   centered?: boolean;
+  as?: "p" | "h2";
 }) {
   // On the dark brand bands, ink-coloured `--primary` collapses into the
   // background (light mode); use the band's light foreground token instead.
@@ -54,7 +57,7 @@ function SectionLabel({
     : "bg-primary";
 
   return (
-    <p
+    <Tag
       className={cn(
         "flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em]",
         centered && "justify-center",
@@ -63,7 +66,7 @@ function SectionLabel({
     >
       <span className={`h-px w-7 ${rule}`} />
       {children}
-    </p>
+    </Tag>
   );
 }
 
@@ -95,7 +98,7 @@ export default async function AboutUs() {
                 <Button asChild className={ctaPrimaryClass}>
                   <Link href="/products">
                     {t("about.heroCtaPrimary")}
-                    <ArrowIcon className="size-4" />
+                    <ArrowIcon className="size-4" aria-hidden />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className={ctaOutlineClass}>
@@ -157,7 +160,7 @@ export default async function AboutUs() {
 
         <section className="bg-storefront-brand-soft text-foreground dark:bg-storefront-brand-soft dark:text-foreground">
           <div className="mx-auto max-w-5xl px-5 py-16 text-center sm:px-8 sm:py-22 lg:px-12">
-            <SectionLabel centered>{t("about.missionTitle")}</SectionLabel>
+            <SectionLabel centered as="h2">{t("about.missionTitle")}</SectionLabel>
             <p className="mx-auto mt-7 max-w-4xl text-2xl font-light leading-[1.45] sm:text-[2rem]">
               {t("about.missionBody")}
             </p>
@@ -251,7 +254,7 @@ export default async function AboutUs() {
         <section className="bg-storefront-brand-soft/70 dark:bg-storefront-brand-soft">
           <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[0.85fr_1.15fr] lg:px-12">
             <div>
-              <SectionLabel>{t("about.trustTitle")}</SectionLabel>
+              <SectionLabel as="h2">{t("about.trustTitle")}</SectionLabel>
               <p className="mt-5 max-w-md text-xl leading-8 text-foreground">
                 {t("about.trustBody")}
               </p>
@@ -290,7 +293,7 @@ export default async function AboutUs() {
               <Button asChild size="lg" className={ctaPrimaryClass}>
                 <Link href="/products">
                   {t("about.finalCtaPrimary")}
-                  <ArrowIcon className="size-4" />
+                  <ArrowIcon className="size-4" aria-hidden />
                 </Link>
               </Button>
               <Button

@@ -182,7 +182,7 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-9 w-9 text-destructive hover:text-destructive"
+                            className="text-destructive hover:text-destructive"
                             aria-label={t("common.removeFromFavorites")}
                             onClick={() => removeFromFavorites(item.id)}
                           >

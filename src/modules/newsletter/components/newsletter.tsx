@@ -109,9 +109,9 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
     : {
         form: "mt-8 flex flex-col gap-3 sm:flex-row",
         input:
-          "h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card",
+          "h-11 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card",
         buttonSize: "lg" as const,
-        button: "h-12 gap-2 whitespace-nowrap rounded-full",
+        button: "gap-2 whitespace-nowrap rounded-full",
         alert: "mt-4",
         successAlert: "mt-4 border-border bg-secondary text-foreground",
       };

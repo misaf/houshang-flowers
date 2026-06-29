@@ -547,7 +547,7 @@ function ContactFormCard({
                 <Button
                   type="submit"
                   size="lg"
-                  className="h-12 w-full gap-2 rounded-full px-8 shadow-lg shadow-storefront-brand/15"
+                  className="w-full gap-2 rounded-full px-8 shadow-lg shadow-storefront-brand/15"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
