@@ -25,6 +25,7 @@ import {
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
 import { formatRemainingQuantity } from "../lib/format";
+import { isRtlLocale } from "@/shared/lib/locale";
 import type { Product } from "@/modules/products";
 
 interface HomeProductCategory {
@@ -47,8 +48,6 @@ interface HomeProductCardProps {
   locale: string;
   t: (key: string, values?: Record<string, string | number>) => string;
 }
-
-const RTL_LOCALES = ["fa", "ar", "he"];
 
 function HomeProductCard({ product, locale, t }: HomeProductCardProps) {
   const [hasImageError, setHasImageError] = useState(false);
@@ -144,7 +143,7 @@ interface HomeProductsCarouselProps {
 }
 
 function HomeProductsCarousel({ products, locale, t }: HomeProductsCarouselProps) {
-  const isRTL = RTL_LOCALES.includes(locale);
+  const isRTL = isRtlLocale(locale);
 
   return (
     <Carousel
@@ -273,7 +272,7 @@ export function HomeProductsSection({
   categories,
   loading = false,
 }: HomeProductsSectionProps) {
-  const isRTL = RTL_LOCALES.includes(locale);
+  const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   return (

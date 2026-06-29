@@ -1,8 +1,11 @@
+import { cache } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiClientError, apiClient } from "@/shared/api/client";
 import { createApiQueryOptions, type ApiQueryOptions } from "@/shared/api/query-client";
 import { PLACEHOLDER_IMAGE, toAbsoluteStorageUrl } from "@/shared/lib/image";
 import { getLeadingResourceId } from "@/shared/lib/slug-url";
+import { stringifyRichText, stripHtml } from "@/shared/lib/rich-text";
+import { parseNumericId } from "@/shared/lib/utils";
 import type { JsonApiLinks, JsonApiPageMeta } from "@/shared/api/types";
 import { postKeys } from "./keys";
 import type {
@@ -49,33 +52,6 @@ function getFirstResource<T>(data: T | T[]): T | null {
 
 function getFirstRelationship<T>(data: T | T[] | undefined): T | undefined {
   return Array.isArray(data) ? data[0] : data;
-}
-
-function stringifyRichText(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) {
-    return value.map(stringifyRichText).filter(Boolean).join(" ");
-  }
-
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-
-    if (typeof record.text === "string") return record.text;
-    if (Array.isArray(record.content)) return stringifyRichText(record.content);
-  }
-
-  return "";
-}
-
-function stripHtml(text: unknown, maxLength: number): string {
-  const value = stringifyRichText(text);
-  return value ? value.replace(/<[^>]*>/g, "").substring(0, maxLength) : "";
-}
-
-function parseNumericId(id: string | number): number {
-  const value = typeof id === "number" ? id : Number.parseInt(id, 10);
-  return Number.isFinite(value) ? value : 0;
 }
 
 function getPagination(
@@ -304,23 +280,28 @@ export async function fetchPostsWithDetails(
   };
 }
 
-export async function fetchPostCategories(): Promise<PostCategory[]> {
-  const response = await apiClient.get<PostCategoryDto[]>(
-    "blog-post-categories",
-    {
-      query: {
-        "page[size]": "50",
-      },
-      next: { revalidate: 10 },
-      mode: "cors",
-      credentials: "omit",
-    }
-  );
+// Cached per request: fetchPosts() resolves category names through this and
+// the blog page also fetches the category list, so without cache() the fetch +
+// transform would run twice for a single render.
+export const fetchPostCategories = cache(
+  async (): Promise<PostCategory[]> => {
+    const response = await apiClient.get<PostCategoryDto[]>(
+      "blog-post-categories",
+      {
+        query: {
+          "page[size]": "50",
+        },
+        next: { revalidate: 10 },
+        mode: "cors",
+        credentials: "omit",
+      }
+    );
 
-  return transformPostCategories(response.data).filter(
-    (category) => category.status !== false
-  );
-}
+    return transformPostCategories(response.data).filter(
+      (category) => category.status !== false
+    );
+  }
+);
 
 export const fetchBlogPostCategories = fetchPostCategories;
 

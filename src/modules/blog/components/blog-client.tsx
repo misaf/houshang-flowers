@@ -20,6 +20,8 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { formatLocaleDate } from "@/shared/lib/date";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
 import { cn, normalizeImageUrl } from "@/shared/lib/utils";
+import { isRtlLocale } from "@/shared/lib/locale";
+import { buildBlogQueryKey } from "../lib/keys";
 
 interface BlogPostsClientProps {
   initialPosts: BlogPost[];
@@ -27,10 +29,6 @@ interface BlogPostsClientProps {
   initialError: string | null;
   initialQueryKey: string;
   categories: PostCategory[];
-}
-
-function buildBlogQueryKey(category: string, searchQuery: string): string {
-  return `${category}|${searchQuery}`;
 }
 
 /* The featured lead — the journal opens on its most recent entry, set as an
@@ -124,7 +122,7 @@ export default function BlogPostsClient({
   const { t, locale } = useTranslations();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const isRtl = ["fa", "ar", "he"].includes(locale);
+  const isRtl = isRtlLocale(locale);
   const selectedCategory = searchParams.get("category") || "all";
   const searchQuery = searchParams.get("search") || "";
   const queryKey = buildBlogQueryKey(selectedCategory, searchQuery);

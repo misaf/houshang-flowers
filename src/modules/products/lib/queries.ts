@@ -3,6 +3,8 @@ import { ApiClientError, apiClient } from "@/shared/api/client";
 import { createApiQueryOptions, type ApiQueryOptions } from "@/shared/api/query-client";
 import { PLACEHOLDER_IMAGE, toAbsoluteStorageUrl } from "@/shared/lib/image";
 import { getLeadingResourceId } from "@/shared/lib/slug-url";
+import { stripHtml } from "@/shared/lib/rich-text";
+import { parseNumericId } from "@/shared/lib/utils";
 import type { JsonApiLinks, JsonApiPageMeta } from "@/shared/api/types";
 import { productKeys } from "./keys";
 import type {
@@ -53,32 +55,6 @@ function getFirstRelationship<T>(data: T | T[] | undefined): T | undefined {
   return Array.isArray(data) ? data[0] : data;
 }
 
-function stringifyRichText(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) {
-    return value.map(stringifyRichText).filter(Boolean).join(" ");
-  }
-
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-
-    if (typeof record.text === "string") return record.text;
-    if (Array.isArray(record.content)) return stringifyRichText(record.content);
-  }
-
-  return "";
-}
-
-function stripHtml(text: unknown, maxLength: number): string {
-  const value = stringifyRichText(text);
-  return value ? value.replace(/<[^>]*>/g, "").substring(0, maxLength) : "";
-}
-
-function parseNumericId(id: string | number): number {
-  const value = typeof id === "number" ? id : Number.parseInt(id, 10);
-  return Number.isFinite(value) ? value : 0;
-}
 
 interface ResolvedProductPrice {
   value: number;

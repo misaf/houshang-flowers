@@ -3,24 +3,14 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import BlogPostsClient from "./components/blog-client";
 import { fetchBlogPostCategories, fetchBlogPostsWithDetails } from "./lib/queries";
+import { buildBlogQueryKey } from "./lib/keys";
 import type { FetchBlogPostsResult, Post as BlogPost, PostCategory } from "./types";
 import { buildMetadata } from "@/shared/seo";
-
-function readFirst(value: string | string[] | undefined): string | undefined {
-  return Array.isArray(value) ? value[0] : value;
-}
+import { readFirst, normalizeSearch } from "@/shared/lib/search-params";
 
 function normalizeCategory(value: string | undefined): string {
   const category = value?.trim();
   return category || "all";
-}
-
-function normalizeSearch(value: string | undefined): string {
-  return value?.trim() || "";
-}
-
-function buildBlogQueryKey(category: string, searchQuery: string): string {
-  return `${category}|${searchQuery}`;
 }
 
 export async function generateMetadata({

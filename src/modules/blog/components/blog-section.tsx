@@ -4,6 +4,7 @@ import { Link } from "@/shared/i18n/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogPostCard } from "./blog-post-card";
 import { FeaturedBlogPostCard } from "./featured-blog-post-card";
+import { isRtlLocale } from "@/shared/lib/locale";
 import type { Post as BlogPost, PostCategory } from "@/modules/blog";
 
 // 1 featured lead post + 8 grid posts
@@ -24,7 +25,7 @@ export function BlogSection({
   formatDate,
   t,
 }: BlogSectionProps) {
-  const isRTL = ["fa", "ar", "he"].includes(locale);
+  const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const sectionTitle = t("blog.title") || "Blog";
   const posts = allPosts.slice(0, MAX_STOREFRONT_POSTS);

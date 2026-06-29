@@ -1,5 +1,9 @@
 import type { FetchPostsParams } from "../types";
 
+export function buildBlogQueryKey(category: string, searchQuery: string): string {
+  return `${category}|${searchQuery}`;
+}
+
 export const postKeys = {
   all: ["posts"] as const,
   lists: () => [...postKeys.all, "list"] as const,

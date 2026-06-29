@@ -9,6 +9,7 @@ import { Badge } from "@/shared/components/ui/badge";
 import { ArrowLeft, ArrowRight, Calendar, ImageOff } from "lucide-react";
 import { cn, normalizeImageUrl } from "@/shared/lib/utils";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
+import { isRtlLocale } from "@/shared/lib/locale";
 import type { Post as BlogPost } from "@/modules/blog";
 
 interface BlogPostCardProps {
@@ -34,7 +35,7 @@ export function BlogPostCard({
 }: BlogPostCardProps) {
   const [hasImageError, setHasImageError] = useState(false);
   const { t, locale } = useTranslations();
-  const ArrowIcon = ["fa", "ar", "he"].includes(locale) ? ArrowLeft : ArrowRight;
+  const ArrowIcon = isRtlLocale(locale) ? ArrowLeft : ArrowRight;
 
   return (
     <Link

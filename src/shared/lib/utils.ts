@@ -6,6 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function parseNumericId(id: string | number): number {
+  const value = typeof id === "number" ? id : Number.parseInt(id, 10);
+  return Number.isFinite(value) ? value : 0;
+}
+
 export function formatPrice(price: number | string | null | undefined): string {
   const parsedPrice =
     typeof price === "number" ? price : Number.parseFloat(String(price ?? ""));

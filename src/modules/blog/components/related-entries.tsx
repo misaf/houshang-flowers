@@ -6,11 +6,12 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogPostCard } from "./blog-post-card";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { formatLocaleDate } from "@/shared/lib/date";
+import { isRtlLocale } from "@/shared/lib/locale";
 import type { Post as BlogPost } from "@/modules/blog";
 
 export function RelatedEntries({ posts }: { posts: BlogPost[] }) {
   const { t, locale } = useTranslations();
-  const isRtl = ["fa", "ar", "he"].includes(locale);
+  const isRtl = isRtlLocale(locale);
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
   const formatDate = useCallback(
     (dateString: string) => formatLocaleDate(dateString, locale),

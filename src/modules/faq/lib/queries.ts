@@ -4,6 +4,8 @@ import {
   createApiQueryOptions,
   type ApiQueryOptions,
 } from "@/shared/api/query-client";
+import { stringifyRichText } from "@/shared/lib/rich-text";
+import { parseNumericId } from "@/shared/lib/utils";
 import { faqKeys } from "./keys";
 import type {
   Faq,
@@ -13,11 +15,6 @@ import type {
   FaqDto,
   FetchFaqsParams,
 } from "../types";
-
-function parseNumericId(id: string | number): number {
-  const value = typeof id === "number" ? id : Number.parseInt(id, 10);
-  return Number.isFinite(value) ? value : 0;
-}
 
 function parsePosition(value: number | string | undefined): number {
   if (typeof value === "number") return Number.isFinite(value) ? value : 0;
@@ -30,22 +27,6 @@ function parsePosition(value: number | string | undefined): number {
 
 function getFirstRelationship<T>(data: T | T[] | undefined): T | undefined {
   return Array.isArray(data) ? data[0] : data;
-}
-
-function stringifyRichText(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
-  if (Array.isArray(value)) {
-    return value.map(stringifyRichText).filter(Boolean).join(" ");
-  }
-
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    if (typeof record.text === "string") return record.text;
-    if (Array.isArray(record.content)) return stringifyRichText(record.content);
-  }
-
-  return "";
 }
 
 function toPlainText(value: unknown): string {
