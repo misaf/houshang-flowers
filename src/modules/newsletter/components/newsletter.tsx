@@ -96,6 +96,26 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
 
   useEffect(() => () => clearTimeout(idleTimer.current), []);
 
+  const styles = compact
+    ? {
+        form: "flex gap-2",
+        input: "min-w-0 border-border bg-card/80",
+        buttonSize: "default" as const,
+        button: "rounded-full",
+        alert: "mt-2",
+        successAlert:
+          "mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary",
+      }
+    : {
+        form: "mt-8 flex flex-col gap-3 sm:flex-row",
+        input:
+          "h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card",
+        buttonSize: "lg" as const,
+        button: "h-12 gap-2 whitespace-nowrap rounded-full",
+        alert: "mt-4",
+        successAlert: "mt-4 border-border bg-secondary text-foreground",
+      };
+
   const onSubmit = async () => {
     setError(null);
     try {
@@ -135,7 +155,7 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className={compact ? "flex gap-2" : "mt-8 flex flex-col gap-3 sm:flex-row"}
+          className={styles.form}
         >
           <FormField
             control={form.control}
@@ -147,11 +167,7 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
                     type="email"
                     placeholder={t("newsletter.emailPlaceholder")}
                     aria-label={t("newsletter.emailPlaceholder")}
-                    className={
-                      compact
-                        ? "min-w-0 border-border bg-card/80"
-                        : "h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card"
-                    }
+                    className={styles.input}
                     suppressHydrationWarning
                     {...field}
                   />
@@ -163,12 +179,8 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
           <Button
             type="submit"
             disabled={isSubmitting || isSubmitted}
-            size={compact ? "default" : "lg"}
-            className={
-              compact
-                ? "rounded-full"
-                : "h-12 gap-2 whitespace-nowrap rounded-full"
-            }
+            size={styles.buttonSize}
+            className={styles.button}
           >
             {buttonContent}
           </Button>
@@ -176,7 +188,7 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
       </Form>
 
       {error && (
-        <Alert variant="destructive" role="alert" className={compact ? "mt-2" : "mt-4"}>
+        <Alert variant="destructive" role="alert" className={styles.alert}>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -185,11 +197,7 @@ function NewsletterForm({ compact = false }: { compact?: boolean }) {
         <Alert
           role="status"
           aria-live="polite"
-          className={
-            compact
-              ? "mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary"
-              : "mt-4 border-border bg-secondary text-foreground"
-          }
+          className={styles.successAlert}
         >
           <CheckCircle2 className="h-4 w-4" />
           <AlertDescription>{t("newsletter.success")}</AlertDescription>
