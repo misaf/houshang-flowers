@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 import type { Product } from "@/modules/products";
 import { usePersistentState } from "@/shared/hooks/use-persistent-state";
 
@@ -30,72 +36,89 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = usePersistentState<CartItem[]>("cart", []);
   const [isCartOpen, setCartOpen] = useState(false);
 
-  const addToCart = (product: Product) => {
-    setItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prevItems, { ...product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (productId: number) => {
-    setItems((prevItems) => prevItems.filter((item) => item.id !== productId));
-  };
-
-  const updateQuantity = (productId: number, quantity: number) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    setItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const clearCart = () => {
-    setItems([]);
-  };
-
-  const getTotalPrice = () => {
-    return items.reduce((total, item) => {
-      const price =
-        typeof item.price === "number" ? item.price : Number(item.price) || 0;
-      const quantity = item.quantity || 0;
-      return total + price * quantity;
-    }, 0);
-  };
-
-  const getTotalItems = () => {
-    return items.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  return (
-    <CartContext.Provider
-      value={{
-        items,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        getTotalPrice,
-        getTotalItems,
-        isCartOpen,
-        setCartOpen,
-        openCart: () => setCartOpen(true),
-        closeCart: () => setCartOpen(false),
-      }}
-    >
-      {children}
-    </CartContext.Provider>
+  const addToCart = useCallback(
+    (product: Product) => {
+      setItems((prevItems) => {
+        const existingItem = prevItems.find((item) => item.id === product.id);
+        if (existingItem) {
+          return prevItems.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          );
+        }
+        return [...prevItems, { ...product, quantity: 1 }];
+      });
+    },
+    [setItems]
   );
+
+  const removeFromCart = useCallback(
+    (productId: number) => {
+      setItems((prevItems) => prevItems.filter((item) => item.id !== productId));
+    },
+    [setItems]
+  );
+
+  const updateQuantity = useCallback(
+    (productId: number, quantity: number) => {
+      if (quantity <= 0) {
+        removeFromCart(productId);
+        return;
+      }
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === productId ? { ...item, quantity } : item
+        )
+      );
+    },
+    [removeFromCart, setItems]
+  );
+
+  const clearCart = useCallback(() => setItems([]), [setItems]);
+
+  const getTotalPrice = useCallback(
+    () => items.reduce((total, item) => total + item.price * item.quantity, 0),
+    [items]
+  );
+
+  const getTotalItems = useCallback(
+    () => items.reduce((total, item) => total + item.quantity, 0),
+    [items]
+  );
+
+  const openCart = useCallback(() => setCartOpen(true), []);
+  const closeCart = useCallback(() => setCartOpen(false), []);
+
+  const value = useMemo(
+    () => ({
+      items,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      getTotalPrice,
+      getTotalItems,
+      isCartOpen,
+      setCartOpen,
+      openCart,
+      closeCart,
+    }),
+    [
+      items,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      getTotalPrice,
+      getTotalItems,
+      isCartOpen,
+      openCart,
+      closeCart,
+    ]
+  );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
