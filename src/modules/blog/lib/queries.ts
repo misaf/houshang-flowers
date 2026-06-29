@@ -177,16 +177,80 @@ async function resolvePostCategoryId(slug: string): Promise<string | null> {
   return category ? String(category.id) : null;
 }
 
+async function fetchPostCollection(
+  path: string,
+  queryParams: URLSearchParams,
+  fallback: { page: number; perPage: number }
+): Promise<FetchPostsResult> {
+  const response = await apiClient.get<PostDto[]>(path, {
+    query: queryParams,
+    next: { revalidate: 10 },
+    mode: "cors",
+    credentials: "omit",
+  });
+
+  return {
+    posts: transformPosts(response.data),
+    pagination: getPagination(response.meta?.page, fallback),
+    links: extractCollectionLinks(response.links),
+  };
+}
+
+function mergePostResults(
+  results: FetchPostsResult[],
+  fallback: { page: number; perPage: number }
+): FetchPostsResult {
+  const postsById = new Map<number, Post>();
+
+  for (const result of results) {
+    for (const post of result.posts) {
+      if (!postsById.has(post.id)) {
+        postsById.set(post.id, post);
+      }
+    }
+  }
+
+  return {
+    posts: [...postsById.values()],
+    pagination: {
+      currentPage: fallback.page,
+      lastPage: Math.max(
+        1,
+        ...results.map((result) => result.pagination.lastPage)
+      ),
+      perPage: fallback.perPage,
+      total: results.reduce(
+        (total, result) => total + result.pagination.total,
+        0
+      ),
+      from: results.some((result) => result.pagination.from > 0)
+        ? Math.min(
+            ...results
+              .map((result) => result.pagination.from)
+              .filter((value) => value > 0)
+          )
+        : 0,
+      to: results.reduce((total, result) => total + result.pagination.to, 0),
+    },
+    links: extractCollectionLinks(undefined),
+  };
+}
+
+function createPostQueryParams(page: number, perPage: number): URLSearchParams {
+  const queryParams = createPageQueryParams(page, perPage);
+  queryParams.append("include", "multimedia,blogPostCategory");
+  queryParams.append("filter[status]", "1");
+  return queryParams;
+}
+
 export async function fetchPosts(
   params: FetchPostsParams = {}
 ): Promise<FetchPostsResult> {
   const { page = 1, perPage = 15, category, search, slug } = params;
-  const queryParams = createPageQueryParams(page, perPage);
+  const queryParams = createPostQueryParams(page, perPage);
+  const normalizedSearch = search?.trim();
   let path = "blog-posts";
 
-  queryParams.append("include", "multimedia,blogPostCategory");
-  queryParams.append("filter[status]", "1");
-  appendOptionalQueryParam(queryParams, "filter[search]", search);
   appendOptionalQueryParam(queryParams, "filter[slug]", slug);
 
   if (category) {
@@ -199,18 +263,20 @@ export async function fetchPosts(
     path = `blog-post-categories/${categoryId}/blog-posts`;
   }
 
-  const response = await apiClient.get<PostDto[]>(path, {
-    query: queryParams,
-    next: { revalidate: 10 },
-    mode: "cors",
-    credentials: "omit",
-  });
+  if (normalizedSearch && !slug) {
+    const searchFilters = ["filter[name]", "filter[slug]"];
+    const searchResults = await Promise.all(
+      searchFilters.map((filterKey) => {
+        const searchQueryParams = createPostQueryParams(page, perPage);
+        searchQueryParams.append(filterKey, normalizedSearch);
+        return fetchPostCollection(path, searchQueryParams, { page, perPage });
+      })
+    );
 
-  return {
-    posts: transformPosts(response.data),
-    pagination: getPagination(response.meta?.page, { page, perPage }),
-    links: extractCollectionLinks(response.links),
-  };
+    return mergePostResults(searchResults, { page, perPage });
+  }
+
+  return fetchPostCollection(path, queryParams, { page, perPage });
 }
 
 async function fetchPostById(id: string | number): Promise<Post | null> {

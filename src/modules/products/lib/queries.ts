@@ -277,33 +277,6 @@ function transformProducts(products: ProductDto[]): Product[] {
   return products.map(transformProduct);
 }
 
-function normalizeSearchText(value: string | undefined): string {
-  return value
-    ?.toLocaleLowerCase()
-    .replace(/[\s\-_]+/g, "")
-    .trim() ?? "";
-}
-
-function productMatchesSearch(product: Product, search: string): boolean {
-  const normalizedSearch = search.toLocaleLowerCase().trim();
-  const compactSearch = normalizeSearchText(search);
-
-  if (!normalizedSearch) return true;
-
-  const candidates = [
-    product.name,
-    product.token,
-  ].filter(Boolean) as string[];
-
-  return candidates.some((candidate) => {
-    const normalizedCandidate = candidate.toLocaleLowerCase();
-    return (
-      normalizedCandidate.includes(normalizedSearch) ||
-      normalizeSearchText(candidate).includes(compactSearch)
-    );
-  });
-}
-
 function transformCategory(category: ProductCategoryDto): ProductCategory {
   return {
     id: parseNumericId(category.id),
@@ -337,35 +310,6 @@ function emptyProductsResult(page: number, perPage: number): FetchProductsResult
   };
 }
 
-function filteredProductsResult(
-  products: Product[],
-  search: string,
-  page: number,
-  perPage: number
-): FetchProductsResult {
-  const matchedProducts = products.filter((product) =>
-    productMatchesSearch(product, search)
-  );
-  const total = matchedProducts.length;
-  const lastPage = Math.max(1, Math.ceil(total / perPage));
-  const currentPage = Math.min(page, lastPage);
-  const fromIndex = (currentPage - 1) * perPage;
-  const pageProducts = matchedProducts.slice(fromIndex, fromIndex + perPage);
-
-  return {
-    products: pageProducts,
-    pagination: {
-      currentPage,
-      lastPage,
-      perPage,
-      total,
-      from: total === 0 ? 0 : fromIndex + 1,
-      to: fromIndex + pageProducts.length,
-    },
-    links: extractCollectionLinks(undefined),
-  };
-}
-
 async function resolveProductCategoryId(slug: string): Promise<string | null> {
   const categories = await fetchProductCategories();
   const category = categories.find((item) => item.slug === slug);
@@ -373,20 +317,91 @@ async function resolveProductCategoryId(slug: string): Promise<string | null> {
   return category ? String(category.id) : null;
 }
 
-export async function fetchProducts(
-  params: FetchProductsParams = {}
+async function fetchProductCollection(
+  path: string,
+  queryParams: URLSearchParams,
+  fallback: { page: number; perPage: number }
 ): Promise<FetchProductsResult> {
-  const { page = 1, perPage = 15, category, search, slug, sort } = params;
-  const queryParams = createPageQueryParams(page, perPage);
-  const normalizedSearch = search?.trim();
-  let path = "products";
+  const response = await apiClient.get<ProductDto[]>(path, {
+    query: queryParams,
+    next:
+      queryParams.get("sort") === "random-position"
+        ? { revalidate: 0 }
+        : { revalidate: 10 },
+    mode: "cors",
+    credentials: "omit",
+  });
 
+  return {
+    products: transformProducts(response.data),
+    pagination: getPagination(response.meta?.page, fallback),
+    links: extractCollectionLinks(response.links),
+  };
+}
+
+function mergeProductResults(
+  results: FetchProductsResult[],
+  fallback: { page: number; perPage: number }
+): FetchProductsResult {
+  const productsById = new Map<number, Product>();
+
+  for (const result of results) {
+    for (const product of result.products) {
+      if (!productsById.has(product.id)) {
+        productsById.set(product.id, product);
+      }
+    }
+  }
+
+  return {
+    products: [...productsById.values()],
+    pagination: {
+      currentPage: fallback.page,
+      lastPage: Math.max(
+        1,
+        ...results.map((result) => result.pagination.lastPage)
+      ),
+      perPage: fallback.perPage,
+      total: results.reduce(
+        (total, result) => total + result.pagination.total,
+        0
+      ),
+      from: results.some((result) => result.pagination.from > 0)
+        ? Math.min(
+            ...results
+              .map((result) => result.pagination.from)
+              .filter((value) => value > 0)
+          )
+        : 0,
+      to: results.reduce((total, result) => total + result.pagination.to, 0),
+    },
+    links: extractCollectionLinks(undefined),
+  };
+}
+
+function createProductQueryParams(
+  page: number,
+  perPage: number,
+  sort: string | undefined
+): URLSearchParams {
+  const queryParams = createPageQueryParams(page, perPage);
   queryParams.append(
     "include",
     "multimedia,productCategory,latestProductPrice,productPrices"
   );
-  appendOptionalQueryParam(queryParams, "filter[slug]", slug);
   appendOptionalQueryParam(queryParams, "sort", sort);
+  return queryParams;
+}
+
+export async function fetchProducts(
+  params: FetchProductsParams = {}
+): Promise<FetchProductsResult> {
+  const { page = 1, perPage = 15, category, search, slug, sort } = params;
+  const queryParams = createProductQueryParams(page, perPage, sort);
+  const normalizedSearch = search?.trim();
+  let path = "products";
+
+  appendOptionalQueryParam(queryParams, "filter[slug]", slug);
 
   if (category) {
     const categoryId = await resolveProductCategoryId(category);
@@ -399,49 +414,22 @@ export async function fetchProducts(
   }
 
   if (normalizedSearch && !slug) {
-    const searchPerPage = 100;
-    const allProducts: Product[] = [];
-    let searchPage = 1;
-    let lastSearchPage = 1;
+    const searchFilters = ["filter[name]", "filter[slug]", "filter[token]"];
+    const searchResults = await Promise.all(
+      searchFilters.map((filterKey) => {
+        const searchQueryParams = createProductQueryParams(page, perPage, sort);
+        searchQueryParams.append(filterKey, normalizedSearch);
+        return fetchProductCollection(path, searchQueryParams, {
+          page,
+          perPage,
+        });
+      })
+    );
 
-    do {
-      const searchQueryParams = createPageQueryParams(searchPage, searchPerPage);
-      searchQueryParams.append(
-        "include",
-        "multimedia,productCategory,latestProductPrice,productPrices"
-      );
-      appendOptionalQueryParam(searchQueryParams, "sort", sort);
-
-      const response = await apiClient.get<ProductDto[]>(path, {
-        query: searchQueryParams,
-        next: { revalidate: 10 },
-        mode: "cors",
-        credentials: "omit",
-      });
-
-      allProducts.push(...transformProducts(response.data));
-      lastSearchPage = getPagination(response.meta?.page, {
-        page: searchPage,
-        perPage: searchPerPage,
-      }).lastPage;
-      searchPage += 1;
-    } while (searchPage <= lastSearchPage);
-
-    return filteredProductsResult(allProducts, normalizedSearch, page, perPage);
+    return mergeProductResults(searchResults, { page, perPage });
   }
 
-  const response = await apiClient.get<ProductDto[]>(path, {
-    query: queryParams,
-    next: sort === "random-position" ? { revalidate: 0 } : { revalidate: 10 },
-    mode: "cors",
-    credentials: "omit",
-  });
-
-  return {
-    products: transformProducts(response.data),
-    pagination: getPagination(response.meta?.page, { page, perPage }),
-    links: extractCollectionLinks(response.links),
-  };
+  return fetchProductCollection(path, queryParams, { page, perPage });
 }
 
 export async function fetchProductsWithDetails(
