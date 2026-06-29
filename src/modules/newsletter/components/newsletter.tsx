@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,93 +31,11 @@ interface NewsletterProps {
 
 export function Newsletter({ variant = "default", className = "" }: NewsletterProps) {
   const { t } = useTranslations();
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [error, setError] = useState<string | null>(null);
-
-  const form = useForm<NewsletterFormValues>({
-    resolver: zodResolver(newsletterSchema),
-    defaultValues: { email: "" },
-  });
-
-  const onSubmit = async () => {
-    setStatus("submitting");
-    setError(null);
-    
-    try {
-      // TODO: Replace with actual API endpoint
-      // await fetch('/api/newsletter/subscribe', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: data.email }),
-      // });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setStatus("success");
-      form.reset();
-      setTimeout(() => setStatus("idle"), 5000);
-    } catch (err) {
-      setStatus("error");
-      setError(err instanceof Error ? err.message : t("newsletter.error") || "Failed to subscribe. Please try again.");
-    }
-  };
-
-  const isSubmitting = status === "submitting";
-  const isSubmitted = status === "success";
 
   if (variant === "compact") {
     return (
       <div className={className}>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormControl>
-                    <Input
-                      type="email"
-                      placeholder={t("newsletter.emailPlaceholder") || "Enter your email"}
-                      aria-label={t("newsletter.emailPlaceholder") || "Enter your email"}
-                      className="min-w-0 border-border bg-card/80"
-                      suppressHydrationWarning
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              disabled={isSubmitting || isSubmitted}
-              className="rounded-full"
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isSubmitted ? (
-                <CheckCircle2 className="h-4 w-4" />
-              ) : (
-                t("newsletter.subscribe") || "Subscribe"
-              )}
-            </Button>
-          </form>
-        </Form>
-        {error && (
-          <Alert variant="destructive" role="alert" className="mt-2">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-        {isSubmitted && (
-          <Alert role="status" aria-live="polite" className="mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription>
-              {t("newsletter.success") || "Thank you for subscribing!"}
-            </AlertDescription>
-          </Alert>
-        )}
+        <NewsletterForm compact />
       </div>
     );
   }
@@ -134,11 +52,11 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
               sizes="(min-width: 1024px) 40vw, 100vw"
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
-              <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-white/75">
+            <div className="absolute inset-0 bg-gradient-to-t from-storefront-brand/80 via-storefront-brand/15 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-storefront-brand-foreground sm:p-8">
+              <span className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.18em] text-storefront-brand-foreground/75">
                 <Mail className="h-4 w-4" />
-                {t("newsletter.title") || "Newsletter"}
+                {t("newsletter.title")}
               </span>
             </div>
           </div>
@@ -149,79 +67,134 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
                 <Mail className="h-5 w-5" />
               </span>
               <h2 className="font-display mt-6 text-3xl leading-tight text-foreground sm:text-4xl">
-                {t("newsletter.title") || "Subscribe to Our Newsletter"}
+                {t("newsletter.title")}
               </h2>
               <p className="mt-4 text-base leading-8 text-muted-foreground">
-                {t("newsletter.description") || "Get the latest updates, news, and exclusive offers delivered to your inbox."}
+                {t("newsletter.description")}
               </p>
             </div>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8">
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder={t("newsletter.emailPlaceholder") || "Enter your email address"}
-                            aria-label={t("newsletter.emailPlaceholder") || "Enter your email address"}
-                            className="h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card"
-                            suppressHydrationWarning
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting || isSubmitted}
-                    size="lg"
-                    className="h-12 gap-2 whitespace-nowrap rounded-full"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        {t("newsletter.subscribing") || "Subscribing..."}
-                      </>
-                    ) : isSubmitted ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4" />
-                        {t("newsletter.subscribed") || "Subscribed!"}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4" />
-                        {t("newsletter.subscribe") || "Subscribe"}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-
-            {error && (
-              <Alert variant="destructive" role="alert" className="mt-4">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            {isSubmitted && (
-              <Alert role="status" aria-live="polite" className="mt-4 border-border bg-secondary text-foreground">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>
-                  {t("newsletter.success") || "Thank you for subscribing! Check your email for confirmation."}
-                </AlertDescription>
-              </Alert>
-            )}
+            <NewsletterForm />
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function NewsletterForm({ compact = false }: { compact?: boolean }) {
+  const { t } = useTranslations();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const form = useForm<NewsletterFormValues>({
+    resolver: zodResolver(newsletterSchema),
+    defaultValues: { email: "" },
+  });
+  const isSubmitting = form.formState.isSubmitting;
+
+  useEffect(() => () => clearTimeout(idleTimer.current), []);
+
+  const onSubmit = async () => {
+    setError(null);
+    try {
+      // TODO: Replace with POST to /api/newsletter/subscribe (body: { email })
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      setIsSubmitted(true);
+      form.reset();
+      clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("newsletter.error"));
+    }
+  };
+
+  const buttonContent = isSubmitting ? (
+    <>
+      <Loader2 className="h-4 w-4 animate-spin" />
+      {!compact && t("newsletter.subscribing")}
+    </>
+  ) : isSubmitted ? (
+    <>
+      <CheckCircle2 className="h-4 w-4" />
+      {!compact && t("newsletter.subscribed")}
+    </>
+  ) : compact ? (
+    t("newsletter.subscribe")
+  ) : (
+    <>
+      <Send className="h-4 w-4" />
+      {t("newsletter.subscribe")}
+    </>
+  );
+
+  return (
+    <>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className={compact ? "flex gap-2" : "mt-8 flex flex-col gap-3 sm:flex-row"}
+        >
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder={t("newsletter.emailPlaceholder")}
+                    aria-label={t("newsletter.emailPlaceholder")}
+                    className={
+                      compact
+                        ? "min-w-0 border-border bg-card/80"
+                        : "h-12 rounded-full border-border bg-card px-5 text-card-foreground placeholder:text-muted-foreground focus:bg-card"
+                    }
+                    suppressHydrationWarning
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            disabled={isSubmitting || isSubmitted}
+            size={compact ? "default" : "lg"}
+            className={
+              compact
+                ? "rounded-full"
+                : "h-12 gap-2 whitespace-nowrap rounded-full"
+            }
+          >
+            {buttonContent}
+          </Button>
+        </form>
+      </Form>
+
+      {error && (
+        <Alert variant="destructive" role="alert" className={compact ? "mt-2" : "mt-4"}>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {isSubmitted && (
+        <Alert
+          role="status"
+          aria-live="polite"
+          className={
+            compact
+              ? "mt-2 border-primary/30 bg-storefront-brand-soft text-primary dark:bg-storefront-brand-soft dark:text-primary"
+              : "mt-4 border-border bg-secondary text-foreground"
+          }
+        >
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertDescription>{t("newsletter.success")}</AlertDescription>
+        </Alert>
+      )}
+    </>
   );
 }
