@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { PageShell } from "@/shared/components/layout/page-shell";
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/shared/components/ui/card";
 import {
   Form,
   FormControl,
@@ -111,10 +111,6 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
     await new Promise((resolve) => setTimeout(resolve, 500));
     setIsSubmitted(true);
     form.reset();
-
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 5000);
   };
 
   return (
@@ -200,6 +196,8 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
               isSubmitted={isSubmitted}
               isSubmitting={form.formState.isSubmitting}
               onSubmit={onSubmit}
+              onReset={() => setIsSubmitted(false)}
+              email={email}
               t={t}
             />
 
@@ -369,20 +367,35 @@ function ContactFormCard({
   isSubmitted,
   isSubmitting,
   onSubmit,
+  onReset,
+  email,
   t,
 }: {
   form: ReturnType<typeof useForm<ContactFormValues>>;
   isSubmitted: boolean;
   isSubmitting: boolean;
   onSubmit: (values: ContactFormValues) => Promise<void>;
+  onReset: () => void;
+  email: string;
   t: (key: string) => string;
 }) {
+  const successRef = useRef<HTMLDivElement>(null);
+
+  // Move focus to the confirmation when the form swaps to the success state,
+  // so keyboard and screen-reader users land on the new content instead of
+  // having focus fall back to <body>.
+  useEffect(() => {
+    if (isSubmitted) {
+      successRef.current?.focus();
+    }
+  }, [isSubmitted]);
+
   return (
     <Card className="overflow-hidden rounded-lg border-border bg-card py-0 shadow-lg shadow-storefront-brand/5">
       <CardHeader className="gap-0 px-5 pt-7 pb-0 sm:px-9 sm:pt-9">
-        <CardTitle className="text-2xl leading-tight sm:text-3xl lg:text-4xl">
+        <h2 className="text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl">
           {t("contact.formTitle")}
-        </CardTitle>
+        </h2>
         <CardDescription className="mt-2 max-w-xl text-sm leading-6">
           {t("contact.formDescription")}
         </CardDescription>
@@ -391,16 +404,36 @@ function ContactFormCard({
       <CardContent className="px-5 py-7 sm:px-9 sm:py-9">
         {isSubmitted ? (
           <div
+            ref={successRef}
+            tabIndex={-1}
             role="status"
-            className="flex min-h-96 flex-col items-center justify-center rounded-lg border border-primary/30 bg-storefront-brand-soft px-6 text-center"
+            className="flex min-h-96 flex-col items-center justify-center rounded-lg border border-primary/30 bg-storefront-brand-soft px-6 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <div className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-storefront-brand/20">
               <CheckCircle2 className="size-8" />
             </div>
-            <h3 className="mt-5 text-2xl font-semibold">{t("contact.messageSent")}</h3>
+            <h2 className="mt-5 text-2xl font-semibold">{t("contact.messageSent")}</h2>
             <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
               {t("contact.messageSentDescription")}
             </p>
+            <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">
+              {t("contact.messageSentFallback")}{" "}
+              <a
+                href={`mailto:${email}`}
+                dir="ltr"
+                className="font-medium text-foreground underline underline-offset-4 hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {email}
+              </a>
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onReset}
+              className="mt-6 rounded-full px-6"
+            >
+              {t("contact.sendAnother")}
+            </Button>
           </div>
         ) : (
           <Form {...form}>
@@ -451,7 +484,12 @@ function ContactFormCard({
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("contact.phone")}</FormLabel>
+                      <FormLabel>
+                        {t("contact.phone")}
+                        <span className="font-normal text-muted-foreground">
+                          ({t("contact.optional")})
+                        </span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="tel"
