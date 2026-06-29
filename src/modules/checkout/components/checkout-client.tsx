@@ -1,7 +1,7 @@
 "use client";
 
 import { Link, useRouter } from "@/shared/i18n/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PageShell } from "@/shared/components/layout/page-shell";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -42,6 +42,8 @@ export default function CheckoutClient() {
     country: "",
   });
 
+  const totals = useMemo(() => getOrderTotals(getTotalPrice()), [getTotalPrice]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -54,26 +56,12 @@ export default function CheckoutClient() {
     // Submit the order request (no online payment — handled offline/on contact)
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const { subtotal, shipping, tax, total } = getOrderTotals(getTotalPrice());
-
     // Save order to order history
     addOrder({
-      items: items,
-      subtotal,
-      shipping,
-      tax,
-      total,
+      items,
+      ...totals,
       status: "pending",
-      shippingAddress: {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        zipCode: formData.zipCode,
-        country: formData.country,
-      },
+      shippingAddress: formData,
     });
 
     // Clear cart and redirect to success page
@@ -104,7 +92,7 @@ export default function CheckoutClient() {
     );
   }
 
-  const { subtotal, shipping, tax, total } = getOrderTotals(getTotalPrice());
+  const { subtotal, shipping, tax, total } = totals;
 
   return (
     <PageShell showFooter={false}>
@@ -267,7 +255,7 @@ export default function CheckoutClient() {
                         </p>
                         <p className="mt-1 text-sm font-medium text-card-foreground" dir="ltr">
                           {formatLocalizedPrice(
-                            Number(item.price) * item.quantity,
+                            item.price * item.quantity,
                             locale
                           )}
                         </p>
