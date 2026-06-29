@@ -13,6 +13,8 @@ import {
 import { PageShell } from "@/shared/components/layout/page-shell";
 import { Button } from "@/shared/components/ui/button";
 import { Link } from "@/shared/i18n/navigation";
+import { isRtlLocale } from "@/shared/lib/locale";
+import { cn } from "@/shared/lib/utils";
 
 const valueKeys = ["valueFreshness", "valueCraft", "valueService", "valueDetail"];
 const processKeys = [
@@ -25,13 +27,13 @@ const processKeys = [
 
 const valueIcons = [Leaf, Flower2, HandHeart, ScanHeart];
 const trustKeys = ["trustPoint1", "trustPoint2", "trustPoint3"];
+const trustIcons = [Flower2, Sparkles, PackageCheck];
 
-function toLocaleNumber(value: number, isRTL: boolean): string {
-  const text = String(value).padStart(2, "0");
-  return isRTL
-    ? text.replace(/[0-9]/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)])
-    : text;
-}
+// Shared brand-band CTA button styles, used by the hero and final-CTA pairs.
+const ctaPrimaryClass =
+  "bg-storefront-brand-foreground text-storefront-brand shadow-none hover:bg-storefront-brand-foreground/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90";
+const ctaOutlineClass =
+  "border-storefront-brand-foreground/40 bg-transparent text-storefront-brand-foreground shadow-none hover:bg-storefront-brand-foreground/10 hover:text-storefront-brand-foreground dark:border-foreground/35 dark:text-foreground dark:hover:bg-foreground/10";
 
 function SectionLabel({
   children,
@@ -52,7 +54,13 @@ function SectionLabel({
     : "bg-primary";
 
   return (
-    <p className={`flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] ${centered ? "justify-center" : ""} ${tone}`}>
+    <p
+      className={cn(
+        "flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em]",
+        centered && "justify-center",
+        tone
+      )}
+    >
       <span className={`h-px w-7 ${rule}`} />
       {children}
     </p>
@@ -61,8 +69,11 @@ function SectionLabel({
 
 export default async function AboutUs() {
   const [t, locale] = await Promise.all([getTranslations(), getLocale()]);
-  const isRTL = locale === "fa";
-  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const ArrowIcon = isRtlLocale(locale) ? ArrowLeft : ArrowRight;
+  // Localized, zero-padded step numbers (Persian digits for fa, etc.).
+  const stepNumberFormat = new Intl.NumberFormat(locale, {
+    minimumIntegerDigits: 2,
+  });
 
   return (
     <PageShell showFooterNewsletter={false}>
@@ -81,20 +92,13 @@ export default async function AboutUs() {
                 {t("about.heroSubtitle")}
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Button
-                  asChild
-                  className="bg-storefront-brand-foreground text-storefront-brand shadow-none hover:bg-storefront-brand-foreground/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
-                >
+                <Button asChild className={ctaPrimaryClass}>
                   <Link href="/products">
                     {t("about.heroCtaPrimary")}
                     <ArrowIcon className="size-4" />
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-storefront-brand-foreground/45 bg-transparent text-storefront-brand-foreground shadow-none hover:bg-storefront-brand-foreground/10 hover:text-storefront-brand-foreground dark:border-foreground/35 dark:text-foreground dark:hover:bg-foreground/10"
-                >
+                <Button asChild variant="outline" className={ctaOutlineClass}>
                   <Link href="/contact">{t("about.heroCtaSecondary")}</Link>
                 </Button>
               </div>
@@ -227,7 +231,7 @@ export default async function AboutUs() {
                     }`}
                   >
                     <span className="flex size-11 items-center justify-center rounded-md bg-storefront-brand-soft text-base font-semibold tabular-nums text-primary dark:bg-storefront-brand-soft dark:text-primary">
-                      {toLocaleNumber(index + 1, isRTL)}
+                      {stepNumberFormat.format(index + 1)}
                     </span>
                     <div>
                       <h3 className="text-lg font-semibold sm:text-xl">
@@ -254,7 +258,7 @@ export default async function AboutUs() {
             </div>
             <div className="grid gap-3 sm:grid-cols-3">
               {trustKeys.map((key, index) => {
-                const Icon = index === 0 ? Flower2 : index === 1 ? Sparkles : PackageCheck;
+                const Icon = trustIcons[index];
 
                 return (
                   <div
@@ -283,11 +287,7 @@ export default async function AboutUs() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                asChild
-                size="lg"
-                className="bg-storefront-brand-foreground text-storefront-brand shadow-none hover:bg-storefront-brand-foreground/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
-              >
+              <Button asChild size="lg" className={ctaPrimaryClass}>
                 <Link href="/products">
                   {t("about.finalCtaPrimary")}
                   <ArrowIcon className="size-4" />
@@ -297,7 +297,7 @@ export default async function AboutUs() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-storefront-brand-foreground/40 bg-transparent text-storefront-brand-foreground shadow-none hover:bg-storefront-brand-foreground/10 hover:text-storefront-brand-foreground dark:border-foreground/35 dark:text-foreground dark:hover:bg-foreground/10"
+                className={ctaOutlineClass}
               >
                 <Link href="/contact">{t("about.finalCtaSecondary")}</Link>
               </Button>
