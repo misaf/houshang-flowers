@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,6 +20,7 @@ import { Input } from "@/shared/components/ui/input";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { useTranslations } from "@/shared/hooks/use-translations";
+import { telHref } from "@/shared/lib/utils";
 import { Link } from "@/shared/i18n/navigation";
 import type { ContactInfo } from "@/shared/lib/config";
 import { useFaqs } from "@/modules/faq";
@@ -33,6 +34,7 @@ import {
   Clock,
   Flower2,
   HelpCircle,
+  Loader2,
   MapPin,
   PhoneCall,
   Smartphone,
@@ -66,9 +68,8 @@ type ContactFormValues = z.infer<ReturnType<typeof createContactFormSchema>>;
 
 export default function ContactClient({ contactInfo }: { contactInfo: ContactInfo }) {
   const { t, locale } = useTranslations();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const contactFormSchema = createContactFormSchema(t);
+  const contactFormSchema = useMemo(() => createContactFormSchema(t), [t]);
 
   const mobilePhone = contactInfo.mobilePhone;
   const officePhone = contactInfo.officePhone;
@@ -97,11 +98,6 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
   });
 
   const onSubmit = async (values: ContactFormValues) => {
-    if (isSubmitting) {
-      return;
-    }
-
-    setIsSubmitting(true);
     const body = [
       `${t("contact.name")}: ${values.name}`,
       `${t("contact.email")}: ${values.email}`,
@@ -113,7 +109,6 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
     window.location.href = `mailto:${email}?subject=${encodeURIComponent(values.subject)}&body=${encodeURIComponent(body)}`;
 
     await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsSubmitting(false);
     setIsSubmitted(true);
     form.reset();
 
@@ -170,7 +165,7 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
                 title={t("contact.mobilePhoneLabel")}
                 value={toLocaleDigits(mobilePhone, locale)}
                 description={t("contact.mobilePhoneDescription")}
-                href={`tel:${mobilePhone.replace(/[^\d+]/g, "")}`}
+                href={telHref(mobilePhone)}
                 valueDir="ltr"
               />
               <ContactItem
@@ -178,7 +173,7 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
                 title={t("contact.officePhoneLabel")}
                 value={toLocaleDigits(officePhone, locale)}
                 description={t("contact.officePhoneDescription")}
-                href={`tel:${officePhone.replace(/[^\d+]/g, "")}`}
+                href={telHref(officePhone)}
                 valueDir="ltr"
               />
               <ContactItem
@@ -201,7 +196,7 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
             <ContactFormCard
               form={form}
               isSubmitted={isSubmitted}
-              isSubmitting={isSubmitting}
+              isSubmitting={form.formState.isSubmitting}
               onSubmit={onSubmit}
               t={t}
             />
@@ -244,7 +239,7 @@ function ContactFaqCard({ t }: { t: (key: string) => string }) {
             <h2 className="text-lg font-semibold">{t("contact.faqTitle")}</h2>
           </div>
           <div className="mt-4 space-y-4">
-            {[...Array(3)].map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-5 w-full" />
             ))}
           </div>
@@ -441,7 +436,7 @@ function ContactFormCard({
                 >
                   {isSubmitting ? (
                     <>
-                      <span className="size-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      <Loader2 className="size-4 motion-safe:animate-spin" />
                       {t("contact.sending")}
                     </>
                   ) : (
@@ -474,7 +469,6 @@ function ContactItem({
   description,
   href,
   valueDir,
-  multiline = false,
 }: {
   icon: LucideIcon;
   title: string;
@@ -482,7 +476,6 @@ function ContactItem({
   description?: string;
   href?: string;
   valueDir?: "ltr" | "rtl" | "auto";
-  multiline?: boolean;
 }) {
   const content = (
     <div className="flex h-full flex-col gap-3.5 p-4 sm:p-5">
@@ -502,11 +495,7 @@ function ContactItem({
           dir={valueDir}
           title={value}
           className={`mt-1.5 text-lg font-semibold leading-snug text-foreground ${
-            multiline
-              ? "whitespace-pre-line"
-              : valueDir === "ltr"
-                ? "truncate"
-                : "break-words"
+            valueDir === "ltr" ? "truncate" : "break-words"
           }`}
         >
           {value}

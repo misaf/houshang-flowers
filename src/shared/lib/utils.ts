@@ -11,6 +11,11 @@ export function parseNumericId(id: string | number): number {
   return Number.isFinite(value) ? value : 0;
 }
 
+/** Build a dialable `tel:` href, stripping everything but digits and `+`. */
+export function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, "")}`;
+}
+
 export function formatPrice(price: number | string | null | undefined): string {
   const parsedPrice =
     typeof price === "number" ? price : Number.parseFloat(String(price ?? ""));

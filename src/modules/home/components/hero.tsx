@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Link } from "@/shared/i18n/navigation";
 import { Button } from "@/shared/components/ui/button";
 import { useTranslations } from "@/shared/hooks/use-translations";
-import { cn } from "@/shared/lib/utils";
+import { cn, telHref } from "@/shared/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
@@ -45,13 +45,13 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
       icon: Smartphone,
       value: heroMobile,
       dir: "ltr" as const,
-      href: `tel:${heroMobile.replace(/[^\d+]/g, "")}`,
+      href: telHref(heroMobile),
     },
     {
       icon: Phone,
       value: heroOffice,
       dir: "ltr" as const,
-      href: `tel:${heroOffice.replace(/[^\d+]/g, "")}`,
+      href: telHref(heroOffice),
     },
   ];
   const socialLinks = [
