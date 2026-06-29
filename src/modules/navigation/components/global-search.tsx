@@ -26,6 +26,7 @@ export function GlobalSearch() {
   const [isMac, setIsMac] = useState(false);
   const { t, locale } = useTranslations();
   const router = useRouter();
+  const trimmedQuery = searchQuery.trim();
 
   // Detect OS for keyboard shortcut display
   useEffect(() => {
@@ -34,7 +35,7 @@ export function GlobalSearch() {
 
   // Debounced search
   useEffect(() => {
-    if (!open || searchQuery.trim().length < 2) {
+    if (!open || trimmedQuery.length < 2) {
       setResults([]);
       return;
     }
@@ -45,7 +46,7 @@ export function GlobalSearch() {
         const result = await fetchProductsWithDetails({
           page: 1,
           perPage: 8,
-          search: searchQuery.trim(),
+          search: trimmedQuery,
         });
         setResults(result.products);
       } catch (error) {
@@ -57,7 +58,7 @@ export function GlobalSearch() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, open]);
+  }, [trimmedQuery, open]);
 
   // Reset search when dialog closes
   useEffect(() => {
@@ -80,7 +81,6 @@ export function GlobalSearch() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-
   const handleSelect = useCallback(
     (product: Product) => {
       setOpen(false);
@@ -93,14 +93,14 @@ export function GlobalSearch() {
   );
 
   const handleSearchAll = useCallback(() => {
-    if (searchQuery.trim()) {
+    if (trimmedQuery) {
       setOpen(false);
       router.push({
         pathname: "/products",
-        query: { search: searchQuery.trim() },
+        query: { search: trimmedQuery },
       });
     }
-  }, [searchQuery, router]);
+  }, [trimmedQuery, router]);
 
   return (
     <>
@@ -145,12 +145,12 @@ export function GlobalSearch() {
               </span>
             </div>
           )}
-          {!loading && searchQuery.trim().length < 2 && (
+          {!loading && trimmedQuery.length < 2 && (
             <CommandEmpty>
               {t("search.typeToSearch") || "Type at least 2 characters to search"}
             </CommandEmpty>
           )}
-          {!loading && searchQuery.trim().length >= 2 && results.length === 0 && (
+          {!loading && trimmedQuery.length >= 2 && results.length === 0 && (
             <CommandEmpty>
               {t("search.noResults") || "No products found"}
             </CommandEmpty>
@@ -200,7 +200,7 @@ export function GlobalSearch() {
                   </CommandItem>
                 ))}
               </CommandGroup>
-              {searchQuery.trim() && (
+              {trimmedQuery && (
                 <CommandItem
                   onSelect={handleSearchAll}
                   className="justify-center border-t px-2 py-2 text-center text-sm font-medium"

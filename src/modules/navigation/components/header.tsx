@@ -22,6 +22,7 @@ import { Button } from "@/shared/components/ui/button";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { useProductCategories } from "@/modules/products";
 import { cn } from "@/shared/lib/utils";
+import { isRtlLocale } from "@/shared/lib/locale";
 import {
   ArrowLeft,
   ArrowRight,
@@ -86,9 +87,10 @@ function NavLink({
           ? "flex w-full items-center gap-3 px-3 py-3 text-base"
           : "inline-flex h-10 items-center px-3.5 text-sm",
         isActive
-          ? mobile
-            ? "bg-primary text-primary-foreground shadow-sm shadow-storefront-brand/15"
-            : "bg-primary text-primary-foreground shadow-sm shadow-storefront-brand/10"
+          ? cn(
+              "bg-primary text-primary-foreground shadow-sm",
+              mobile ? "shadow-storefront-brand/15" : "shadow-storefront-brand/10"
+            )
           : mobile
             ? "text-muted-foreground hover:bg-muted hover:text-primary"
             : "text-primary/80 hover:bg-muted hover:text-primary"
@@ -116,7 +118,7 @@ export function Header({ showNav = true }: HeaderProps) {
   const { data: apiCategories = [] } = useProductCategories();
   const [isMobileProductsOpen, setIsMobileProductsOpen] = useState(false);
   const localeClass = locale === "fa" ? "locale-fa" : "locale-en";
-  const isRTL = locale === "fa";
+  const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const mobileNavDescription = t("common.mobileNavigationDescription");
 
@@ -131,6 +133,7 @@ export function Header({ showNav = true }: HeaderProps) {
   const featuredMobileCategories = apiCategories.slice(0, 3);
   const regularMobileCategories = apiCategories.slice(3);
   const mobileProductsSubmenuId = "mobile-products-submenu";
+  const isProductsActive = isPathActive(pathname, productsHref);
 
   return (
     <header
@@ -266,7 +269,7 @@ export function Header({ showNav = true }: HeaderProps) {
                         }
                         className={cn(
                           "group flex w-full items-center gap-3 rounded-full px-3 py-3 text-start text-base font-semibold transition-all",
-                          isPathActive(pathname, productsHref)
+                          isProductsActive
                             ? "bg-primary text-primary-foreground shadow-sm shadow-storefront-brand/15"
                             : "text-muted-foreground hover:bg-muted hover:text-primary"
                         )}
@@ -274,7 +277,7 @@ export function Header({ showNav = true }: HeaderProps) {
                         <ShoppingBag
                           className={cn(
                             "size-4 shrink-0",
-                            isPathActive(pathname, productsHref)
+                            isProductsActive
                               ? "text-current"
                               : "text-muted-foreground transition-colors group-hover:text-primary"
                           )}

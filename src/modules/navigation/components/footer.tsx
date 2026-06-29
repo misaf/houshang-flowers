@@ -8,6 +8,12 @@ import { Flower2, ShieldCheck } from "lucide-react";
 
 const linkClassName = "text-sm text-muted-foreground transition-colors hover:text-primary";
 
+const socialLinks = [
+  { label: "Instagram", href: "https://www.instagram.com/houshangflower", labelKey: "home.heroInstagramLabel" },
+  { label: "Telegram", href: "https://t.me/houshangflowers", labelKey: "home.heroTelegramLabel" },
+  { label: "WhatsApp", href: "https://wa.me/+989129333034", labelKey: "home.heroWhatsAppLabel" },
+] as const;
+
 interface FooterProps {
   showNewsletter?: boolean;
 }
@@ -20,34 +26,25 @@ export function Footer({ showNewsletter = true }: FooterProps) {
     "<a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=5767588&Code=a0tdleVtDMJCDPR9WxSCD59wOLhHcUyO'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=5767588&Code=a0tdleVtDMJCDPR9WxSCD59wOLhHcUyO' alt='' style='cursor:pointer' code='a0tdleVtDMJCDPR9WxSCD59wOLhHcUyO'></a>";
 
   useEffect(() => {
-    const container = enamadContainerRef.current;
-    if (!container) {
-      return;
-    }
-
-    const imageElement = container.querySelector("img");
+    const imageElement = enamadContainerRef.current?.querySelector("img");
     if (!imageElement) {
       return;
     }
 
+    const isLoaded = () => imageElement.complete && imageElement.naturalWidth > 0;
     const handleLoad = () => setShowEnamadFallback(false);
     const handleError = () => setShowEnamadFallback(true);
 
     imageElement.addEventListener("load", handleLoad);
     imageElement.addEventListener("error", handleError);
 
-    if (imageElement.complete && imageElement.naturalWidth > 0) {
-      const immediateTimer = window.setTimeout(() => setShowEnamadFallback(false), 0);
-      return () => {
-        imageElement.removeEventListener("load", handleLoad);
-        imageElement.removeEventListener("error", handleError);
-        window.clearTimeout(immediateTimer);
-      };
+    // The image may already be cached/complete before the listeners attach.
+    if (isLoaded()) {
+      setShowEnamadFallback(false);
     }
 
     const fallbackTimer = window.setTimeout(() => {
-      const loaded = imageElement.complete && imageElement.naturalWidth > 0;
-      setShowEnamadFallback(!loaded);
+      setShowEnamadFallback(!isLoaded());
     }, 3500);
 
     return () => {
@@ -146,39 +143,19 @@ export function Footer({ showNewsletter = true }: FooterProps) {
                 {t("footer.connect")}
               </h3>
               <ul className="mt-4 space-y-2">
-                <li>
-                  <a
-                    href="https://www.instagram.com/houshangflower"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={t("home.heroInstagramLabel")}
-                    className={linkClassName}
-                  >
-                    Instagram
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://t.me/houshangflowers"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={t("home.heroTelegramLabel")}
-                    className={linkClassName}
-                  >
-                    Telegram
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://wa.me/+989129333034"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={t("home.heroWhatsAppLabel")}
-                    className={linkClassName}
-                  >
-                    WhatsApp
-                  </a>
-                </li>
+                {socialLinks.map((social) => (
+                  <li key={social.label}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={t(social.labelKey)}
+                      className={linkClassName}
+                    >
+                      {social.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
