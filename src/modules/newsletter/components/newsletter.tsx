@@ -46,7 +46,7 @@ export function Newsletter({ variant = "default", className = "" }: NewsletterPr
         <div className="grid overflow-hidden rounded-2xl border border-border bg-storefront-brand-soft shadow-2xl shadow-foreground/10 dark:border-white/10 dark:bg-storefront-surface lg:grid-cols-[0.85fr_1.15fr]">
           <div className="relative min-h-72 overflow-hidden bg-primary lg:min-h-[30rem]">
             <Image
-              src="/hero-florist-studio.png"
+              src="/hero-florist-studio.webp"
               alt=""
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"

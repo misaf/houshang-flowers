@@ -310,23 +310,20 @@ export default function BlogPostsClient({
             <form
               onSubmit={handleSearchSubmit}
               role="search"
-              className="relative w-full lg:max-w-xs"
+              className="grid w-full grid-cols-[minmax(0,1fr)_auto] gap-2 lg:max-w-md"
             >
-              <button
-                type="submit"
-                aria-label={t("blog.searchAction") || "Search"}
-                className="absolute start-1 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Search className="h-4 w-4" aria-hidden="true" />
-              </button>
               <Input
                 type="search"
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
                 aria-label={t("blog.searchPlaceholder") || "Search the journal"}
                 placeholder={t("blog.searchPlaceholder") || "Search the journal"}
-                className="h-11 rounded-full bg-card ps-11 pe-4"
+                className="h-11 rounded-full bg-card px-4"
               />
+              <Button type="submit" className="h-11 rounded-full px-4">
+                <Search className="h-4 w-4" aria-hidden="true" />
+                <span>{t("blog.searchAction") || "Search"}</span>
+              </Button>
             </form>
           </div>
 

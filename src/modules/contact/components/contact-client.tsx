@@ -136,7 +136,7 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
 
             <div className="relative min-h-56 overflow-hidden rounded-lg border border-primary/10 bg-primary shadow-lg shadow-storefront-brand/10 dark:border-white/10 sm:min-h-72">
               <Image
-                src="/contact-consultation.png"
+                src="/contact-consultation.webp"
                 alt=""
                 fill
                 priority

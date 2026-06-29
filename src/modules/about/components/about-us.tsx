@@ -115,7 +115,7 @@ export default async function AboutUs() {
               />
               <div className="relative aspect-[5/4] overflow-hidden rounded-lg border border-storefront-brand-foreground/15 bg-storefront-brand-soft shadow-2xl shadow-black/25">
                 <Image
-                  src="/hero-florist-studio.png"
+                  src="/hero-florist-studio.webp"
                   alt={t("about.heroImageAlt")}
                   fill
                   priority
@@ -144,7 +144,7 @@ export default async function AboutUs() {
             <figure className="lg:pt-8">
               <div className="relative aspect-[5/4] overflow-hidden rounded-lg bg-storefront-brand-soft dark:bg-storefront-surface sm:aspect-[4/3] lg:aspect-[4/5]">
                 <Image
-                  src="/contact-consultation.png"
+                  src="/contact-consultation.webp"
                   alt={t("about.missionImageAlt")}
                   fill
                   sizes="(min-width: 1024px) 38vw, 100vw"
@@ -210,7 +210,7 @@ export default async function AboutUs() {
               <figure className="mt-9">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-storefront-brand-soft dark:bg-storefront-surface">
                   <Image
-                    src="/contact-delivery-prep.png"
+                    src="/contact-delivery-prep.webp"
                     alt={t("about.trustImageAlt")}
                     fill
                     sizes="(min-width: 1024px) 42vw, 100vw"

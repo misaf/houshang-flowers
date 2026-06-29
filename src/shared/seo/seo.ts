@@ -9,7 +9,7 @@ export const SITE_NAME: Record<Locale, string> = {
 };
 
 /** Default social-share image, resolved against `metadataBase`. */
-export const DEFAULT_OG_IMAGE = "/hero-florist-studio.png";
+export const DEFAULT_OG_IMAGE = "/hero-florist-studio.webp";
 
 /**
  * Currency used in Product JSON-LD offers. ISO 4217 code — Iranian Rial.
