@@ -1,7 +1,6 @@
 "use client";
 
-import { useFavorites } from "@/modules/account";
-import { useOrders } from "@/modules/account";
+import { useFavorites, useOrders, type Order } from "@/modules/account";
 import { useCart } from "@/modules/cart";
 import {
   Sheet,
@@ -21,7 +20,16 @@ import {
   EmptyTitle,
 } from "@/shared/components/ui/empty";
 import { Link } from "@/shared/i18n/navigation";
-import { Heart, Package, User, Trash2, ShoppingBag, Calendar } from "lucide-react";
+import {
+  Heart,
+  Package,
+  User,
+  Trash2,
+  ShoppingBag,
+  Calendar,
+  type LucideIcon,
+} from "lucide-react";
+import type { ComponentProps } from "react";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { formatLocalizedPrice } from "@/shared/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -34,28 +42,56 @@ interface UserPanelProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const STATUS_BADGE_VARIANT: Record<
+  Order["status"],
+  ComponentProps<typeof Badge>["variant"]
+> = {
+  pending: "outline",
+  processing: "outline",
+  shipped: "secondary",
+  delivered: "default",
+  cancelled: "destructive",
+};
+
+/** Shared empty state for the favorites/orders tabs: a neutral icon and a
+ *  real "Shop Now" CTA that closes the panel. */
+function EmptyTab({
+  icon: Icon,
+  title,
+  description,
+  onShop,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  onShop: () => void;
+}) {
+  const { t } = useTranslations();
+  return (
+    <Empty className="py-12">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Icon className="h-6 w-6" />
+        </EmptyMedia>
+        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button asChild>
+          <Link href="/products" onClick={onShop}>
+            {t("common.shopNow")}
+          </Link>
+        </Button>
+      </EmptyContent>
+    </Empty>
+  );
+}
+
 export function UserPanel({ open, onOpenChange }: UserPanelProps) {
   const { favorites, removeFromFavorites } = useFavorites();
   const { orders } = useOrders();
   const { addToCart, openCart } = useCart();
   const { t, locale } = useTranslations();
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case "delivered":
-        return "default";
-      case "shipped":
-        return "secondary";
-      case "processing":
-        return "outline";
-      case "pending":
-        return "outline";
-      case "cancelled":
-        return "destructive";
-      default:
-        return "outline";
-    }
-  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -87,24 +123,12 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
             {/* Favorites Tab */}
             <TabsContent value="favorites" className="mt-4">
               {favorites.length === 0 ? (
-                <Empty className="py-12">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Heart className="h-6 w-6" />
-                    </EmptyMedia>
-                    <EmptyTitle>{t("common.emptyFavorites")}</EmptyTitle>
-                    <EmptyDescription>
-                      {t("common.addSomeFavorites")}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
-                    <Button asChild>
-                      <Link href="/products" onClick={() => onOpenChange(false)}>
-                        {t("common.shopNow")}
-                      </Link>
-                    </Button>
-                  </EmptyContent>
-                </Empty>
+                <EmptyTab
+                  icon={Heart}
+                  title={t("common.emptyFavorites")}
+                  description={t("common.addSomeFavorites")}
+                  onShop={() => onOpenChange(false)}
+                />
               ) : (
                 <div className="space-y-4">
                   {favorites.map((item) => (
@@ -175,24 +199,12 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
             {/* Order History Tab */}
             <TabsContent value="orders" className="mt-4">
               {orders.length === 0 ? (
-                <Empty className="py-12">
-                  <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                      <Package className="h-6 w-6" />
-                    </EmptyMedia>
-                    <EmptyTitle>{t("common.emptyOrders")}</EmptyTitle>
-                    <EmptyDescription>
-                      {t("common.startShopping")}
-                    </EmptyDescription>
-                  </EmptyHeader>
-                  <EmptyContent>
-                    <Button asChild>
-                      <Link href="/products" onClick={() => onOpenChange(false)}>
-                        {t("common.shopNow")}
-                      </Link>
-                    </Button>
-                  </EmptyContent>
-                </Empty>
+                <EmptyTab
+                  icon={Package}
+                  title={t("common.emptyOrders")}
+                  description={t("common.startShopping")}
+                  onShop={() => onOpenChange(false)}
+                />
               ) : (
                 <div className="space-y-4">
                   {orders.map((order) => (
@@ -202,7 +214,7 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
                           <CardTitle className="text-base">
                             {t("common.orderNumber")} {order.id.slice(-8).toUpperCase()}
                           </CardTitle>
-                          <Badge variant={getStatusBadgeVariant(order.status)}>
+                          <Badge variant={STATUS_BADGE_VARIANT[order.status]}>
                             {t(`common.${order.status}`)}
                           </Badge>
                         </div>

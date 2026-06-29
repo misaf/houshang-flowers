@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import type { Product } from "@/modules/products";
-import { getStorageItem, setStorageItem } from "@/shared/lib/storage";
+import { usePersistentState } from "@/shared/hooks/use-persistent-state";
 
 export interface CartItem extends Product {
   quantity: number;
@@ -27,15 +27,8 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>(() =>
-    getStorageItem<CartItem[]>("cart", [])
-  );
+  const [items, setItems] = usePersistentState<CartItem[]>("cart", []);
   const [isCartOpen, setCartOpen] = useState(false);
-
-  // Save cart to localStorage whenever items change
-  useEffect(() => {
-    setStorageItem("cart", items);
-  }, [items]);
 
   const addToCart = (product: Product) => {
     setItems((prevItems) => {

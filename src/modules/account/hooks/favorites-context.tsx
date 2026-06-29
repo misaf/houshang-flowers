@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext } from "react";
 import type { Product } from "@/modules/products";
-import { getStorageItem, setStorageItem } from "@/shared/lib/storage";
+import { usePersistentState } from "@/shared/hooks/use-persistent-state";
 
 interface FavoritesContextType {
   favorites: Product[];
@@ -17,14 +17,10 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(
 );
 
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
-  const [favorites, setFavorites] = useState<Product[]>(() =>
-    getStorageItem<Product[]>("favorites", [])
+  const [favorites, setFavorites] = usePersistentState<Product[]>(
+    "favorites",
+    []
   );
-
-  // Save favorites to localStorage whenever favorites change
-  useEffect(() => {
-    setStorageItem("favorites", favorites);
-  }, [favorites]);
 
   const addToFavorites = (product: Product) => {
     setFavorites((prevFavorites) => {

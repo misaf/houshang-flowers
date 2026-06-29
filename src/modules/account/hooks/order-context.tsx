@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext } from "react";
 import type { CartItem } from "@/modules/cart";
-import { getStorageItem, setStorageItem } from "@/shared/lib/storage";
+import { usePersistentState } from "@/shared/hooks/use-persistent-state";
 
 export interface Order {
   id: string;
@@ -28,20 +28,12 @@ export interface Order {
 interface OrderContextType {
   orders: Order[];
   addOrder: (order: Omit<Order, "id" | "date">) => void;
-  getOrder: (orderId: string) => Order | undefined;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: React.ReactNode }) {
-  const [orders, setOrders] = useState<Order[]>(() =>
-    getStorageItem<Order[]>("orders", [])
-  );
-
-  // Save orders to localStorage whenever orders change
-  useEffect(() => {
-    setStorageItem("orders", orders);
-  }, [orders]);
+  const [orders, setOrders] = usePersistentState<Order[]>("orders", []);
 
   const addOrder = (orderData: Omit<Order, "id" | "date">) => {
     const newOrder: Order = {
@@ -52,16 +44,11 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     setOrders((prevOrders) => [newOrder, ...prevOrders]);
   };
 
-  const getOrder = (orderId: string) => {
-    return orders.find((order) => order.id === orderId);
-  };
-
   return (
     <OrderContext.Provider
       value={{
         orders,
         addOrder,
-        getOrder,
       }}
     >
       {children}
