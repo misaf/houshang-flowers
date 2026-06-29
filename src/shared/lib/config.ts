@@ -1,6 +1,6 @@
 const DEFAULT_API_BASE_URL = "https://vendra.test/v1";
 const DEFAULT_STORAGE_BASE_URL = "https://vendra.test";
-const DEFAULT_SITE_URL = "https://houshangflowers.com";
+const DEFAULT_SITE_URL = "https://houshang-flowers.com";
 
 function normalizeBaseUrl(value: string): string {
   return value.replace(/\/+$/, "");
@@ -8,7 +8,7 @@ function normalizeBaseUrl(value: string): string {
 
 /**
  * Public, canonical origin of the storefront (no trailing slash), e.g.
- * "https://houshangflowers.com". Used for canonical URLs, hreflang
+ * "https://houshang-flowers.com". Used for canonical URLs, hreflang
  * alternates, sitemap/robots, Open Graph and JSON-LD. Override per
  * environment via NEXT_PUBLIC_SITE_URL (must be the real production domain).
  */

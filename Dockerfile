@@ -20,7 +20,7 @@ ARG STORAGE_BASE_URL=https://vendra.test
 ARG NEXT_PUBLIC_API_BASE_URL=https://vendra.test/v1
 ARG NEXT_PUBLIC_STORAGE_BASE_URL=https://vendra.test
 # Public canonical origin used for SEO (canonical/hreflang/sitemap/OG/JSON-LD).
-ARG NEXT_PUBLIC_SITE_URL=https://houshangflowers.com
+ARG NEXT_PUBLIC_SITE_URL=https://houshang-flowers.com
 
 ENV API_BASE_URL=$API_BASE_URL
 ENV STORAGE_BASE_URL=$STORAGE_BASE_URL
@@ -45,7 +45,7 @@ ENV API_BASE_URL=https://vendra.test/v1
 ENV STORAGE_BASE_URL=https://vendra.test
 ENV NEXT_PUBLIC_API_BASE_URL=https://vendra.test/v1
 ENV NEXT_PUBLIC_STORAGE_BASE_URL=https://vendra.test
-ENV NEXT_PUBLIC_SITE_URL=https://houshangflowers.com
+ENV NEXT_PUBLIC_SITE_URL=https://houshang-flowers.com
 ENV NODE_OPTIONS=--use-system-ca
 
 COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
