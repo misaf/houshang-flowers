@@ -28,6 +28,9 @@ interface FaqClientProps {
 
 const UNCATEGORIZED_KEY = "__uncategorized__";
 
+/** The grouping key for a FAQ: its category slug, or the uncategorized bucket. */
+const bucketKey = (faq: Faq) => faq.categorySlug || UNCATEGORIZED_KEY;
+
 interface Bucket {
   key: string;
   name: string;
@@ -65,9 +68,7 @@ export default function FaqClient({
 
   // Category buckets in catalogue order, with uncategorized last.
   const buckets = useMemo<Bucket[]>(() => {
-    const present = new Set(
-      faqs.map((faq) => faq.categorySlug || UNCATEGORIZED_KEY)
-    );
+    const present = new Set(faqs.map(bucketKey));
     const ordered: Bucket[] = [];
     for (const category of initialCategories) {
       if (present.has(category.slug)) {
@@ -94,7 +95,7 @@ export default function FaqClient({
   const counts = useMemo(() => {
     const map = new Map<string, number>();
     for (const faq of matched) {
-      const key = faq.categorySlug || UNCATEGORIZED_KEY;
+      const key = bucketKey(faq);
       map.set(key, (map.get(key) ?? 0) + 1);
     }
     return map;
@@ -102,20 +103,21 @@ export default function FaqClient({
 
   const visible = useMemo(() => {
     if (selectedCategory === "all") return matched;
-    return matched.filter(
-      (faq) => (faq.categorySlug || UNCATEGORIZED_KEY) === selectedCategory
-    );
+    return matched.filter((faq) => bucketKey(faq) === selectedCategory);
   }, [matched, selectedCategory]);
 
-  // Group the visible entries by bucket so the ledger reads as a guide.
+  // Group the visible entries by bucket in a single pass so the ledger reads
+  // as a guide.
   const groups = useMemo(() => {
+    const byKey = new Map<string, Faq[]>();
+    for (const faq of visible) {
+      const key = bucketKey(faq);
+      const list = byKey.get(key);
+      if (list) list.push(faq);
+      else byKey.set(key, [faq]);
+    }
     return buckets
-      .map((bucket) => ({
-        ...bucket,
-        items: visible.filter(
-          (faq) => (faq.categorySlug || UNCATEGORIZED_KEY) === bucket.key
-        ),
-      }))
+      .map((bucket) => ({ ...bucket, items: byKey.get(bucket.key) ?? [] }))
       .filter((group) => group.items.length > 0);
   }, [buckets, visible]);
 
@@ -150,14 +152,17 @@ export default function FaqClient({
     });
   }, []);
 
-  const railItems = [
-    { key: "all", name: t("faq.allCategories"), count: matched.length },
-    ...buckets.map((bucket) => ({
-      key: bucket.key,
-      name: bucket.name,
-      count: counts.get(bucket.key) ?? 0,
-    })),
-  ];
+  const railItems = useMemo(
+    () => [
+      { key: "all", name: t("faq.allCategories"), count: matched.length },
+      ...buckets.map((bucket) => ({
+        key: bucket.key,
+        name: bucket.name,
+        count: counts.get(bucket.key) ?? 0,
+      })),
+    ],
+    [buckets, counts, matched.length, t]
+  );
 
   const showGroupHeadings = groups.length > 1;
   const hasResults = visible.length > 0;

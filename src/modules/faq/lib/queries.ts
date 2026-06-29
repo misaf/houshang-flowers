@@ -16,15 +16,6 @@ import type {
   FetchFaqsParams,
 } from "../types";
 
-function parsePosition(value: number | string | undefined): number {
-  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
-  if (typeof value === "string") {
-    const parsed = Number.parseInt(value, 10);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-  return 0;
-}
-
 function getFirstRelationship<T>(data: T | T[] | undefined): T | undefined {
   return Array.isArray(data) ? data[0] : data;
 }
@@ -40,7 +31,7 @@ function transformFaq(faq: FaqDto): Faq {
     id: parseNumericId(faq.id),
     question: faq.name,
     answer: toPlainText(faq.description),
-    position: parsePosition(faq.position),
+    position: parseNumericId(faq.position ?? 0),
     category: category?.name || category?.slug,
     categorySlug: category?.slug,
   };
