@@ -3,6 +3,7 @@ import { fetchProductsWithDetails } from "@/modules/products";
 import { fetchBlogPostsWithDetails } from "@/modules/blog";
 import { routing } from "@/shared/i18n/routing";
 import { absoluteUrl, localizedPath } from "@/shared/seo";
+import { createReadableResourcePath } from "@/shared/lib/slug-url";
 
 // Revalidate the sitemap hourly so new products/posts get picked up.
 export const revalidate = 3600;
@@ -32,21 +33,26 @@ function entry(
   };
 }
 
-type SlugEntry = { slug: string; updatedAt?: string };
+type SlugEntry = { id: string | number; slug: string; updatedAt?: string };
 
 /** Paginate a collection, accumulating every entry with a slug. */
 async function collectSlugs(
   label: string,
   loadPage: (
     page: number
-  ) => Promise<{ entries: { slug?: string; updatedAt?: string }[]; lastPage: number }>
+  ) => Promise<{
+    entries: { id: string | number; slug?: string; updatedAt?: string }[];
+    lastPage: number;
+  }>
 ): Promise<SlugEntry[]> {
   const items: SlugEntry[] = [];
   try {
     for (let page = 1; page <= MAX_PAGES; page += 1) {
       const { entries, lastPage } = await loadPage(page);
       for (const item of entries) {
-        if (item.slug) items.push({ slug: item.slug, updatedAt: item.updatedAt });
+        if (item.slug) {
+          items.push({ id: item.id, slug: item.slug, updatedAt: item.updatedAt });
+        }
       }
       if (page >= lastPage) break;
     }
@@ -80,7 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   const productEntries = products.map((p) =>
-    entry(`/products/${p.slug}`, {
+    entry(`/products/${createReadableResourcePath(p.id, p.slug)}`, {
       changeFrequency: "weekly",
       priority: 0.8,
       lastModified: p.updatedAt,
@@ -88,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   const postEntries = posts.map((p) =>
-    entry(`/blog/${p.slug}`, {
+    entry(`/blog/${createReadableResourcePath(p.id, p.slug)}`, {
       changeFrequency: "monthly",
       priority: 0.6,
       lastModified: p.updatedAt,
