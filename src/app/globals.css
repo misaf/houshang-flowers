@@ -207,6 +207,24 @@
       transparent
     );
   }
+  /* Store map: rests in ink to belong on the porcelain page, then blooms
+     into full colour when reached for. The grayscale rest state is opt-in
+     behind motion preference, so reduced-motion users get the full-colour,
+     fully legible map immediately. Colour is always one hover/focus away. */
+  @media (prefers-reduced-motion: no-preference) {
+    .golzar-map {
+      filter: grayscale(1) contrast(0.96) brightness(1.02);
+      transition: filter 0.5s ease;
+    }
+    :root.dark .golzar-map {
+      filter: grayscale(1) contrast(0.92) brightness(0.92);
+    }
+    .golzar-map:hover,
+    .golzar-map:focus,
+    .golzar-map:focus-within {
+      filter: none;
+    }
+  }
 }
 
 @keyframes storefront-section-enter {

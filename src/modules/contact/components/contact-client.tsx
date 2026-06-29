@@ -191,6 +191,8 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
           </div>
         </section>
 
+        <VisitStudioMap mapQuery={contactInfo.mapQuery} locale={locale} t={t} />
+
         <section className="pb-12 sm:pb-16 pt-8 sm:pt-10">
           <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[1.25fr_0.75fr] lg:px-8">
             <ContactFormCard
@@ -223,6 +225,82 @@ export default function ContactClient({ contactInfo }: { contactInfo: ContactInf
         </section>
       </div>
     </PageShell>
+  );
+}
+
+function VisitStudioMap({
+  mapQuery,
+  locale,
+  t,
+}: {
+  mapQuery: string;
+  locale: string;
+  t: (key: string) => string;
+}) {
+  const embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=16&hl=${locale}&output=embed`;
+  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`;
+
+  return (
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mb-7 max-w-2xl sm:mb-9">
+          <span className="golzar-seam mb-3 max-w-[7rem]">
+            <span className="petal-dot" aria-hidden="true" />
+            <span className="h-px flex-1" aria-hidden="true" />
+          </span>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            {t("contact.visitEyebrow")}
+          </p>
+          <h2 className="font-display mt-3 text-2xl leading-tight sm:text-3xl">
+            {t("contact.visitTitle")}
+          </h2>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base sm:leading-8">
+            {t("contact.visitDescription")}
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Offset frame — the editorial inset rectangle used on the About hero. */}
+          <div
+            className="pointer-events-none absolute -inset-2 rounded-xl border border-border sm:-inset-3"
+            aria-hidden="true"
+          />
+          <div className="relative overflow-hidden rounded-lg border border-border bg-storefront-brand-soft shadow-lg shadow-storefront-brand/10">
+            <iframe
+              title={t("contact.mapLabel")}
+              src={embedUrl}
+              className="golzar-map block h-80 w-full border-0 sm:h-[26rem] lg:h-[30rem]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            {/* Ink address plate — same primary card as the help panel. */}
+            <div className="pointer-events-none absolute inset-x-3 bottom-3 sm:inset-x-5 sm:bottom-5">
+              <div className="pointer-events-auto max-w-sm rounded-lg bg-primary p-4 text-primary-foreground shadow-xl shadow-storefront-brand/30 sm:p-5">
+                <div className="flex items-center gap-2">
+                  <MapPin className="size-4 shrink-0 text-primary-foreground/80" />
+                  <p className="font-display text-base font-semibold leading-tight sm:text-lg">
+                    {t("common.store")}
+                  </p>
+                </div>
+                <p className="mt-1.5 text-sm leading-6 text-primary-foreground/85">
+                  {t("contact.addressValue")}
+                </p>
+                <a
+                  href={directionsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary-foreground px-4 py-2 text-sm font-semibold text-primary shadow-sm motion-safe:transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                >
+                  {t("contact.getDirections")}
+                  <ArrowUpRight className="size-4 rtl:rotate-180" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

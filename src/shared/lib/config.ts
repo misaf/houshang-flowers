@@ -40,12 +40,16 @@ const DEFAULT_CONTACT_MOBILE_PHONE = "0912-9333034";
 const DEFAULT_CONTACT_OFFICE_PHONE = "021-22011507";
 const DEFAULT_CONTACT_HOURS_OPEN = "08:00";
 const DEFAULT_CONTACT_HOURS_CLOSE = "21:00";
+// Store location for the map, as "lat,lng" so the pin lands on the
+// storefront. Override via CONTACT_MAP_QUERY (accepts coords or a place query).
+const DEFAULT_CONTACT_MAP_QUERY = "35.77212623987952,51.42057522912032";
 
 export interface ContactInfo {
   mobilePhone: string;
   officePhone: string;
   hoursOpen: string;
   hoursClose: string;
+  mapQuery: string;
 }
 
 export function getContactInfo(): ContactInfo {
@@ -54,5 +58,6 @@ export function getContactInfo(): ContactInfo {
     officePhone: process.env.CONTACT_OFFICE_PHONE || DEFAULT_CONTACT_OFFICE_PHONE,
     hoursOpen: process.env.CONTACT_HOURS_OPEN || DEFAULT_CONTACT_HOURS_OPEN,
     hoursClose: process.env.CONTACT_HOURS_CLOSE || DEFAULT_CONTACT_HOURS_CLOSE,
+    mapQuery: process.env.CONTACT_MAP_QUERY || DEFAULT_CONTACT_MAP_QUERY,
   };
 }
