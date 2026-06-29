@@ -21,6 +21,7 @@ function entry(
   for (const locale of routing.locales) {
     languages[locale] = absoluteUrl(localizedPath(locale, path));
   }
+  languages["x-default"] = absoluteUrl(localizedPath(routing.defaultLocale, path));
 
   return {
     url: absoluteUrl(localizedPath(routing.defaultLocale, path)),
