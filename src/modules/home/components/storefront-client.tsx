@@ -8,23 +8,13 @@ import { Newsletter } from "@/modules/newsletter";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { useCallback, useEffect } from "react";
 import type { Post as BlogPost, PostCategory } from "@/modules/blog";
-import type { Product } from "@/modules/products";
+import type { HomeProductCategory } from "@/modules/products";
 import { formatLocaleDate } from "@/shared/lib/date";
-
-export interface HomeProductCategoryData {
-  slug: string;
-  title: string;
-  description: string | null;
-  image?: string;
-  products: Product[];
-}
 
 interface StorefrontClientProps {
   initialBlogPosts: BlogPost[];
   initialBlogCategory: PostCategory | null;
-  initialBlogPage: number;
-  initialHasMoreBlogPosts: boolean;
-  initialHomeProductCategories: HomeProductCategoryData[];
+  initialHomeProductCategories: HomeProductCategory[];
 }
 
 export default function StorefrontClient({

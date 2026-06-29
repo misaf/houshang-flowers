@@ -1,6 +1,9 @@
 export { CategoryMediaImage } from "./components/category-media-image";
 export { CategoryMenu } from "./components/category-menu";
-export { HomeProductsSection } from "./components/home-products-section";
+export {
+  HomeProductsSection,
+  type HomeProductCategory,
+} from "./components/home-products-section";
 export { default as ProductDetailClient } from "./components/product-detail-client";
 export { default as ProductsClient } from "./components/products-client";
 export { ThemedProductImage } from "./components/themed-product-image";

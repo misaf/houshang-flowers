@@ -28,7 +28,7 @@ import { formatRemainingQuantity } from "../lib/format";
 import { isRtlLocale } from "@/shared/lib/locale";
 import type { Product } from "@/modules/products";
 
-interface HomeProductCategory {
+export interface HomeProductCategory {
   slug: string;
   title: string;
   description: string | null;

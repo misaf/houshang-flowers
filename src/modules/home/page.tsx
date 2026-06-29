@@ -5,9 +5,13 @@ import {
   fetchBlogPostsWithDetails,
 } from "@/modules/blog";
 import type { Post as BlogPost, PostCategory } from "@/modules/blog";
-import { fetchProductCategories, fetchProductsWithDetails } from "@/modules/products";
+import {
+  fetchProductCategories,
+  fetchProductsWithDetails,
+  type HomeProductCategory,
+} from "@/modules/products";
 import { buildMetadata } from "@/shared/seo";
-import StorefrontClient, { type HomeProductCategoryData } from "./components/storefront-client";
+import StorefrontClient from "./components/storefront-client";
 
 const BLOG_PAGE_SIZE = 9;
 const HOME_PRODUCTS_PER_CATEGORY = 20;
@@ -34,55 +38,38 @@ export async function generateMetadata({
 interface InitialBlogData {
   initialBlogPosts: BlogPost[];
   initialBlogCategory: PostCategory | null;
-  initialBlogPage: number;
-  initialHasMoreBlogPosts: boolean;
 }
 
 async function loadInitialBlog(): Promise<InitialBlogData> {
-  const data: InitialBlogData = {
-    initialBlogPosts: [],
-    initialBlogCategory: null,
-    initialBlogPage: 1,
-    initialHasMoreBlogPosts: false,
-  };
+  let blogCategories: PostCategory[] = [];
 
   try {
-    let blogCategories: PostCategory[] = [];
+    blogCategories = await fetchBlogPostCategories();
+  } catch (error) {
+    console.error("Error loading blog post categories:", error);
+  }
 
-    try {
-      blogCategories = await fetchBlogPostCategories();
-    } catch (error) {
-      console.error("Error loading blog post categories:", error);
-    }
-
-    const categoriesToTry = [...blogCategories, null];
-
-    for (const category of categoriesToTry) {
-      const blogResult = await fetchBlogPostsWithDetails({
+  try {
+    // Try each category, then the unfiltered feed; use the first with posts.
+    for (const category of [...blogCategories, null]) {
+      const { posts } = await fetchBlogPostsWithDetails({
         perPage: BLOG_PAGE_SIZE,
         page: 1,
         category: category?.slug,
       });
 
-      if (blogResult.posts.length === 0) {
-        continue;
+      if (posts.length > 0) {
+        return { initialBlogPosts: posts, initialBlogCategory: category };
       }
-
-      data.initialBlogCategory = category;
-      data.initialBlogPosts = blogResult.posts;
-      data.initialBlogPage = blogResult.pagination.currentPage;
-      data.initialHasMoreBlogPosts =
-        blogResult.pagination.currentPage < blogResult.pagination.lastPage;
-      break;
     }
   } catch (error) {
     console.error("Error loading initial blog posts:", error);
   }
 
-  return data;
+  return { initialBlogPosts: [], initialBlogCategory: null };
 }
 
-async function loadInitialHomeProductCategories(): Promise<HomeProductCategoryData[]> {
+async function loadInitialHomeProductCategories(): Promise<HomeProductCategory[]> {
   try {
     const apiCategories = await fetchProductCategories();
     const homeCategories = apiCategories.slice(0, HOME_CATEGORY_LIMIT);
@@ -131,8 +118,6 @@ export default async function StorefrontPage() {
     <StorefrontClient
       initialBlogPosts={blog.initialBlogPosts}
       initialBlogCategory={blog.initialBlogCategory}
-      initialBlogPage={blog.initialBlogPage}
-      initialHasMoreBlogPosts={blog.initialHasMoreBlogPosts}
       initialHomeProductCategories={initialHomeProductCategories}
     />
   );
