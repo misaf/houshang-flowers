@@ -42,7 +42,7 @@ const DEFAULT_CONTACT_HOURS_OPEN = "08:00";
 const DEFAULT_CONTACT_HOURS_CLOSE = "21:00";
 // Store location for the map, as "lat,lng" so the pin lands on the
 // storefront. Override via CONTACT_MAP_QUERY (accepts coords or a place query).
-const DEFAULT_CONTACT_MAP_QUERY = "35.77212623987952,51.42057522912032";
+const DEFAULT_CONTACT_MAP_QUERY = "35.772123240655716,51.420586774090964";
 
 export interface ContactInfo {
   mobilePhone: string;
