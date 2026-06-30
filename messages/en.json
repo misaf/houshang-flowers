@@ -111,7 +111,17 @@
     "cityRequired": "Please enter your city.",
     "zipCodeRequired": "Please enter your ZIP code.",
     "countryRequired": "Please enter your country.",
-    "submitError": "Something went wrong placing your order. Please try again."
+    "submitError": "Something went wrong placing your order. Please try again.",
+    "deliveryLocation": "Delivery location",
+    "dropPinEyebrow": "Drop a pin",
+    "pinHint": "Drag the map so the pin sits on your door — we'll fill in the address.",
+    "findingAddress": "Finding address…",
+    "geocodeError": "Couldn't read that spot. Pan a little, or type the address below.",
+    "useMyLocation": "Use my location",
+    "locating": "Locating…",
+    "apartmentHint": "Add your unit, floor, or a nearby landmark.",
+    "countryFromMap": "Set from the map",
+    "pinRequired": "Drop a pin on the map to set your delivery location."
   },
   "home": {
     "metadataTitle": "Fresh Flowers, Plants & Floral Arrangements",

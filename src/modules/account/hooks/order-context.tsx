@@ -22,6 +22,8 @@ export interface Order {
     city: string;
     zipCode: string;
     country: string;
+    latitude?: number;
+    longitude?: number;
   };
 }
 

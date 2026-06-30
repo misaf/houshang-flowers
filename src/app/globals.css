@@ -1,3 +1,4 @@
+@import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -232,6 +233,113 @@
     .golzar-map:focus,
     .golzar-map:focus-within {
       filter: none;
+    }
+  }
+
+  /* Checkout delivery picker — an interactive Leaflet map rendered as an
+     "ink wash": tiles desaturated to porcelain + grey so the only solid ink
+     on the canvas is the petal-pin fixed at centre. Pan the map, the pin
+     stays put, the address resolves underneath. */
+  .golzar-pinmap .leaflet-container {
+    background: var(--muted);
+    font: inherit;
+    font-size: 0.75rem;
+  }
+  /* OSM tiles are colourful, so they're desaturated to porcelain + grey and
+     inverted into ink for dark mode. */
+  .golzar-pinmap[data-provider="osm"] .leaflet-tile-pane {
+    filter: grayscale(1) contrast(0.95) brightness(1.03);
+  }
+  :root.dark .golzar-pinmap[data-provider="osm"] .leaflet-tile-pane {
+    filter: grayscale(1) invert(0.92) brightness(0.85) contrast(0.95);
+  }
+  /* Neshan ships its own day/night styles, so only a light desaturation is
+     applied to keep it in the Golzār ink palette — never inverted. */
+  .golzar-pinmap[data-provider="neshan"] .leaflet-tile-pane {
+    filter: grayscale(1) contrast(0.98);
+  }
+  .golzar-pinmap .leaflet-bar {
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+  .golzar-pinmap .leaflet-bar a {
+    background: var(--card);
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+  .golzar-pinmap .leaflet-bar a:hover {
+    background: var(--secondary);
+  }
+  .golzar-pinmap .leaflet-control-attribution {
+    background: color-mix(in oklch, var(--card) 82%, transparent);
+    color: var(--muted-foreground);
+    font-size: 0.6rem;
+    backdrop-filter: blur(4px);
+  }
+  .golzar-pinmap .leaflet-control-attribution a {
+    color: var(--muted-foreground);
+    text-decoration: underline;
+  }
+  .golzar-pinmap .leaflet-container:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: -2px;
+  }
+
+  /* The petal-pin: bottom-centre anchored at the map centre. */
+  .golzar-pin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 500;
+    pointer-events: none;
+  }
+  .golzar-pin__shadow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.7rem;
+    height: 0.28rem;
+    transform: translate(-50%, -50%);
+    background: var(--foreground);
+    opacity: 0.28;
+    border-radius: 999px;
+    filter: blur(1px);
+  }
+  .golzar-pin__drop {
+    display: block;
+    width: 1.35rem;
+    height: 1.35rem;
+    background: var(--primary);
+    border-radius: 50% 50% 50% 0;
+    transform: translate(-50%, -100%) rotate(-45deg);
+    transform-origin: bottom center;
+    box-shadow: 0 3px 7px -2px color-mix(in oklch, var(--foreground) 40%, transparent);
+  }
+  .golzar-pin__dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.4rem;
+    height: 0.4rem;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background: var(--primary-foreground);
+  }
+  /* One restrained motion: the pin lifts while the map pans, settles on
+     release — only for users who haven't asked for reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .golzar-pin__drop {
+      transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .golzar-pin__shadow {
+      transition: transform 0.28s ease, opacity 0.28s ease;
+    }
+    .golzar-pin[data-moving="true"] .golzar-pin__drop {
+      transform: translate(-50%, calc(-100% - 0.35rem)) rotate(-45deg);
+    }
+    .golzar-pin[data-moving="true"] .golzar-pin__shadow {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0.16;
     }
   }
 }

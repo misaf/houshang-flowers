@@ -1,7 +1,8 @@
 "use client";
 
 import { Link, useRouter } from "@/shared/i18n/navigation";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -27,6 +28,18 @@ import { formatLocalizedPrice } from "@/shared/lib/utils";
 import { ShoppingBag, MapPin, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { SafeImage } from "@/shared/components/ui/safe-image";
 import { toast } from "sonner";
+import type { ResolvedLocation } from "./address-map-picker";
+
+// Leaflet touches `window` on import, so the picker is client-only.
+const AddressMapPicker = dynamic(() => import("./address-map-picker"), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-2.5">
+      <div className="h-8 w-40 animate-pulse rounded-md bg-muted" />
+      <div className="h-64 w-full animate-pulse rounded-xl border border-border bg-muted sm:h-80" />
+    </div>
+  ),
+});
 
 const SHIPPING_FEE = 10.0;
 const TAX_RATE = 0.1;
@@ -46,7 +59,10 @@ function createCheckoutFormSchema(t: (key: string) => string) {
     address: z.string().min(1, t("checkout.addressRequired")),
     city: z.string().min(1, t("checkout.cityRequired")),
     zipCode: z.string().min(1, t("checkout.zipCodeRequired")),
-    country: z.string().min(1, t("checkout.countryRequired")),
+    // Country is filled by pinning the map, never typed by hand.
+    country: z.string().min(1, t("checkout.pinRequired")),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
   });
 }
 
@@ -72,8 +88,28 @@ export default function CheckoutClient() {
       city: "",
       zipCode: "",
       country: "",
+      latitude: undefined,
+      longitude: undefined,
     },
   });
+
+  // A resolved pin pours its address into the form; blanks never clobber
+  // anything the buyer has already typed.
+  const handleLocationResolve = useCallback(
+    (loc: ResolvedLocation) => {
+      if (loc.address)
+        form.setValue("address", loc.address, { shouldValidate: true, shouldDirty: true });
+      if (loc.city)
+        form.setValue("city", loc.city, { shouldValidate: true, shouldDirty: true });
+      if (loc.country)
+        form.setValue("country", loc.country, { shouldValidate: true, shouldDirty: true });
+      form.setValue("latitude", loc.latitude);
+      form.setValue("longitude", loc.longitude);
+    },
+    [form]
+  );
+
+  const detectedCountry = form.watch("country");
 
   const totals = useMemo(() => getOrderTotals(getTotalPrice()), [getTotalPrice]);
 
@@ -244,6 +280,11 @@ export default function CheckoutClient() {
                       </FormItem>
                     )}
                   />
+                  <AddressMapPicker
+                    locale={locale}
+                    t={t}
+                    onResolve={handleLocationResolve}
+                  />
                   <FormField
                     control={form.control}
                     name="address"
@@ -257,11 +298,14 @@ export default function CheckoutClient() {
                             {...field}
                           />
                         </FormControl>
+                        <p className="text-xs text-muted-foreground">
+                          {t("checkout.apartmentHint")}
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     <FormField
                       control={form.control}
                       name="city"
@@ -293,20 +337,29 @@ export default function CheckoutClient() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="country"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{t("checkout.country")}</FormLabel>
-                          <FormControl>
-                            <Input autoComplete="country-name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
+                  {/* Country is read-only — it comes from the pinned map, not
+                      the keyboard. */}
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>{t("checkout.country")}</FormLabel>
+                        <div className="flex h-9 items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 text-sm">
+                          <MapPin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                          {detectedCountry ? (
+                            <span className="text-foreground">{detectedCountry}</span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {t("checkout.countryFromMap")}
+                            </span>
+                          )}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
             </div>
