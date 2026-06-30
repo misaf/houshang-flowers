@@ -45,7 +45,6 @@ export default function StorefrontClient({
         locale={locale}
         t={t}
         categories={initialHomeProductCategories}
-        loading={false}
       />
 
       <BlogSection

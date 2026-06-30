@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { ThemeProvider } from "@/shared/components/theme-provider";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { getDirection } from "@/shared/lib/locale";
 import { Cart } from "@/modules/cart";
 import { JsonLd } from "@/shared/components/seo/json-ld";
 import { CartProvider } from "@/modules/cart";
@@ -86,7 +87,7 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
-  const direction = locale === "fa" ? "rtl" : "ltr";
+  const direction = getDirection(locale);
 
   const localeClassName = locale === "fa" ? "locale-fa" : "locale-en";
 

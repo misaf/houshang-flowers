@@ -5,7 +5,6 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight, Flower2, ImageOff } from "lucide-react";
 import { ThemedProductImage } from "@/modules/products";
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardFooter, CardHeader } from "@/shared/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -14,7 +13,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/shared/components/ui/empty";
-import { Skeleton } from "@/shared/components/ui/skeleton";
 import {
   Carousel,
   CarouselContent,
@@ -40,7 +38,6 @@ interface HomeProductsSectionProps {
   locale: string;
   t: (key: string, values?: Record<string, string | number>) => string;
   categories: HomeProductCategory[];
-  loading?: boolean;
 }
 
 interface HomeProductCardProps {
@@ -245,43 +242,17 @@ function ProductCategorySectionHeader({
   );
 }
 
-function ProductCategorySkeleton() {
-  return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-      {[0, 1, 2, 3, 4].map((index) => (
-        <Card key={index} className="overflow-hidden">
-          <Skeleton className="aspect-[4/3] w-full" />
-          <CardHeader>
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </CardHeader>
-          <CardFooter className="justify-between">
-            <Skeleton className="h-6 w-24" />
-            <Skeleton className="h-9 w-28" />
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
 export function HomeProductsSection({
   locale,
   t,
   categories,
-  loading = false,
 }: HomeProductsSectionProps) {
   const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   return (
     <section className="w-full">
-      {loading && categories.length === 0 ? (
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-          <ProductCategorySkeleton />
-        </div>
-      ) : categories.length === 0 ? (
+      {categories.length === 0 ? (
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <Empty>
             <EmptyHeader>
@@ -317,9 +288,7 @@ export function HomeProductsSection({
                   t={t}
                   arrowIcon={ArrowIcon}
                 />
-                {loading ? (
-                  <ProductCategorySkeleton />
-                ) : category.products.length === 0 ? (
+                {category.products.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
                     {t("products.noProductsInCategory") ||
                       "There are no products available in this category."}

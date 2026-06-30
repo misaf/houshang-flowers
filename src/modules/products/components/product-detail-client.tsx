@@ -7,6 +7,7 @@ import { ThemedProductImage } from "./themed-product-image";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { isRtlLocale } from "@/shared/lib/locale";
 import {
   Dialog,
   DialogContent,
@@ -67,7 +68,7 @@ export default function ProductDetailClient({
   const { t, locale } = useTranslations();
   const { addToCart, openCart } = useCart();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const isRTL = locale === "fa";
+  const isRTL = isRtlLocale(locale);
   const BackArrow = isRTL ? ArrowRight : ArrowLeft;
 
   const product = initialProduct;

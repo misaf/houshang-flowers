@@ -1,13 +1,7 @@
 import Jsona from "jsona";
 import { getApiBaseUrl } from "@/shared/lib/config";
 import type { JsonApiLinks, JsonApiMeta } from "@/shared/api/types";
-
-export const JSON_API_MEDIA_TYPE = "application/vnd.api+json";
-
-export const JSON_API_HEADERS = {
-  Accept: JSON_API_MEDIA_TYPE,
-  "Content-Type": JSON_API_MEDIA_TYPE,
-} as const;
+import { JSON_API_HEADERS } from "@/shared/lib/network";
 
 const API_BASE_URL = getApiBaseUrl();
 const dataFormatter = new Jsona();

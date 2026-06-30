@@ -2,7 +2,7 @@ import { cache } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiClientError, apiClient } from "@/shared/api/client";
 import { createApiQueryOptions, type ApiQueryOptions } from "@/shared/api/query-client";
-import { PLACEHOLDER_IMAGE, toAbsoluteStorageUrl } from "@/shared/lib/image";
+import { PLACEHOLDER_IMAGE, buildMediaUrl } from "@/shared/lib/image";
 import { getLeadingResourceId } from "@/shared/lib/slug-url";
 import { stringifyRichText, stripHtml } from "@/shared/lib/rich-text";
 import { parseNumericId } from "@/shared/lib/utils";
@@ -68,37 +68,15 @@ function getPagination(
   };
 }
 
-function getConversionName(conversions: Record<string, unknown>): string | null {
-  const priority = ["extra-large", "large", "medium", "small"];
-
-  for (const name of priority) {
-    if (conversions[name]) return name;
-  }
-
-  return Object.keys(conversions)[0] || null;
-}
-
 function buildImageUrl(media?: PostMedia | null): string | null {
   if (!media) return null;
-  if (media.url) return toAbsoluteStorageUrl(media.url);
-  if (!media.uuid) return null;
-
-  const conversions = media.generated_conversions || {};
-  const conversionName = getConversionName(conversions);
-
-  if (conversionName) {
-    const baseName =
-      media.file_name?.replace(/\.[^/.]+$/, "") ||
-      media.name?.replace(/-v\d+$/, "");
-    if (!baseName) return null;
-    return toAbsoluteStorageUrl(
-      `storage/${media.uuid}/conversions/${baseName}-${conversionName}.webp`
-    );
-  }
-
-  return media.file_name
-    ? toAbsoluteStorageUrl(`storage/${media.uuid}/${media.file_name}`)
-    : null;
+  return buildMediaUrl({
+    url: media.url,
+    uuid: media.uuid,
+    fileName: media.file_name,
+    name: media.name,
+    conversions: media.generated_conversions,
+  });
 }
 
 function getFirstRelatedImage(post: PostDto): string {

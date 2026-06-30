@@ -212,7 +212,7 @@ export function Header({ showNav = true }: HeaderProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent
-                  side={locale === "fa" ? "right" : "left"}
+                  side={isRTL ? "right" : "left"}
                   className={cn(
                     "w-[88vw] max-w-sm overflow-y-auto border-border bg-[linear-gradient(160deg,var(--background),var(--storefront-brand-soft)_58%,var(--background))] p-0 text-foreground dark:bg-[linear-gradient(160deg,var(--background),var(--storefront-brand-soft)_58%,var(--background))]",
                     localeClass

@@ -5,10 +5,11 @@ import { PageShell } from "@/shared/components/layout/page-shell";
 import { Button } from "@/shared/components/ui/button";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { isRtlLocale } from "@/shared/lib/locale";
 
 export default function NotFound() {
   const { t, locale } = useTranslations();
-  const HomeArrow = locale === "fa" ? ArrowRight : ArrowLeft;
+  const HomeArrow = isRtlLocale(locale) ? ArrowRight : ArrowLeft;
 
   return (
     <PageShell>

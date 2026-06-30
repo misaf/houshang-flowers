@@ -1,5 +1,3 @@
-"use client";
-
 import type { ReactNode } from "react";
 import type { JSONContent } from "@tiptap/core";
 import { renderToReactElement } from "@tiptap/static-renderer/pm/react";

@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ApiClientError, apiClient } from "@/shared/api/client";
 import { createApiQueryOptions, type ApiQueryOptions } from "@/shared/api/query-client";
-import { PLACEHOLDER_IMAGE, toAbsoluteStorageUrl } from "@/shared/lib/image";
+import { PLACEHOLDER_IMAGE, buildMediaUrl } from "@/shared/lib/image";
 import { getLeadingResourceId } from "@/shared/lib/slug-url";
 import { stripHtml } from "@/shared/lib/rich-text";
 import { parseNumericId } from "@/shared/lib/utils";
@@ -157,16 +158,6 @@ function getPagination(
   };
 }
 
-function getConversionName(conversions: Record<string, unknown>): string | null {
-  const priority = ["extra-large", "large", "medium", "small"];
-
-  for (const name of priority) {
-    if (conversions[name]) return name;
-  }
-
-  return Object.keys(conversions)[0] || null;
-}
-
 type ProductMediaAttributeKey =
   | "url"
   | "uuid"
@@ -181,30 +172,17 @@ function getMediaValue<K extends ProductMediaAttributeKey>(
   return media[key] ?? media.attributes?.[key];
 }
 
+// ProductMedia nests its fields under `attributes`; flatten them for the
+// shared storage-URL builder.
 function buildImageUrl(media?: ProductMedia | null): string | null {
   if (!media) return null;
-  const url = getMediaValue(media, "url");
-  const uuid = getMediaValue(media, "uuid");
-  const fileName = getMediaValue(media, "file_name");
-  const name = getMediaValue(media, "name");
-  if (url) return toAbsoluteStorageUrl(url);
-  if (!uuid) return null;
-
-  const conversions = getMediaValue(media, "generated_conversions") || {};
-  const conversionName = getConversionName(conversions);
-
-  if (conversionName) {
-    const baseName =
-      fileName?.replace(/\.[^/.]+$/, "") || name?.replace(/-v\d+$/, "");
-    if (!baseName) return null;
-    return toAbsoluteStorageUrl(
-      `storage/${uuid}/conversions/${baseName}-${conversionName}.webp`
-    );
-  }
-
-  return fileName
-    ? toAbsoluteStorageUrl(`storage/${uuid}/${fileName}`)
-    : null;
+  return buildMediaUrl({
+    url: getMediaValue(media, "url"),
+    uuid: getMediaValue(media, "uuid"),
+    fileName: getMediaValue(media, "file_name"),
+    name: getMediaValue(media, "name"),
+    conversions: getMediaValue(media, "generated_conversions"),
+  });
 }
 
 function getFirstRelatedImage(product: ProductDto): string {
@@ -502,22 +480,28 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   return null;
 }
 
-export async function fetchProductCategories(): Promise<ProductCategory[]> {
-  const response = await apiClient.get<ProductCategoryDto[]>(
-    "product-categories",
-    {
-      query: {
-        include: "multimedia",
-        "filter[status]": "1",
-      },
-      next: { revalidate: 10 },
-      mode: "cors",
-      credentials: "omit",
-    }
-  );
+// Cached per request: the home page resolves the category list several times in
+// one render (loadInitialHomeProductCategories plus each resolveProductCategoryId),
+// so without cache() the fetch + transform would run repeatedly. Mirrors the blog
+// side's fetchPostCategories.
+export const fetchProductCategories = cache(
+  async (): Promise<ProductCategory[]> => {
+    const response = await apiClient.get<ProductCategoryDto[]>(
+      "product-categories",
+      {
+        query: {
+          include: "multimedia",
+          "filter[status]": "1",
+        },
+        next: { revalidate: 10 },
+        mode: "cors",
+        credentials: "omit",
+      }
+    );
 
-  return transformCategories(response.data);
-}
+    return transformCategories(response.data);
+  }
+);
 
 export function useProducts(
   params: FetchProductsParams = {},

@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/shared/i18n/navigation";
@@ -8,6 +8,7 @@ import { Button } from "@/shared/components/ui/button";
 import { SafeImage } from "@/shared/components/ui/safe-image";
 import { RichText } from "@/shared/components/rich-text";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { isRtlLocale } from "@/shared/lib/locale";
 import { fetchBlogPost, fetchBlogPostsWithDetails } from "./lib/queries";
 import type { Post as BlogPost } from "./types";
 import { PLACEHOLDER_IMAGE } from "@/shared/lib/image";
@@ -23,6 +24,19 @@ import {
 
 // Deduplicate the post fetch across generateMetadata + the page render.
 const getPost = cache((slug: string) => fetchBlogPost(slug));
+
+// The latest entries close the article — fetched without blocking the render
+// and streamed in via <Suspense>. Errors degrade to an empty list.
+async function loadRelatedPosts(currentPostId: number): Promise<BlogPost[]> {
+  try {
+    const result = await fetchBlogPostsWithDetails({ page: 1, perPage: 4 });
+    return result.posts
+      .filter((entry) => entry.id !== currentPostId)
+      .slice(0, 3);
+  } catch {
+    return [];
+  }
+}
 
 export async function generateMetadata({
   params,
@@ -70,7 +84,7 @@ export default async function BlogPostDetail({
 }) {
   const { locale, slug } = await params;
   const t = await getTranslations({ locale });
-  const BackArrow = locale === "fa" ? ArrowRight : ArrowLeft;
+  const BackArrow = isRtlLocale(locale) ? ArrowRight : ArrowLeft;
 
   let post = null;
   let error: string | null = null;
@@ -89,18 +103,10 @@ export default async function BlogPostDetail({
 
   const hasLeadImage = Boolean(post?.image && post.image !== PLACEHOLDER_IMAGE);
 
-  // The latest entries close the article — a quiet invitation to keep reading.
-  let relatedPosts: BlogPost[] = [];
-  if (post) {
-    try {
-      const result = await fetchBlogPostsWithDetails({ page: 1, perPage: 4 });
-      relatedPosts = result.posts
-        .filter((entry) => entry.id !== post!.id)
-        .slice(0, 3);
-    } catch {
-      // Related entries are optional — never block the article on them.
-    }
-  }
+  // Kick off the related fetch without awaiting — streamed on the client.
+  const relatedPostsPromise: Promise<BlogPost[]> = post
+    ? loadRelatedPosts(post.id)
+    : Promise.resolve([]);
 
   return (
     <PageShell>
@@ -224,7 +230,9 @@ export default async function BlogPostDetail({
             </div>
           </article>
 
-          <RelatedEntries posts={relatedPosts} />
+          <Suspense fallback={null}>
+            <RelatedEntries postsPromise={relatedPostsPromise} />
+          </Suspense>
         </>
       ) : null}
     </PageShell>

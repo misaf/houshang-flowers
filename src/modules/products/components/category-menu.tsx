@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Link, usePathname } from "@/shared/i18n/navigation";
 import { CategoryMediaImage } from "./category-media-image";
 import { useTranslations } from "@/shared/hooks/use-translations";
+import { isRtlLocale } from "@/shared/lib/locale";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,7 +48,7 @@ export function CategoryMenu() {
   const currentCategory = searchParams?.get("category") || "all";
   const isProductsPage = pathname?.includes("/products");
   const { data: apiCategories = [], isLoading } = useProductCategories();
-  const isRTL = locale === "fa";
+  const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const categories = useMemo<CategoryDisplayItem[]>(() => {

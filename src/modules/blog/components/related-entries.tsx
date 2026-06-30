@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { use, useCallback } from "react";
 import { Link } from "@/shared/i18n/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BlogPostCard } from "./blog-post-card";
@@ -9,7 +9,12 @@ import { formatLocaleDate } from "@/shared/lib/date";
 import { isRtlLocale } from "@/shared/lib/locale";
 import type { Post as BlogPost } from "@/modules/blog";
 
-export function RelatedEntries({ posts }: { posts: BlogPost[] }) {
+export function RelatedEntries({
+  postsPromise,
+}: {
+  postsPromise: Promise<BlogPost[]>;
+}) {
+  const posts = use(postsPromise);
   const { t, locale } = useTranslations();
   const isRtl = isRtlLocale(locale);
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;

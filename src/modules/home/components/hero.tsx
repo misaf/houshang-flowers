@@ -5,6 +5,7 @@ import { Link } from "@/shared/i18n/navigation";
 import { Button } from "@/shared/components/ui/button";
 import { useTranslations } from "@/shared/hooks/use-translations";
 import { cn, telHref } from "@/shared/lib/utils";
+import { isRtlLocale } from "@/shared/lib/locale";
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,7 +26,7 @@ interface HeroProps {
 export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
   const { t, locale } = useTranslations();
   const consultText = t("home.heroConsult");
-  const isRTL = locale === "fa";
+  const isRTL = isRtlLocale(locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   // The signature: shop the spectrum. Each chip is a real entry into the
