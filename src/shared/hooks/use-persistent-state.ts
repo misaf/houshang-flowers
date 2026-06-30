@@ -4,17 +4,22 @@ import { useEffect, useRef, useState } from "react";
 import { getStorageItem, setStorageItem } from "@/shared/lib/storage";
 
 /**
- * State backed by localStorage: lazily hydrated from `key` on mount and
- * persisted on every subsequent change. The initial value read from storage
- * is not written back, so mounting a provider is a no-op for storage.
+ * State backed by localStorage. To stay hydration-safe, the first render — on the
+ * server and during the client's hydration pass — always uses `defaultValue`, so
+ * the markup matches. The persisted value is adopted from `key` in an effect
+ * after mount, then written back on every subsequent change. (Reading storage in
+ * the `useState` initializer instead would diverge the hydration render from the
+ * server and throw a hydration mismatch.)
  */
 export function usePersistentState<T>(key: string, defaultValue: T) {
-  const [value, setValue] = useState<T>(() => getStorageItem<T>(key, defaultValue));
+  const [value, setValue] = useState<T>(defaultValue);
 
+  const defaultRef = useRef(defaultValue);
   const hydrated = useRef(false);
   useEffect(() => {
     if (!hydrated.current) {
       hydrated.current = true;
+      setValue(getStorageItem<T>(key, defaultRef.current));
       return;
     }
     setStorageItem(key, value);

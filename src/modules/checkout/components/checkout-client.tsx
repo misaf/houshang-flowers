@@ -22,6 +22,7 @@ import { Empty, EmptyHeader, EmptyTitle, EmptyDescription, EmptyMedia } from "@/
 import { useCart } from "@/modules/cart";
 import { useOrders } from "@/modules/account";
 import { useTranslations } from "@/shared/hooks/use-translations";
+import { useHydrated } from "@/shared/hooks/use-hydrated";
 import { formatLocalizedPrice } from "@/shared/lib/utils";
 import { ShoppingBag, MapPin, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { SafeImage } from "@/shared/components/ui/safe-image";
@@ -56,6 +57,7 @@ export default function CheckoutClient() {
   const { items, getTotalPrice, clearCart, openCart } = useCart();
   const { addOrder } = useOrders();
   const { t, locale } = useTranslations();
+  const hydrated = useHydrated();
 
   const checkoutFormSchema = useMemo(() => createCheckoutFormSchema(t), [t]);
 
@@ -96,6 +98,25 @@ export default function CheckoutClient() {
       toast.error(t("checkout.submitError"));
     }
   };
+
+  // Cart lives in localStorage, so the first render can't know its contents.
+  // Hold a neutral loader until hydrated to avoid flashing the empty-cart CTA.
+  if (!hydrated) {
+    return (
+      <PageShell showFooter={false}>
+        <div
+          role="status"
+          aria-label={t("common.loading")}
+          className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4"
+        >
+          <Loader2
+            className="size-6 animate-spin text-muted-foreground"
+            aria-hidden="true"
+          />
+        </div>
+      </PageShell>
+    );
+  }
 
   if (items.length === 0) {
     return (

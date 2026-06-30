@@ -1,20 +1,14 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { useCart } from "@/modules/cart";
 import { Button } from "@/shared/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
 import { useTranslations } from "@/shared/hooks/use-translations";
-
-const subscribe = () => () => {};
+import { useHydrated } from "@/shared/hooks/use-hydrated";
 
 export function CartButton() {
-  const hydrated = useSyncExternalStore(
-    subscribe,
-    () => true,
-    () => false
-  );
+  const hydrated = useHydrated();
   const { getTotalItems, openCart } = useCart();
   const { t } = useTranslations();
   const totalItems = getTotalItems();
