@@ -148,7 +148,7 @@
 .locale-fa .font-display {
   font-family: var(--font-persian);
 }
-/* Persian display: Vazirmatn at its heaviest, never the grotesque */
+/* Persian display: Vazirmatn at its heaviest, never the Latin display face */
 .locale-fa .font-display {
   letter-spacing: 0;
   font-weight: 800;

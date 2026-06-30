@@ -69,7 +69,10 @@
     "processing": "در حال پردازش",
     "shipped": "ارسال شده",
     "delivered": "تحویل داده شده",
-    "cancelled": "لغو شده"
+    "cancelled": "لغو شده",
+    "undo": "بازگردانی",
+    "removedFromFavorites": "{name} از علاقه‌مندی‌ها حذف شد",
+    "backToCart": "بازگشت به سبد خرید"
   },
   "checkout": {
     "metadataTitle": "تسویه حساب",
@@ -98,7 +101,16 @@
     "successDescription": "از خرید شما متشکریم. سفارش شما دریافت شده و در حال پردازش است.",
     "successDetails": "به‌زودی ایمیل تایید سفارش همراه با جزئیات و اطلاعات پیگیری برای شما ارسال می‌شود.",
     "continueShopping": "ادامه خرید",
-    "backToHome": "بازگشت به خانه"
+    "backToHome": "بازگشت به خانه",
+    "firstNameRequired": "لطفاً نام را وارد کنید.",
+    "lastNameRequired": "لطفاً نام خانوادگی را وارد کنید.",
+    "emailInvalid": "لطفاً یک ایمیل معتبر وارد کنید.",
+    "phoneRequired": "لطفاً شماره تماس را وارد کنید.",
+    "addressRequired": "لطفاً نشانی را وارد کنید.",
+    "cityRequired": "لطفاً شهر را وارد کنید.",
+    "zipCodeRequired": "لطفاً کد پستی را وارد کنید.",
+    "countryRequired": "لطفاً کشور را وارد کنید.",
+    "submitError": "در ثبت سفارش مشکلی پیش آمد. لطفاً دوباره تلاش کنید."
   },
   "home": {
     "metadataTitle": "گل‌ها، گیاهان و چیدمان‌های گل تازه",

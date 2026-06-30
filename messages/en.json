@@ -69,7 +69,10 @@
     "processing": "Processing",
     "shipped": "Shipped",
     "delivered": "Delivered",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "undo": "Undo",
+    "removedFromFavorites": "{name} removed from favorites",
+    "backToCart": "Back to cart"
   },
   "checkout": {
     "metadataTitle": "Checkout",
@@ -98,7 +101,16 @@
     "successDescription": "Thank you for your purchase. Your order has been received and is being processed.",
     "successDetails": "You will receive an email confirmation shortly with your order details and tracking information.",
     "continueShopping": "Continue Shopping",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "firstNameRequired": "Please enter your first name.",
+    "lastNameRequired": "Please enter your last name.",
+    "emailInvalid": "Please enter a valid email address.",
+    "phoneRequired": "Please enter your phone number.",
+    "addressRequired": "Please enter your address.",
+    "cityRequired": "Please enter your city.",
+    "zipCodeRequired": "Please enter your ZIP code.",
+    "countryRequired": "Please enter your country.",
+    "submitError": "Something went wrong placing your order. Please try again."
   },
   "home": {
     "metadataTitle": "Fresh Flowers, Plants & Floral Arrangements",

@@ -88,7 +88,7 @@ function EmptyTab({
 }
 
 export function UserPanel({ open, onOpenChange }: UserPanelProps) {
-  const { favorites, removeFromFavorites } = useFavorites();
+  const { favorites, removeFromFavorites, addToFavorites } = useFavorites();
   const { orders } = useOrders();
   const { addToCart, openCart } = useCart();
   const { t, locale } = useTranslations();
@@ -184,7 +184,20 @@ export function UserPanel({ open, onOpenChange }: UserPanelProps) {
                             size="icon"
                             className="text-destructive hover:text-destructive"
                             aria-label={t("common.removeFromFavorites")}
-                            onClick={() => removeFromFavorites(item.id)}
+                            onClick={() => {
+                              removeFromFavorites(item.id);
+                              toast.success(
+                                t("common.removedFromFavorites", {
+                                  name: item.name,
+                                }),
+                                {
+                                  action: {
+                                    label: t("common.undo"),
+                                    onClick: () => addToFavorites(item),
+                                  },
+                                }
+                              );
+                            }}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

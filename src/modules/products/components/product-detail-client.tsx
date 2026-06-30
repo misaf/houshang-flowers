@@ -154,8 +154,9 @@ export default function ProductDetailClient({
 		                  <li>
 		                    <Link
 		                      href="/products"
-		                      className="rounded-sm text-muted-foreground outline-none transition-colors hover:text-foreground hover:underline focus-visible:ring-2 focus-visible:ring-ring"
+		                      className="group inline-flex items-center gap-1.5 rounded-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
 		                    >
+		                      <BackArrow className="size-3.5 transition-transform duration-300 group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0.5" />
 		                      {t("common.products")}
 		                    </Link>
 		                  </li>
