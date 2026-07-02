@@ -232,6 +232,7 @@ export function Hero({ title, subtitle, showButtons = true }: HeroProps) {
               fill
               sizes="(min-width: 1024px) 45vw, 100vw"
               className="object-cover"
+              quality={95}
               loading="eager"
               fetchPriority="high"
               priority
