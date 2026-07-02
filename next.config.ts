@@ -23,6 +23,7 @@ const imageHostnames = Array.from(new Set([apiHostname, storageHostname]));
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
+    qualities: [75, 95],
     remotePatterns: imageHostnames.flatMap((hostname) => [
       {
         protocol: "https" as const,
