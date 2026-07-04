@@ -23,7 +23,9 @@ export function PageShell({
     <div className={cn("min-h-screen bg-background text-foreground", className)}>
       <SkipLink />
       <Header />
-      <main id="main-content">{children}</main>
+      <main id="main-content" tabIndex={-1} className="scroll-mt-24 focus:outline-none">
+        {children}
+      </main>
       {showFooter ? <Footer showNewsletter={showFooterNewsletter} /> : null}
     </div>
   );
