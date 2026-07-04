@@ -13,17 +13,23 @@ import {
 } from "@/shared/seo";
 
 // Deduplicate the product fetch across generateMetadata + the page render.
-const getProduct = cache((slug: string) => fetchProductBySlug(slug));
+const getProduct = cache((slug: string, locale: string) =>
+  fetchProductBySlug(slug, locale)
+);
 
 // Related products are secondary — fetched without blocking the product render
 // and streamed in via <Suspense> on the client. Errors degrade to an empty list.
-async function loadRelatedProducts(product: Product): Promise<Product[]> {
+async function loadRelatedProducts(
+  product: Product,
+  locale: string
+): Promise<Product[]> {
   try {
     const currentProductId = product.id;
     const relatedResult = await fetchProductsWithDetails({
       page: 1,
       perPage: 16,
       category: product.categorySlug,
+      locale,
       sort: "random-position",
     });
 
@@ -35,6 +41,7 @@ async function loadRelatedProducts(product: Product): Promise<Product[]> {
       const fallbackResult = await fetchProductsWithDetails({
         page: 1,
         perPage: 16,
+        locale,
         sort: "random-position",
       });
       const relatedIds = new Set(relatedProducts.map((item) => item.id));
@@ -64,7 +71,7 @@ export async function generateMetadata({
 
   let product: Product | null = null;
   try {
-    product = await getProduct(slug);
+    product = await getProduct(slug, locale);
   } catch {
     // Fall back to generic metadata when the API is unavailable.
   }
@@ -107,7 +114,7 @@ export default async function ProductDetailPage({
   let initialError: string | null = null;
 
   try {
-    initialProduct = await getProduct(slug);
+    initialProduct = await getProduct(slug, locale);
     if (!initialProduct) {
       initialError = "NOT_FOUND";
     }
@@ -117,7 +124,7 @@ export default async function ProductDetailPage({
 
   // Kick off the related fetch without awaiting — streamed on the client.
   const relatedProductsPromise = initialProduct
-    ? loadRelatedProducts(initialProduct)
+    ? loadRelatedProducts(initialProduct, locale)
     : Promise.resolve<Product[]>([]);
 
   const structuredData = initialProduct

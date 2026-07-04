@@ -38,8 +38,8 @@ export default async function FaqPage({
 
   try {
     const [faqs, categories] = await Promise.all([
-      fetchFaqs({ perPage: 100 }),
-      fetchFaqCategories(),
+      fetchFaqs({ perPage: 100, locale }),
+      fetchFaqCategories(locale),
     ]);
     initialFaqs = faqs;
     initialCategories = categories;

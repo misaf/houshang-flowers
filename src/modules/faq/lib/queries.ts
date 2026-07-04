@@ -49,8 +49,11 @@ function transformFaqCategory(category: FaqCategoryDto): FaqCategory {
   };
 }
 
-async function resolveFaqCategoryId(slug: string): Promise<string | null> {
-  const categories = await fetchFaqCategories();
+async function resolveFaqCategoryId(
+  slug: string,
+  locale?: string
+): Promise<string | null> {
+  const categories = await fetchFaqCategories(locale);
   const category = categories.find((item) => item.slug === slug);
 
   return category ? String(category.id) : null;
@@ -58,10 +61,12 @@ async function resolveFaqCategoryId(slug: string): Promise<string | null> {
 
 async function fetchFaqCollection(
   path: string,
-  queryParams: URLSearchParams
+  queryParams: URLSearchParams,
+  locale?: string
 ): Promise<Faq[]> {
   const response = await apiClient.get<FaqDto[]>(path, {
     query: queryParams,
+    locale,
     next: { revalidate: 10 },
     mode: "cors",
     credentials: "omit",
@@ -103,14 +108,14 @@ function createFaqQueryParams(page: number, perPage: number): URLSearchParams {
 }
 
 export async function fetchFaqs(params: FetchFaqsParams = {}): Promise<Faq[]> {
-  const { page = 1, perPage = 20, search, category } = params;
+  const { page = 1, perPage = 20, locale, search, category } = params;
   const queryParams = createFaqQueryParams(page, perPage);
   const normalizedSearch = search?.trim();
 
   let path = "faqs";
 
   if (category) {
-    const categoryId = await resolveFaqCategoryId(category);
+    const categoryId = await resolveFaqCategoryId(category, locale);
 
     if (!categoryId) {
       return [];
@@ -125,21 +130,22 @@ export async function fetchFaqs(params: FetchFaqsParams = {}): Promise<Faq[]> {
       searchFilters.map((filterKey) => {
         const searchQueryParams = createFaqQueryParams(page, perPage);
         searchQueryParams.append(filterKey, normalizedSearch);
-        return fetchFaqCollection(path, searchQueryParams);
+        return fetchFaqCollection(path, searchQueryParams, locale);
       })
     );
 
     return mergeFaqs(results);
   }
 
-  return sortFaqs(await fetchFaqCollection(path, queryParams));
+  return sortFaqs(await fetchFaqCollection(path, queryParams, locale));
 }
 
-export async function fetchFaqCategories(): Promise<FaqCategory[]> {
+export async function fetchFaqCategories(locale?: string): Promise<FaqCategory[]> {
   const response = await apiClient.get<FaqCategoryDto[]>("faq-categories", {
     query: {
       "page[size]": "50",
     },
+    locale,
     next: { revalidate: 10 },
     mode: "cors",
     credentials: "omit",

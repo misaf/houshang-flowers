@@ -30,10 +30,13 @@ export async function generateMetadata({
 }
 
 export default async function BlogPosts({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const { locale } = await params;
   const query = await searchParams;
   const selectedCategory = normalizeCategory(readFirst(query.category));
   const searchQuery = normalizeSearch(readFirst(query.search));
@@ -49,9 +52,10 @@ export default async function BlogPosts({
       page: 1,
       perPage: 12,
       category: selectedCategory !== "all" ? selectedCategory : undefined,
+      locale,
       search: searchQuery || undefined,
     }),
-    fetchBlogPostCategories(),
+    fetchBlogPostCategories(locale),
   ]);
 
   if (postsResult.status === "fulfilled") {

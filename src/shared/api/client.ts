@@ -1,7 +1,11 @@
 import Jsona from "jsona";
 import { getApiBaseUrl } from "@/shared/lib/config";
 import type { JsonApiLinks, JsonApiMeta } from "@/shared/api/types";
-import { JSON_API_HEADERS } from "@/shared/lib/network";
+import {
+  JSON_API_HEADERS,
+  getAcceptLanguageHeader,
+} from "@/shared/lib/network";
+import { routing } from "@/shared/i18n/routing";
 
 const API_BASE_URL = getApiBaseUrl();
 const dataFormatter = new Jsona();
@@ -56,6 +60,7 @@ export interface ApiRequestOptions
   authToken?: string | null;
   body?: unknown;
   headers?: HeadersInit;
+  locale?: string;
   next?: {
     revalidate?: number | false;
     tags?: string[];
@@ -152,12 +157,60 @@ function deserializeJsonApi<TData>(body: unknown): ApiResponse<TData> {
   };
 }
 
+function getBrowserLocale(): string | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const [, locale] = window.location.pathname.split("/");
+  return (routing.locales as readonly string[]).includes(locale)
+    ? locale
+    : undefined;
+}
+
+function createRequestHeaders({
+  headers,
+  locale,
+  token,
+}: {
+  headers?: HeadersInit;
+  locale?: string;
+  token?: string | null;
+}): Headers {
+  const requestHeaders = new Headers(JSON_API_HEADERS);
+  const acceptLanguage = getAcceptLanguageHeader(locale ?? getBrowserLocale());
+
+  if (acceptLanguage) {
+    requestHeaders.set("Accept-Language", acceptLanguage);
+  }
+
+  if (token) {
+    requestHeaders.set("Authorization", `Bearer ${token}`);
+  }
+
+  if (headers) {
+    new Headers(headers).forEach((value, key) => {
+      requestHeaders.set(key, value);
+    });
+  }
+
+  return requestHeaders;
+}
+
 async function apiRequest<TData>(
   method: string,
   path: string,
   options: ApiRequestOptions = {}
 ): Promise<ApiResponse<TData>> {
-  const { authToken, body, headers, query, timeout = 30000, ...init } = options;
+  const {
+    authToken,
+    body,
+    headers,
+    locale,
+    query,
+    timeout = 30000,
+    ...init
+  } = options;
   const controller = new AbortController();
   const timeoutId =
     timeout > 0 ? setTimeout(() => controller.abort(), timeout) : null;
@@ -169,11 +222,7 @@ async function apiRequest<TData>(
     const response = await fetch(url, {
       ...init,
       method,
-      headers: {
-        ...JSON_API_HEADERS,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...headers,
-      },
+      headers: createRequestHeaders({ headers, locale, token }),
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: controller.signal,
     });

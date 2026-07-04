@@ -4,6 +4,17 @@ import { JSON_API_HEADERS, getNetworkErrorStatus } from "@/shared/lib/network";
 
 const API_BASE_URL = getApiBaseUrl();
 
+function createProxyHeaders(request: NextRequest): Headers {
+  const headers = new Headers(JSON_API_HEADERS);
+  const acceptLanguage = request.headers.get("Accept-Language");
+
+  if (acceptLanguage) {
+    headers.set("Accept-Language", acceptLanguage);
+  }
+
+  return headers;
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> }
@@ -23,7 +34,7 @@ export async function GET(
     const url = `${API_BASE_URL}/${path}${queryString ? `?${queryString}` : ""}`;
 
     const response = await fetch(url, {
-      headers: JSON_API_HEADERS,
+      headers: createProxyHeaders(request),
       cache: "no-store",
     });
 

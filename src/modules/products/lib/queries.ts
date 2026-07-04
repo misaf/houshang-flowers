@@ -288,8 +288,11 @@ function emptyProductsResult(page: number, perPage: number): FetchProductsResult
   };
 }
 
-async function resolveProductCategoryId(slug: string): Promise<string | null> {
-  const categories = await fetchProductCategories();
+async function resolveProductCategoryId(
+  slug: string,
+  locale?: string
+): Promise<string | null> {
+  const categories = await fetchProductCategories(locale);
   const category = categories.find((item) => item.slug === slug);
 
   return category ? String(category.id) : null;
@@ -298,10 +301,12 @@ async function resolveProductCategoryId(slug: string): Promise<string | null> {
 async function fetchProductCollection(
   path: string,
   queryParams: URLSearchParams,
-  fallback: { page: number; perPage: number }
+  fallback: { page: number; perPage: number },
+  locale?: string
 ): Promise<FetchProductsResult> {
   const response = await apiClient.get<ProductDto[]>(path, {
     query: queryParams,
+    locale,
     next:
       queryParams.get("sort") === "random-position"
         ? { revalidate: 0 }
@@ -374,7 +379,7 @@ function createProductQueryParams(
 export async function fetchProducts(
   params: FetchProductsParams = {}
 ): Promise<FetchProductsResult> {
-  const { page = 1, perPage = 15, category, search, slug, sort } = params;
+  const { page = 1, perPage = 15, category, locale, search, slug, sort } = params;
   const queryParams = createProductQueryParams(page, perPage, sort);
   const normalizedSearch = search?.trim();
   let path = "products";
@@ -382,7 +387,7 @@ export async function fetchProducts(
   appendOptionalQueryParam(queryParams, "filter[slug]", slug);
 
   if (category) {
-    const categoryId = await resolveProductCategoryId(category);
+    const categoryId = await resolveProductCategoryId(category, locale);
 
     if (!categoryId) {
       return emptyProductsResult(page, perPage);
@@ -400,14 +405,14 @@ export async function fetchProducts(
         return fetchProductCollection(path, searchQueryParams, {
           page,
           perPage,
-        });
+        }, locale);
       })
     );
 
     return mergeProductResults(searchResults, { page, perPage });
   }
 
-  return fetchProductCollection(path, queryParams, { page, perPage });
+  return fetchProductCollection(path, queryParams, { page, perPage }, locale);
 }
 
 export async function fetchProductsWithDetails(
@@ -422,7 +427,8 @@ export async function fetchProductsWithDetails(
 }
 
 export async function fetchProduct(
-  id: string | number
+  id: string | number,
+  locale?: string
 ): Promise<Product | null> {
   try {
     const response = await apiClient.get<ProductDto | ProductDto[]>(
@@ -431,6 +437,7 @@ export async function fetchProduct(
         query: {
           include: "multimedia,productCategory,latestProductPrice,productPrices",
         },
+        locale,
         next: { revalidate: 10 },
         mode: "cors",
         credentials: "omit",
@@ -444,7 +451,10 @@ export async function fetchProduct(
   }
 }
 
-export async function fetchProductBySlug(slug: string): Promise<Product | null> {
+export async function fetchProductBySlug(
+  slug: string,
+  locale?: string
+): Promise<Product | null> {
   const normalizedSlug = decodeURIComponent(slug).trim();
   const resourceId = getLeadingResourceId(normalizedSlug);
 
@@ -453,7 +463,7 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   }
 
   if (resourceId) {
-    return fetchProduct(resourceId);
+    return fetchProduct(resourceId, locale);
   }
 
   const perPage = 100;
@@ -464,13 +474,14 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
     const result = await fetchProductsWithDetails({
       page,
       perPage,
+      locale,
     });
     const product = result.products.find(
       (candidate) => candidate.slug === normalizedSlug
     );
 
     if (product) {
-      return (await fetchProduct(product.id)) ?? product;
+      return (await fetchProduct(product.id, locale)) ?? product;
     }
 
     lastPage = result.pagination.lastPage;
@@ -485,7 +496,7 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
 // so without cache() the fetch + transform would run repeatedly. Mirrors the blog
 // side's fetchPostCategories.
 export const fetchProductCategories = cache(
-  async (): Promise<ProductCategory[]> => {
+  async (locale?: string): Promise<ProductCategory[]> => {
     const response = await apiClient.get<ProductCategoryDto[]>(
       "product-categories",
       {
@@ -493,6 +504,7 @@ export const fetchProductCategories = cache(
           include: "multimedia",
           "filter[status]": "1",
         },
+        locale,
         next: { revalidate: 10 },
         mode: "cors",
         credentials: "omit",
@@ -530,9 +542,13 @@ export function useProductCategories(
   options?: ApiQueryOptions<ProductCategory[]>
 ) {
   return useQuery(
-    createApiQueryOptions(productKeys.categories(), fetchProductCategories, {
-      staleTime: 5 * 60 * 1000,
-      ...options,
-    })
+    createApiQueryOptions(
+      productKeys.categories(),
+      () => fetchProductCategories(),
+      {
+        staleTime: 5 * 60 * 1000,
+        ...options,
+      }
+    )
   );
 }

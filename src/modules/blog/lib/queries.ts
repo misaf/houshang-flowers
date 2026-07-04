@@ -148,8 +148,11 @@ function emptyPostsResult(page: number, perPage: number): FetchPostsResult {
   };
 }
 
-async function resolvePostCategoryId(slug: string): Promise<string | null> {
-  const categories = await fetchPostCategories();
+async function resolvePostCategoryId(
+  slug: string,
+  locale?: string
+): Promise<string | null> {
+  const categories = await fetchPostCategories(locale);
   const category = categories.find((item) => item.slug === slug);
 
   return category ? String(category.id) : null;
@@ -158,10 +161,12 @@ async function resolvePostCategoryId(slug: string): Promise<string | null> {
 async function fetchPostCollection(
   path: string,
   queryParams: URLSearchParams,
-  fallback: { page: number; perPage: number }
+  fallback: { page: number; perPage: number },
+  locale?: string
 ): Promise<FetchPostsResult> {
   const response = await apiClient.get<PostDto[]>(path, {
     query: queryParams,
+    locale,
     next: { revalidate: 10 },
     mode: "cors",
     credentials: "omit",
@@ -224,7 +229,7 @@ function createPostQueryParams(page: number, perPage: number): URLSearchParams {
 export async function fetchPosts(
   params: FetchPostsParams = {}
 ): Promise<FetchPostsResult> {
-  const { page = 1, perPage = 15, category, search, slug } = params;
+  const { page = 1, perPage = 15, category, locale, search, slug } = params;
   const queryParams = createPostQueryParams(page, perPage);
   const normalizedSearch = search?.trim();
   let path = "blog-posts";
@@ -232,7 +237,7 @@ export async function fetchPosts(
   appendOptionalQueryParam(queryParams, "filter[slug]", slug);
 
   if (category) {
-    const categoryId = await resolvePostCategoryId(category);
+    const categoryId = await resolvePostCategoryId(category, locale);
 
     if (!categoryId) {
       return emptyPostsResult(page, perPage);
@@ -247,17 +252,20 @@ export async function fetchPosts(
       searchFilters.map((filterKey) => {
         const searchQueryParams = createPostQueryParams(page, perPage);
         searchQueryParams.append(filterKey, normalizedSearch);
-        return fetchPostCollection(path, searchQueryParams, { page, perPage });
+        return fetchPostCollection(path, searchQueryParams, { page, perPage }, locale);
       })
     );
 
     return mergePostResults(searchResults, { page, perPage });
   }
 
-  return fetchPostCollection(path, queryParams, { page, perPage });
+  return fetchPostCollection(path, queryParams, { page, perPage }, locale);
 }
 
-async function fetchPostById(id: string | number): Promise<Post | null> {
+async function fetchPostById(
+  id: string | number,
+  locale?: string
+): Promise<Post | null> {
   try {
     const response = await apiClient.get<PostDto | PostDto[]>(
       `blog-posts/${id}`,
@@ -265,6 +273,7 @@ async function fetchPostById(id: string | number): Promise<Post | null> {
         query: {
           include: "multimedia,blogPostCategory",
         },
+        locale,
         next: { revalidate: 10 },
         mode: "cors",
         credentials: "omit",
@@ -278,7 +287,10 @@ async function fetchPostById(id: string | number): Promise<Post | null> {
   }
 }
 
-export async function fetchPost(slug: string): Promise<Post | null> {
+export async function fetchPost(
+  slug: string,
+  locale?: string
+): Promise<Post | null> {
   const normalizedSlug = decodeURIComponent(slug).trim();
   const resourceId = getLeadingResourceId(normalizedSlug);
 
@@ -287,7 +299,7 @@ export async function fetchPost(slug: string): Promise<Post | null> {
   }
 
   if (resourceId) {
-    return fetchPostById(resourceId);
+    return fetchPostById(resourceId, locale);
   }
 
   const perPage = 100;
@@ -298,13 +310,14 @@ export async function fetchPost(slug: string): Promise<Post | null> {
     const result = await fetchPostsWithDetails({
       page,
       perPage,
+      locale,
     });
     const post = result.posts.find(
       (candidate) => candidate.slug === normalizedSlug
     );
 
     if (post) {
-      return (await fetchPostById(post.id)) ?? post;
+      return (await fetchPostById(post.id, locale)) ?? post;
     }
 
     lastPage = result.pagination.lastPage;
@@ -328,13 +341,14 @@ export async function fetchPostsWithDetails(
 // the blog page also fetches the category list, so without cache() the fetch +
 // transform would run twice for a single render.
 export const fetchPostCategories = cache(
-  async (): Promise<PostCategory[]> => {
+  async (locale?: string): Promise<PostCategory[]> => {
     const response = await apiClient.get<PostCategoryDto[]>(
       "blog-post-categories",
       {
         query: {
           "page[size]": "50",
         },
+        locale,
         next: { revalidate: 10 },
         mode: "cors",
         credentials: "omit",

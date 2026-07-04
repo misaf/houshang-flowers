@@ -50,6 +50,7 @@ export interface FaqCategory {
 export interface FetchFaqsParams {
   page?: number;
   perPage?: number;
+  locale?: string;
   search?: string;
   category?: string;
 }

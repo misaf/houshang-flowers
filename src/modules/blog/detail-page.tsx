@@ -23,13 +23,22 @@ import {
 } from "@/shared/seo";
 
 // Deduplicate the post fetch across generateMetadata + the page render.
-const getPost = cache((slug: string) => fetchBlogPost(slug));
+const getPost = cache((slug: string, locale: string) =>
+  fetchBlogPost(slug, locale)
+);
 
 // The latest entries close the article — fetched without blocking the render
 // and streamed in via <Suspense>. Errors degrade to an empty list.
-async function loadRelatedPosts(currentPostId: number): Promise<BlogPost[]> {
+async function loadRelatedPosts(
+  currentPostId: number,
+  locale: string
+): Promise<BlogPost[]> {
   try {
-    const result = await fetchBlogPostsWithDetails({ page: 1, perPage: 4 });
+    const result = await fetchBlogPostsWithDetails({
+      page: 1,
+      perPage: 4,
+      locale,
+    });
     return result.posts
       .filter((entry) => entry.id !== currentPostId)
       .slice(0, 3);
@@ -48,7 +57,7 @@ export async function generateMetadata({
   const path = `/blog/${slug}`;
 
   try {
-    const post = await getPost(slug);
+    const post = await getPost(slug, locale);
 
     if (post) {
       return buildMetadata({
@@ -90,7 +99,7 @@ export default async function BlogPostDetail({
   let error: string | null = null;
 
   try {
-    post = await getPost(slug);
+    post = await getPost(slug, locale);
     if (!post) {
       error = t("blog.postNotFound");
     }
@@ -105,7 +114,7 @@ export default async function BlogPostDetail({
 
   // Kick off the related fetch without awaiting — streamed on the client.
   const relatedPostsPromise: Promise<BlogPost[]> = post
-    ? loadRelatedPosts(post.id)
+    ? loadRelatedPosts(post.id, locale)
     : Promise.resolve([]);
 
   return (

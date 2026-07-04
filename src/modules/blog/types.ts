@@ -78,6 +78,7 @@ export interface FetchPostsParams {
   page?: number;
   perPage?: number;
   category?: string;
+  locale?: string;
   search?: string;
   slug?: string;
 }

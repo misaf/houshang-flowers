@@ -49,10 +49,13 @@ export async function generateMetadata({
 }
 
 export default async function Products({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const { locale } = await params;
   const query = await searchParams;
   const category = normalizeCategory(readFirst(query.category));
   const search = normalizeSearch(readFirst(query.search));
@@ -69,6 +72,7 @@ export default async function Products({
       page: 1,
       perPage: 12,
       category,
+      locale,
       search: search || undefined,
       sort: apiSort,
     });

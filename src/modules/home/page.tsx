@@ -40,11 +40,11 @@ interface InitialBlogData {
   initialBlogCategory: PostCategory | null;
 }
 
-async function loadInitialBlog(): Promise<InitialBlogData> {
+async function loadInitialBlog(locale: string): Promise<InitialBlogData> {
   let blogCategories: PostCategory[] = [];
 
   try {
-    blogCategories = await fetchBlogPostCategories();
+    blogCategories = await fetchBlogPostCategories(locale);
   } catch (error) {
     console.error("Error loading blog post categories:", error);
   }
@@ -56,6 +56,7 @@ async function loadInitialBlog(): Promise<InitialBlogData> {
         perPage: BLOG_PAGE_SIZE,
         page: 1,
         category: category?.slug,
+        locale,
       });
 
       if (posts.length > 0) {
@@ -69,9 +70,11 @@ async function loadInitialBlog(): Promise<InitialBlogData> {
   return { initialBlogPosts: [], initialBlogCategory: null };
 }
 
-async function loadInitialHomeProductCategories(): Promise<HomeProductCategory[]> {
+async function loadInitialHomeProductCategories(
+  locale: string
+): Promise<HomeProductCategory[]> {
   try {
-    const apiCategories = await fetchProductCategories();
+    const apiCategories = await fetchProductCategories(locale);
     const homeCategories = apiCategories.slice(0, HOME_CATEGORY_LIMIT);
     const results = await Promise.allSettled(
       homeCategories.map((category) =>
@@ -79,6 +82,7 @@ async function loadInitialHomeProductCategories(): Promise<HomeProductCategory[]
           category: category.slug,
           page: 1,
           perPage: HOME_PRODUCTS_PER_CATEGORY,
+          locale,
         })
       )
     );
@@ -107,11 +111,17 @@ async function loadInitialHomeProductCategories(): Promise<HomeProductCategory[]
   }
 }
 
-export default async function StorefrontPage() {
+export default async function StorefrontPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
   // Blog and product data are independent — load them concurrently.
   const [blog, initialHomeProductCategories] = await Promise.all([
-    loadInitialBlog(),
-    loadInitialHomeProductCategories(),
+    loadInitialBlog(locale),
+    loadInitialHomeProductCategories(locale),
   ]);
 
   return (

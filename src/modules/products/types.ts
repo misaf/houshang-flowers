@@ -129,6 +129,7 @@ export interface FetchProductsParams {
   page?: number;
   perPage?: number;
   category?: string;
+  locale?: string;
   search?: string;
   slug?: string;
   sort?: string;
