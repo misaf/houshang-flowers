@@ -1,5 +1,6 @@
+import type { ReactNode } from "react";
 import type { JSONContent } from "@tiptap/core";
-import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
+import { renderToReactElement } from "@tiptap/static-renderer/pm/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import TiptapImage from "@tiptap/extension-image";
@@ -131,24 +132,19 @@ export function RichText({ content, className }: RichTextProps) {
   const tiptapDocument = parseTiptapDocument(content);
 
   if (hasRenderableTiptap(tiptapDocument)) {
-    let rendered = "";
+    let rendered: ReactNode = null;
     try {
-      rendered = renderToHTMLString({
+      rendered = renderToReactElement({
         content: tiptapDocument,
         extensions: TIPTAP_RENDER_EXTENSIONS,
         staticEditorOptions: { textDirection: "auto" },
       });
     } catch {
-      rendered = "";
+      rendered = null;
     }
 
     if (rendered) {
-      return (
-        <div
-          className={rootClassName}
-          dangerouslySetInnerHTML={{ __html: rendered }}
-        />
-      );
+      return <div className={rootClassName}>{rendered}</div>;
     }
   }
 
