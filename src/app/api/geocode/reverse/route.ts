@@ -77,13 +77,26 @@ async function reverseWithNominatim(
   };
 }
 
+/**
+ * Parse a coordinate query param. Returns null for a missing, blank,
+ * non-numeric, or out-of-range value — `Number(null)` and `Number("")` are both
+ * 0, which would otherwise pass a bare `Number.isFinite` check and geocode the
+ * null-island point (0, 0).
+ */
+function parseCoordinate(value: string | null, max: number): number | null {
+  if (value === null || value.trim() === "") return null;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || Math.abs(parsed) > max) return null;
+  return parsed;
+}
+
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
-  const lat = Number(params.get("lat"));
-  const lng = Number(params.get("lng"));
+  const lat = parseCoordinate(params.get("lat"), 90);
+  const lng = parseCoordinate(params.get("lng"), 180);
   const locale = params.get("locale") === "fa" ? "fa" : "en";
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+  if (lat === null || lng === null) {
     return NextResponse.json(
       { error: "Invalid or missing lat/lng" },
       { status: 400 }

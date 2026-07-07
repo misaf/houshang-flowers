@@ -128,6 +128,9 @@ export function GlobalSearch() {
       <CommandDialog
         open={open}
         onOpenChange={setOpen}
+        // Results are filtered server-side; don't let cmdk re-filter and hide
+        // valid matches (or the "View all results" action).
+        shouldFilter={false}
         title={t("search.title") || "Search Products"}
         description={t("search.description") || "Search for products by name or description"}
       >
