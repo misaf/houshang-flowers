@@ -1,9 +1,29 @@
-import type { ReactNode } from "react";
 import type { JSONContent } from "@tiptap/core";
-import { renderToReactElement } from "@tiptap/static-renderer/pm/react";
+import { renderToHTMLString } from "@tiptap/static-renderer/pm/html-string";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import TiptapImage from "@tiptap/extension-image";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Highlight from "@tiptap/extension-highlight";
+import {
+  TextStyle,
+  Color,
+  BackgroundColor,
+  FontFamily,
+  FontSize,
+  LineHeight,
+} from "@tiptap/extension-text-style";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import Typography from "@tiptap/extension-typography";
+import Youtube from "@tiptap/extension-youtube";
+import {
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@tiptap/extension-table";
 
 // Mirror the backend TipTap editor so rendered output matches what authors
 // composed. StarterKit (v3) already bundles bold, italic, strike, code,
@@ -17,6 +37,33 @@ const TIPTAP_RENDER_EXTENSIONS = [
     alignments: ["start", "end", "left", "center", "right", "justify"],
   }),
   TiptapImage,
+  TaskList,
+  TaskItem.configure({
+    nested: true,
+  }),
+  Highlight.configure({
+    multicolor: true,
+  }),
+  TextStyle,
+  Color,
+  BackgroundColor,
+  FontFamily,
+  FontSize,
+  LineHeight,
+  Subscript,
+  Superscript,
+  Typography,
+  Youtube.configure({
+    nocookie: true,
+    controls: true,
+    modestBranding: true,
+  }),
+  Table.configure({
+    renderWrapper: true,
+  }),
+  TableRow,
+  TableHeader,
+  TableCell,
 ];
 
 function isTiptapDocument(value: unknown): value is JSONContent {
@@ -28,11 +75,34 @@ function isTiptapDocument(value: unknown): value is JSONContent {
   );
 }
 
+function parseTiptapDocument(value: unknown): JSONContent | null {
+  if (isTiptapDocument(value)) {
+    return value;
+  }
+
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("{")) {
+    return null;
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(trimmed);
+    return isTiptapDocument(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function hasRenderableTiptap(value: unknown): value is JSONContent {
+  const document = parseTiptapDocument(value);
   return (
-    isTiptapDocument(value) &&
-    Array.isArray(value.content) &&
-    value.content.length > 0
+    Boolean(document) &&
+    Array.isArray(document?.content) &&
+    document.content.length > 0
   );
 }
 
@@ -57,20 +127,28 @@ interface RichTextProps {
  * document.
  */
 export function RichText({ content, className }: RichTextProps) {
-  if (hasRenderableTiptap(content)) {
-    let rendered: ReactNode = null;
+  const rootClassName = ["rich-text", className].filter(Boolean).join(" ");
+  const tiptapDocument = parseTiptapDocument(content);
+
+  if (hasRenderableTiptap(tiptapDocument)) {
+    let rendered = "";
     try {
-      rendered = renderToReactElement({
-        content,
+      rendered = renderToHTMLString({
+        content: tiptapDocument,
         extensions: TIPTAP_RENDER_EXTENSIONS,
         staticEditorOptions: { textDirection: "auto" },
       });
     } catch {
-      rendered = null;
+      rendered = "";
     }
 
     if (rendered) {
-      return <div className={className}>{rendered}</div>;
+      return (
+        <div
+          className={rootClassName}
+          dangerouslySetInnerHTML={{ __html: rendered }}
+        />
+      );
     }
   }
 
@@ -82,7 +160,7 @@ export function RichText({ content, className }: RichTextProps) {
 
     if (paragraphs.length > 0) {
       return (
-        <div className={className}>
+        <div className={rootClassName}>
           {paragraphs.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
           ))}

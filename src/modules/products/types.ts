@@ -103,6 +103,7 @@ export interface Product {
   image: string;
   images?: string[];
   description: string;
+  richDescription?: unknown;
   category?: string;
   categorySlug?: string;
   slug?: string;

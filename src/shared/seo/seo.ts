@@ -30,6 +30,13 @@ function siteName(locale: string): string {
   return isLocale(locale) ? SITE_NAME[locale] : SITE_NAME[routing.defaultLocale];
 }
 
+function alternateOgLocales(locale: string): string[] {
+  const currentLocale = isLocale(locale) ? locale : routing.defaultLocale;
+  return routing.locales
+    .filter((alternateLocale) => alternateLocale !== currentLocale)
+    .map((alternateLocale) => OG_LOCALE[alternateLocale]);
+}
+
 /**
  * Strips HTML and collapses whitespace into a clean meta description,
  * truncated to `max` characters with an ellipsis.
@@ -114,8 +121,14 @@ export function buildMetadata({
   modifiedTime,
   noIndex = false,
 }: BuildMetadataParams): Metadata {
-  const ogImages = images && images.length > 0 ? images : [DEFAULT_OG_IMAGE];
-  const otherLocale = locale === "fa" ? "en" : "fa";
+  const previewAlt = title || siteName(locale);
+  const previewImages = (images && images.length > 0 ? images : [DEFAULT_OG_IMAGE])
+    .map((image) => ({
+      url: absoluteUrl(image),
+      width: 1200,
+      height: 630,
+      alt: previewAlt,
+    }));
 
   return {
     title,
@@ -125,18 +138,18 @@ export function buildMetadata({
       type,
       siteName: siteName(locale),
       locale: OG_LOCALE[isLocale(locale) ? locale : routing.defaultLocale],
-      alternateLocale: OG_LOCALE[otherLocale],
+      alternateLocale: alternateOgLocales(locale),
       url: absoluteUrl(localizedPath(locale, path)),
       title,
       description,
-      images: ogImages,
+      images: previewImages,
       ...(type === "article" ? { publishedTime, modifiedTime } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ogImages,
+      images: previewImages,
     },
     ...(noIndex
       ? { robots: { index: false, follow: false, googleBot: { index: false, follow: false } } }

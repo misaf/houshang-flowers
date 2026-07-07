@@ -31,19 +31,21 @@ import {
 } from "@/shared/components/ui/carousel";
 import {
   ArrowLeft,
-	  ArrowRight,
-	  MapPin,
-	  Hash,
-	  Heart,
-	  ImageOff,
-	  Package,
-	  ShoppingBag,
-	  PackageCheck,
-	  Share2,
-	  Truck,
+  ArrowRight,
+  MapPin,
+  Hash,
+  Heart,
+  ImageOff,
+  MessageCircle,
+  Package,
+  ShoppingBag,
+  PackageCheck,
+  Send,
+  Share2,
+  Truck,
   Sparkles,
   Palette,
-	} from "lucide-react";
+} from "lucide-react";
 import { useCart } from "@/modules/cart";
 import { useFavorites } from "@/modules/account";
 import { useTranslations } from "@/shared/hooks/use-translations";
@@ -52,6 +54,7 @@ import { formatRemainingQuantity } from "../lib/format";
 import { createReadableResourcePath } from "@/shared/lib/slug-url";
 import { cn, formatLocalizedPrice, normalizeImageUrl } from "@/shared/lib/utils";
 import { PLACEHOLDER_IMAGE } from "@/shared/lib/image";
+import { RichText, hasRichTextContent } from "@/shared/components/rich-text";
 import { toast } from "sonner";
 
 interface ProductDetailClientProps {
@@ -59,6 +62,13 @@ interface ProductDetailClientProps {
   relatedProductsPromise: Promise<Product[]>;
   initialError: string | null;
 }
+
+const SOCIAL_SHARE_TARGETS = {
+  telegramUsername: "houshangflowers",
+  whatsappPhone: "989129333034",
+} as const;
+
+type SocialSharePlatform = "telegram" | "whatsapp";
 
 export default function ProductDetailClient({
   initialProduct,
@@ -120,6 +130,47 @@ export default function ProductDetailClient({
       /* user cancelled the native share sheet — no feedback needed */
     }
   }, [product, t]);
+
+  const handleSocialShare = useCallback(
+    async (platform: SocialSharePlatform) => {
+      if (typeof window === "undefined" || !product) return;
+
+      const shareUrl = window.location.href;
+      const imageUrl =
+        detailImage === PLACEHOLDER_IMAGE
+          ? ""
+          : new URL(detailImage, window.location.origin).toString();
+      const inquiryMessage = t("common.productInquiryMessage", {
+        name: product.name,
+      });
+      const message = [inquiryMessage, shareUrl, imageUrl]
+        .filter(Boolean)
+        .join("\n");
+
+      if (platform === "whatsapp") {
+        window.open(
+          `https://wa.me/${SOCIAL_SHARE_TARGETS.whatsappPhone}?text=${encodeURIComponent(
+            message
+          )}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        return;
+      }
+
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(message);
+        toast.success(t("common.socialShareCopied"));
+      }
+
+      window.open(
+        `https://t.me/${SOCIAL_SHARE_TARGETS.telegramUsername}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    },
+    [detailImage, product, t]
+  );
 
   return (
     <PageShell>
@@ -240,43 +291,7 @@ export default function ProductDetailClient({
 	                </div>
 
                 <div className="relative grid gap-4 border-t border-border p-4 sm:p-6 lg:border-t-0 lg:gap-5">
-                  <div className="absolute end-4 top-4 flex flex-col gap-2 sm:end-6 sm:top-6">
-                    <button
-                      type="button"
-                      onClick={() => toggleFavorite(product)}
-                      aria-pressed={productIsFavorite}
-                      aria-label={
-                        productIsFavorite
-                          ? t("common.removeFromFavorites") || "Remove from favorites"
-                          : t("common.favorites") || "Add to favorites"
-                      }
-                      title={
-                        productIsFavorite
-                          ? t("common.removeFromFavorites") || "Remove from favorites"
-                          : t("common.favorites") || "Add to favorites"
-                      }
-                      className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <Heart
-                        className={`size-5 shrink-0 ${
-                          productIsFavorite
-                            ? "fill-primary text-primary"
-                            : ""
-                        }`}
-                      />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleShare}
-                      aria-label={t("common.share") || "Share"}
-                      title={t("common.share") || "Share"}
-                      className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <Share2 className="size-5 shrink-0" />
-                    </button>
-                  </div>
-
-	                  <div className="flex min-w-0 flex-col justify-center gap-6 pe-12">
+	                  <div className="flex min-w-0 flex-col justify-center gap-6">
 		                    <div className="flex flex-wrap items-center gap-2">
 		                      {product.token ? (
                         <span className="inline-flex items-center gap-2 rounded-full border border-border bg-storefront-brand-soft px-3 py-1 text-xs font-semibold text-primary">
@@ -297,6 +312,68 @@ export default function ProductDetailClient({
 	                      </h1>
 	                    </div>
 
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleFavorite(product)}
+                        aria-pressed={productIsFavorite}
+                        aria-label={
+                          productIsFavorite
+                            ? t("common.removeFromFavorites") || "Remove from favorites"
+                            : t("common.favorites") || "Add to favorites"
+                        }
+                        title={
+                          productIsFavorite
+                            ? t("common.removeFromFavorites") || "Remove from favorites"
+                            : t("common.favorites") || "Add to favorites"
+                        }
+                        className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-auto"
+                      >
+                        <Heart
+                          className={`size-5 shrink-0 ${
+                            productIsFavorite
+                              ? "fill-primary text-primary"
+                              : ""
+                          }`}
+                        />
+                        <span className="truncate">
+                          {productIsFavorite
+                            ? t("common.removeFromFavorites") || "Remove from favorites"
+                            : t("common.favorites") || "Add to favorites"}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleShare}
+                        aria-label={t("common.share") || "Share"}
+                        title={t("common.share") || "Share"}
+                        className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-auto"
+                      >
+                        <Share2 className="size-5 shrink-0" />
+                        <span className="truncate">{t("common.share") || "Share"}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSocialShare("telegram")}
+                        aria-label={t("common.shareOnTelegram")}
+                        title={t("common.shareOnTelegram")}
+                        className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-auto"
+                      >
+                        <Send className="size-5 shrink-0" />
+                        <span className="truncate">{t("common.shareOnTelegram")}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSocialShare("whatsapp")}
+                        aria-label={t("common.shareOnWhatsApp")}
+                        title={t("common.shareOnWhatsApp")}
+                        className="inline-flex h-10 min-w-0 items-center justify-center gap-2 rounded-full border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-auto"
+                      >
+                        <MessageCircle className="size-5 shrink-0" />
+                        <span className="truncate">{t("common.shareOnWhatsApp")}</span>
+                      </button>
+                    </div>
+
                     {product.inStock !== false ? (
                       <p className="text-3xl font-bold text-card-foreground">
                         {Number(product.price) > 0
@@ -309,11 +386,14 @@ export default function ProductDetailClient({
                       </p>
                     ) : null}
 
-	                    {product.description ? (
-	                      <p className="text-base leading-8 text-muted-foreground">
-	                        {product.description}
-	                      </p>
-	                    ) : null}
+                    {hasRichTextContent(
+                      product.richDescription ?? product.description
+                    ) ? (
+                      <RichText
+                        content={product.richDescription ?? product.description}
+                        className="space-y-4 text-base leading-8 text-muted-foreground [&_.tableWrapper]:overflow-x-auto [&_.tableWrapper]:rounded-lg [&_.tableWrapper]:border [&_.tableWrapper]:border-border [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_blockquote]:border-s-2 [&_blockquote]:border-primary/30 [&_blockquote]:ps-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1.5 [&_code]:py-0.5 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:leading-tight [&_h2]:text-card-foreground [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-medium [&_h3]:text-card-foreground [&_img]:rounded-lg [&_ol]:list-inside [&_ol]:list-decimal [&_strong]:text-card-foreground [&_table]:w-full [&_table]:min-w-max [&_table]:border-collapse [&_tbody_tr:nth-child(even)]:bg-muted/35 [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_th]:border [&_th]:border-border [&_th]:bg-muted [&_th]:px-3 [&_th]:py-2 [&_th]:text-start [&_th]:font-semibold [&_th]:text-card-foreground [&_ul]:list-inside [&_ul]:list-disc"
+                      />
+                    ) : null}
 
 	                    {product.quantity != null && product.quantity < 2 ? (
 	                      <p className="inline-flex items-center gap-2 text-sm font-semibold text-primary">

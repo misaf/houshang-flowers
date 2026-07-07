@@ -11,6 +11,7 @@ import {
   plainText,
   productSchema,
 } from "@/shared/seo";
+import { stringifyRichText } from "@/shared/lib/rich-text";
 
 // Deduplicate the product fetch across generateMetadata + the page render.
 const getProduct = cache((slug: string, locale: string) =>
@@ -78,7 +79,10 @@ export async function generateMetadata({
 
   if (product) {
     const description =
-      plainText(product.description) || t("metadataDescription");
+      plainText(
+        stringifyRichText(product.richDescription ?? product.description)
+      ) ||
+      t("metadataDescription");
     const images = product.images?.length
       ? product.images
       : product.image
@@ -131,7 +135,13 @@ export default async function ProductDetailPage({
     ? [
         productSchema(locale, {
           name: initialProduct.name,
-          description: plainText(initialProduct.description, 5000) || undefined,
+          description:
+            plainText(
+              stringifyRichText(
+                initialProduct.richDescription ?? initialProduct.description
+              ),
+              5000
+            ) || undefined,
           image: initialProduct.image,
           images: initialProduct.images,
           price: initialProduct.price,

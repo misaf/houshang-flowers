@@ -240,6 +240,7 @@ export function transformProduct(product: ProductDto): Product {
     image: getFirstRelatedImage(product),
     images: getRelatedImages(product),
     description: stripHtml(product.description, 150),
+    richDescription: product.description,
     category: categoryInfo.name || categoryInfo.slug,
     categorySlug: categoryInfo.slug,
     slug: product.slug,
